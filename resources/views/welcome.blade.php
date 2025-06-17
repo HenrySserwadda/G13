@@ -148,7 +148,7 @@
     <section class="hero-section">
         <div class="container">
             <h1 class="display-3 fw-bold mb-4">Welcome to Durabag</h1>
-            <p class="lead mb-5">Premium quality bags for every occasion</p>
+            <p class="lead mb-5">The bags you dream of</p>
             <a href="#about" class="btn btn-primary btn-lg px-4 me-2">Discover More</a>
            
         </div>
