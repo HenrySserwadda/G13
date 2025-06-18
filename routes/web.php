@@ -22,3 +22,6 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+use App\Http\Controllers\ChatController;
+
+Route::get('/chat', [ChatController::class, 'index'])->middleware('auth');
