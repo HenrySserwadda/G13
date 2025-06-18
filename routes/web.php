@@ -1,10 +1,14 @@
 <?php
 
+use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+Route::get('/about', function(){
+    return view('about');
 });
 
 Route::get('/dashboard', function () {
@@ -18,3 +22,6 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+use App\Http\Controllers\ChatController;
+
+Route::get('/chat', [ChatController::class, 'index'])->middleware('auth');
