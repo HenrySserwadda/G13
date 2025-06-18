@@ -110,24 +110,35 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Products</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
-                    </li>
-                </ul>
+      
                 <div class="ms-3">
-                    <a href="/login" class="btn btn-outline-light me-2">Log in</a>
-                    <a href="/register" class="btn btn-primary">Register</a>
+                     @if (Route::has('login'))
+                
+                    @auth
+                        <a
+                            href="{{ url('/dashboard') }}"  class="btn btn-outline-light me-2">
+                                                   
+                            Dashboard
+                        </a>
+                    @else
+                        <a
+                            href="{{ route('login') }}"  class="btn btn-outline-light me-2"
+                           
+                        >
+                            Log in
+                        </a>
+
+                        @if (Route::has('register'))
+                            <a
+                                href="{{ route('register') }}" class="btn btn-primary" >
+                              
+                                Register
+                            </a>
+                        @endif
+                    @endauth
+                </nav>
+            @endif
+
                 </div>
             </div>
         </div>
@@ -137,9 +148,9 @@
     <section class="hero-section">
         <div class="container">
             <h1 class="display-3 fw-bold mb-4">Welcome to Durabag</h1>
-            <p class="lead mb-5">Premium quality bags for every occasion</p>
+            <p class="lead mb-5">The bags you dream of</p>
             <a href="#about" class="btn btn-primary btn-lg px-4 me-2">Discover More</a>
-            <a href="#products" class="btn btn-outline-light btn-lg px-4">Our Products</a>
+           
         </div>
     </section>
 
@@ -155,7 +166,7 @@
                     <h2 class="fw-bold mb-4">Hello there!</h2>
                     <p class="lead mb-4">Durabag is a company that manufactures different kinds of bags with premium quality and craftsmanship.</p>
                     <p>Since our founding in 2025, we've been committed to creating durable, stylish, and functional bags for all lifestyles. Our products are designed to withstand daily use while maintaining their elegance.</p>
-                    <a href="#" class="btn btn-primary mt-3">Learn More About Us</a>
+                    
                 </div>
             </div>
         </div>
