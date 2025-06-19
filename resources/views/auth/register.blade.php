@@ -4,7 +4,7 @@
 
         <!-- Name -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
+            <x-input-label for="name" :value="__('Full Name')" />
             <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
@@ -14,6 +14,22 @@
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        </div>
+        <!-- Phone number -->
+        <div class="mt-4">
+            <x-input-label for="phonenumber" :value="__('Phone number')" />
+            <x-text-input id="phonenumber" class="block mt-1 w-full" type="tel" name="email" :value="old('phonenumber')" required/>
+            <x-input-error :messages="$errors->get('phonenumber')" class="mt-2" />
+        </div>
+        <!-- Role -->
+        <div class="mt-4">
+            <x-input-label for="category" :value="__('Category')" />
+            <input type="radio" name="category" value="companyemployee">Company employee
+            <br><input type="radio" name="category" value="wholesaler">Wholesaler
+            <br><input type="radio" name="category" value="supplier">Supplier
+            <br><input type="radio" name="category" value="retailer">Retailer
+            <br><input type="radio" name="category" value="customer">Customer
+            <br><x-input-error :messages="$errors->get('category')" class="mt-2" />
         </div>
 
         <!-- Password -->
