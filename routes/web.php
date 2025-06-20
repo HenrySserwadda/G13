@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,3 +26,4 @@ require __DIR__.'/auth.php';
 use App\Http\Controllers\ChatController;
 
 Route::get('/chat', [ChatController::class, 'index'])->middleware('auth');
+Route::resource('products', ProductController::class);
