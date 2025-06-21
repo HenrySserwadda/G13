@@ -1,6 +1,7 @@
 <div id="messages"></div>
 <input type="text" id="message" />
 <button onclick="sendMessage()">Send</button>
+<p>chat</p>
 
 <script>
     Echo.channel('chat-channel')
