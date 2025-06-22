@@ -116,10 +116,11 @@
                 
                     @auth
                         <a
-                            href="{{ url('/dashboard') }}"  class="btn btn-outline-light me-2">
+                            href="{{ uri('/redirect') }}"  class="btn btn-outline-light me-2">
                                                    
                             Dashboard
                         </a>
+                      
                     @else
                         <a
                             href="{{ route('login') }}"  class="btn btn-outline-light me-2"
