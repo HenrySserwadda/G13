@@ -26,11 +26,11 @@
                     </div>
                 </header>
             @endisset
-
             <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+                <main>
+                    {{ $slot }}
+                </main>
+            </div>
         </div>
     </body>
 </html>
