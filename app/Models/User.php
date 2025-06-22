@@ -7,11 +7,13 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
+
 
 class User extends Authenticatable 
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -72,22 +74,22 @@ class User extends Authenticatable
             return $prefix.$nextNumber;
     }
 
-    public function redirectToDashboard(User $user)
-    {
-        switch($user->category) {
-            case 'staff':
-                return redirect()->route('dashboard.staff');
-            case 'supplier':
-                return redirect()->route('dashboard.supplier');
-            case 'wholesaler':
-                return redirect()->route('dashboard.wholesaler');
-            case 'retailer':
-                return redirect()->route('dashboard.retailer');
-            case 'systemadmin':
-                return redirect()->route('dashboard.systemadmin');
-            default:
-                return redirect()->route('dashboard.customer');
-            
-        }
+   public function redirectToDashboard()
+{
+    switch($this->category) {
+        case 'staff':
+            return '/dashboard/staff';
+        case 'supplier':
+            return '/dashboard/supplier';
+        case 'wholesaler':
+            return '/dashboard/wholesaler';
+        case 'retailer':
+            return '/dashboard/retailer';
+        case 'systemadmin':
+            return '/dashboard/systemadmin';
+        default:
+            return '/dashboard/customer';
     }
+}
+
 }

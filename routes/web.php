@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Http\Controllers\Systemadmin;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\RawMaterialController;
    
     
 
@@ -75,3 +76,7 @@ Route::get('/chat', [ChatController::class, 'index'])->middleware('auth');
 Route::post('/approve', [Systemadmin::class,'approve'])->name('approve');
 Route::post('/reject', [Systemadmin::class,'reject'])->name('reject');
 Route::get('/redirect',[User::class,'redirectToDashboard']);
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('raw_materials', RawMaterialController::class);
+});

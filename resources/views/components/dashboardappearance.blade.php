@@ -122,7 +122,8 @@
         </aside>
         <main class="flex-1 bg-white dark:bg-gray-800 p-6 overflow-y-auto overflow-x-auto">
             <div>
-                {{ $content ?? ''}}
+                 {{-- This is the key: display the main content of the child view --}}
+                {{ $slot }}
             </div>
         </main>
         </div>  

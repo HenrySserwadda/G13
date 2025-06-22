@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('raw_materials', function (Blueprint $table) {
             $table->id();
                $table->string('name')->unique();
-            $table->string('type');
+            $table->string('type')->nullable();
             $table->string('unit')->nullable(); // e.g. kg, meters
             $table->integer('quantity')->default(0);
             $table->decimal('unit_price', 10, 2)->nullable();
