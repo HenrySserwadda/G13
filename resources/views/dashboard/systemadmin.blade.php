@@ -1,4 +1,5 @@
 <x-dashboardappearance>
+    <x-slot name="rawmaterials">
     <li>
         <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <svg class="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
@@ -8,6 +9,8 @@
 
         </a>
     </li>
+    </x-slot>
+    <x-slot name="inventory">
     <li>
         <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-database-fill" viewBox="0 0 16 16">
@@ -19,6 +22,8 @@
             <span class="flex-1 ms-3 whitespace-nowrap">Inventory</span>
         </a>
     </li>
+    </x-slot>
+    <x-slot name="reports">
     <li>
         <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-data" viewBox="0 0 16 16">
@@ -29,6 +34,8 @@
             <span class="flex-1 ms-3 whitespace-nowrap">Reports</span>
         </a>
     </li>
+    </x-slot>
+    <x-slot name="analytics">
     <li>
         <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-up-arrow" viewBox="0 0 16 16">
@@ -37,6 +44,8 @@
             <span class="flex-1 ms-3 whitespace-nowrap">Analytics</span>
         </a>
     </li>
+    </x-slot>
+    <x-slot name="users">
     <li>
         <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
@@ -46,4 +55,8 @@
 
         </a>
     </li>
+    </x-slot>
+    <x-slot name="content">
+        
+    </x-slot>
 </x-dashboardappearance>

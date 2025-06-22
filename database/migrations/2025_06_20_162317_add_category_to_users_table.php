@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-            $table->date('orderDate');
-            $table->date('deliveryDate');
-            $table->varchar('status');
-            $table->foreignIdFor(App\Models\Product);
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->enum('category',['staff','supplier','wholesaler','retailer','customer'])->after('status');
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 };

@@ -4,11 +4,13 @@ use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
-   $greeting='Hello';
+use App\Http\Controllers\Systemadmin;
+use App\Http\Controllers\ChatController;
+   
     
 
-Route::get('/', function () use ($greeting){
-    return view('welcome',compact('greeting'));
+Route::get('/', function () {
+    return view('welcome');
 });
 Route::get('/about', function(){
     return view('about');
@@ -27,28 +29,33 @@ Route::get('/insertpdf',function(){
     return view('insertpdf');
  });
  //new routes i am adding for the different dashboards based on user type
-Route::get('/staff',function(){
+Route::get('/dashboard/staff',function(){
     return view('staff');
- });
-Route::get('/customerdashboard',function(){
-    return view('customerdashboard');
- });
-Route::get('/supplierdashboard',function(){
-    return view('supplierdashboard');
- });
-Route::get('/wholesalerdashboard',function(){
-    return view('wholesalerdashboard');
- });
-Route::get('/systemadmin',function(){
-    $users=User::all()->latest();//this reruns a view for the system admin to see the users by the latest one that has been added but i am going to work on it so that it does eager loading
-    return view('systemadmin');
- });
+ })->middleware(['auth', 'verified'])->name('dashboard.staff');
+
+Route::get('/dashboard/customer',function(){
+    return view('dashboard/customer');
+ })->middleware(['auth', 'verified'])->name('dashboard.customer');
+
+Route::get('/dashboard/supplier',function(){
+    return view('dashboard.supplier');
+ })->middleware(['auth', 'verified'])->name('dashboard.supplier');
+
+Route::get('/dashboard/wholesaler',function(){
+    return view('dashboard.wholesaler');
+ })->middleware(['auth', 'verified'])->name('dashboard.wholesaler');
+
+Route::get('/dashboard/systemadmin',function(){
+   // $users=User::all()->latest();//this reruns a view for the system admin to see the users by the latest one that has been added but i am going to work on it so that it does eager loading
+    return view('dashboard.systemadmin');
+ })->middleware(['auth', 'verified'])->name('dashboard.systemadmin');
+
  //routes for added dashboard kinds
 
- //original dashboard
-Route::get('/dashboard', function () use($greeting){
+ /* //original dashboard
+Route::get('/dashboard', function (){
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard'); */
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -57,6 +64,14 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
-use App\Http\Controllers\ChatController;
+
 
 Route::get('/chat', [ChatController::class, 'index'])->middleware('auth');
+
+//Route::middleware(['auth','systemadmin'])->group(function () {
+    Route::get('/dashboard/pending-users', [Systemadmin::class, 'pendingUsers'])->name('dashboard.pending-users');
+//});//remember to comment out the middleware and se if the thing still works as expected
+
+Route::post('/approve', [Systemadmin::class,'approve'])->name('approve');
+Route::post('/reject', [Systemadmin::class,'reject'])->name('reject');
+Route::get('/redirect',[User::class,'redirectToDashboard']);

@@ -1,3 +1,0 @@
-<x-dashboardappearance>
-    
-</x-dashboardappearance>

@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rawmaterials', function (Blueprint $table) {
-            $table->id();
-            $table->string('category');
-            $table->foreignIdFor('');
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean('is_admin')->default(false)->change();
+            $table->enum('status',['pending','approved','rejected'])->default('pending')->change();
         });
     }
 
@@ -24,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rawmaterials');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 };

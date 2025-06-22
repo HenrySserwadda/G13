@@ -116,10 +116,11 @@
                 
                     @auth
                         <a
-                            href="{{ url('/dashboard') }}"  class="btn btn-outline-light me-2">
+                            href="{{ uri('/redirect') }}"  class="btn btn-outline-light me-2">
                                                    
                             Dashboard
                         </a>
+                      
                     @else
                         <a
                             href="{{ route('login') }}"  class="btn btn-outline-light me-2"
@@ -138,7 +139,6 @@
                     @endauth
                 </nav>
             @endif
-<<<<<<< HEAD
 
                 </div>
             </div>
@@ -167,26 +167,6 @@
                     <h2 class="fw-bold mb-4">Hello there!</h2>
                     <p class="lead mb-4">Durabag is a company that manufactures different kinds of bags with premium quality and craftsmanship.</p>
                     <p>Since our founding in 2025, we've been committed to creating durable, stylish, and functional bags for all lifestyles. Our products are designed to withstand daily use while maintaining their elegance.</p>
-=======
-        </header>
-        <div class="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
-            <main class="flex max-w-[600px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
-                <div class="leading-[20px] flex-1 p-6 pb-12 lg:p-20 bg-white dark:bg-[#1f2937] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-xl lg:rounded-xl">
-                    <h1 class="mb-1 font-medium">{{ $greeting }} there!</h1>
-                    <p class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">Durabag is a company that manufactures different kinds of bags.</p>
-                    <ul class="flex flex-col mb-4 lg:mb-6">
-                        <li class="flex items-center gap-4 py-2 relative ">
-                            <span>
-                                Find out what Durabag is all
-                                <a href="{{ url('/about') }}" target="_blank" class="inline-flex items-center space-x-1 font-medium underline underline-offset-4 ml-1">
-                                    <span>about</span>
-                                    
-                                </a>
-                            </span>
-                        </li>
-                        
-                    </ul>
->>>>>>> eeafb03 (WIP: started on something else)
                     
                 </div>
             </div>
