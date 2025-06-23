@@ -74,50 +74,24 @@ require __DIR__.'/auth.php';
 Route::get('/chat', [ChatController::class, 'index'])->middleware('auth');
 
 //Route::middleware(['auth','systemadmin'])->group(function () {
-   // Route::get('/dashboard/pending-users', [Systemadmin::class, 'pendingUsers'])->name('dashboard.pending-users');
-//});//remember to comment out the middleware and se if the thing still works as expected
+   // Route::get('/dashboard/pending-users', [SystemadminController::class, 'pendingUsers'])->name('dashboard.pending-users');
+   // Route::post('/approve', [SystemadminController::class, 'approve'])->name('approve');
+    //Route::post('/reject', [SystemadminController::class, 'reject'])->name('reject');
+    //Route::get('/redirect', [SystemadminController::class, 'redirectToDashboard']);
+//}); // remember to comment out the middleware and see if the thing still works as expected
 
-//Route::post('/approve', [Systemadmin::class,'approve'])->name('approve');
-//Route::post('/reject', [Systemadmin::class,'reject'])->name('reject');
-//Route::get('/redirect',[User::class,'redirectToDashboard']);
-Route::middleware(['auth', 'systemadmin'])->group(function () {
-    Route::get('/dashboard/pending-users', [SystemadminController::class, 'pendingUsers'])
-         ->name('dashboard.pending-users');
-    Route::post('/approve', [SystemadminController::class, 'approve'])
-         ->name('approve');
-    Route::post('/reject', [SystemadminController::class, 'reject'])
-         ->name('reject');
-});
+ 
 
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('raw_materials', RawMaterialController::class);
 });
 
+Route::resource('products', ProductController::class)->middleware('auth');
+Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add')->middleware('auth');
+
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
 
- 
 
-// Cart
-Route::middleware('auth')->group(function () {
-    Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::delete('/cart/remove/{cart}', [CartController::class, 'remove'])->name('cart.remove');
-});
 
-// Product routes
-Route::middleware(['auth'])->group(function () {
-    // Public routes
-    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-    Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
-    
-    // Admin-only routes
-    Route::middleware(['systemadmin', ])->group(function () {
-        Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
-        Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
-    Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-    });
-});
