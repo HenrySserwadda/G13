@@ -1,35 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raw Materials Inventory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="bg-gray-100 dark:bg-gray-900">
-    <div class="container mx-auto px-4 py-8">
-        <!-- Dashboard Quick Link -->
-        <div class="mb-6">
-            @auth
-                @if(Auth::user()->category === 'systemadmin')
-                    <a href="{{ route('dashboard.systemadmin') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Back to Admin Dashboard
-                    </a>
-                @elseif(Auth::user()->category === 'supplier')
-                    <a href="{{ route('dashboard.supplier') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Back to Supplier Dashboard
-                    </a>
-                @else
-                    <a href="{{ url('/home') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Back to Dashboard
-                    </a>
-                @endif
-            @endauth
-        </div>
+@extends('components.dashboard')
+
+@section(section: 'content')
+@php
+    $dashboardRoute = match(Auth::user()->category) {
+        'systemadmin' => route('dashboard.systemadmin'),
+        'supplier' => route('dashboard.supplier'),
+        'wholesaler' => route('dashboard.wholesaler'),
+        'customer' => route('dashboard.customer'),
+        'staff' => route('dashboard.staff'),
+        default => '#'
+    };
+@endphp
+
+   
 
         <!-- Page Header -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -124,5 +107,8 @@
             {{ $materials->links() }}
         </div>
     </div>
-</body>
-</html>
+@endsection
+
+@push('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+@endpush
