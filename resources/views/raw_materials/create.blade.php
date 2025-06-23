@@ -1,21 +1,35 @@
-<x-dashboardappearance>
-    <x-slot name="rawmaterials">
-        <li>
-            <a href="{{ route('raw_materials.index') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                <svg class="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 18 18">
-                    <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Z" />
-                </svg>
-                <span class="flex-1 ms-3 whitespace-nowrap">Raw Materials</span>
-            </a>
-        </li>
-    </x-slot>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Raw Material</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 dark:bg-gray-900">
     <div class="container mx-auto px-4 py-8">
-        <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Add New Raw Material</h2>
+        <!-- Back link -->
+        <div class="mb-6">
+            <a href="{{ route('raw_materials.index') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Raw Materials
+            </a>
+        </div>
 
+        <!-- Page Header -->
+        <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+            <i class="fas fa-plus-circle mr-2"></i>Add New Raw Material
+        </h2>
+
+        <!-- Error Messages -->
         @if ($errors->any())
-            <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
-                <ul class="list-disc pl-5">
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded mb-6 dark:bg-red-900 dark:border-red-700 dark:text-red-100">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <strong>Please fix these errors:</strong>
+                </div>
+                <ul class="list-disc pl-5 mt-2">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -23,32 +37,60 @@
             </div>
         @endif
 
-        <form action="{{ route('raw_materials.store') }}" method="POST" class="space-y-6">
+        <!-- Form -->
+        <form action="{{ route('raw_materials.store') }}" method="POST" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6">
             @csrf
+            
+            <!-- Material Name -->
             <div>
-                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Material Name</label>
-                <input type="text" name="name" id="name" class="w-full mt-1 p-2 border rounded shadow-sm dark:bg-gray-700 dark:text-white" required>
+                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <i class="fas fa-tag mr-2"></i>Material Name
+                </label>
+                <input type="text" name="name" id="name" 
+                       class="w-full mt-1 p-2 border rounded shadow-sm dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500" 
+                       required>
             </div>
 
+            <!-- Type -->
             <div>
-                <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Type</label>
-                <input type="text" name="type" id="type" class="w-full mt-1 p-2 border rounded shadow-sm dark:bg-gray-700 dark:text-white" required>
+                <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <i class="fas fa-list-alt mr-2"></i>Type
+                </label>
+                <input type="text" name="type" id="type" 
+                       class="w-full mt-1 p-2 border rounded shadow-sm dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500" 
+                       required>
             </div>
 
+            <!-- Quantity -->
             <div>
-                <label for="quantity" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
-                <input type="number" name="quantity" id="quantity" class="w-full mt-1 p-2 border rounded shadow-sm dark:bg-gray-700 dark:text-white" required>
+                <label for="quantity" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <i class="fas fa-boxes mr-2"></i>Quantity
+                </label>
+                <input type="number" name="quantity" id="quantity" 
+                       class="w-full mt-1 p-2 border rounded shadow-sm dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500" 
+                       required>
             </div>
 
+            <!-- Unit Price -->
             <div>
-                <label for="unit_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit Price (UGX)</label>
-                <input type="number" name="unit_price" step="0.01" id="unit_price" class="w-full mt-1 p-2 border rounded shadow-sm dark:bg-gray-700 dark:text-white" required>
+                <label for="unit_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <i class="fas fa-money-bill-wave mr-2"></i>Unit Price (UGX)
+                </label>
+                <input type="number" name="unit_price" step="0.01" id="unit_price" 
+                       class="w-full mt-1 p-2 border rounded shadow-sm dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500" 
+                       required>
             </div>
 
-            <div>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">Save Material</button>
-                <a href="{{ route('raw_materials.index') }}" class="ml-4 text-gray-600 hover:underline">Cancel</a>
+            <!-- Form Actions -->
+            <div class="flex items-center justify-end space-x-4 pt-4">
+                <a href="{{ route('raw_materials.index') }}" class="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-times mr-1"></i> Cancel
+                </a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow transition-colors duration-300">
+                    <i class="fas fa-save mr-2"></i> Save Material
+                </button>
             </div>
         </form>
     </div>
-</x-dashboardappearance>
+</body>
+</html>

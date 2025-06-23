@@ -101,4 +101,15 @@ class RawMaterialController extends Controller
 
         return redirect()->route('raw_materials.index')->with('success', 'Raw material deleted successfully.');
     }
+    public function approve(RawMaterial $material)
+{
+    $material->update(['status' => 'approved']);
+    return back()->with('success', 'Material approved successfully');
+}
+
+public function reject(RawMaterial $material)
+{
+    $material->update(['status' => 'rejected']);
+    return back()->with('success', 'Material rejected');
+}
 }
