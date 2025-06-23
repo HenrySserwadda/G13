@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Http\Controllers\Systemadmin;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\RawMaterialController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
    
     
 
@@ -80,3 +81,6 @@ Route::get('/redirect',[User::class,'redirectToDashboard']);
 Route::middleware(['auth'])->group(function () {
     Route::resource('raw_materials', RawMaterialController::class);
 });
+
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->name('logout');
