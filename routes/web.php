@@ -9,6 +9,7 @@ use App\Http\Controllers\SystemadminController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CartController;
    
@@ -54,6 +55,8 @@ Route::get('/dashboard/systemadmin',function(){
    // $users=User::all()->latest();//this reruns a view for the system admin to see the users by the latest one that has been added but i am going to work on it so that it does eager loading
     return view('dashboard.systemadmin');
  })->middleware(['auth', 'verified'])->name('dashboard.systemadmin');
+ Route::resource('inventories', InventoryController::class)->middleware('auth');
+
 
  //routes for added dashboard kinds
 

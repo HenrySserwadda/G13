@@ -91,5 +91,10 @@ class User extends Authenticatable
             return '/dashboard/customer';
     }
 }
+public function inventories()
+{
+    return $this->hasMany(Inventory::class);
+}
+
 
 }

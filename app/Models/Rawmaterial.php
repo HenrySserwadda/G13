@@ -24,4 +24,8 @@ class Rawmaterial extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function invnetories()
+    {
+        return $this->hasMany(Inventory::class);
+    }
 }

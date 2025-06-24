@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Rawmaterial;
+use App\Models\RawMaterial;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -16,8 +16,8 @@ class RawMaterialController extends Controller
         $user = Auth::user();
 
         $materials = $user->category === 'systemadmin'
-            ? Rawmaterial::with('user')->paginate(10)
-            : Rawmaterial::where('user_id', $user->id)->with('user')->paginate(10);
+            ? RawMaterial::with('user')->paginate(10)
+            : RawMaterial::where('user_id', $user->id)->with('user')->paginate(10);
 
         return view('raw_materials.index', compact('materials'));
     }
@@ -27,6 +27,10 @@ class RawMaterialController extends Controller
      */
     public function create()
     {
+        // Allow suppliers and systemadmin to create raw materials
+        if (!in_array(Auth::user()->category, ['systemadmin', 'supplier'])) {
+            abort(403);
+        }
         return view('raw_materials.create');
     }
 
@@ -35,20 +39,24 @@ class RawMaterialController extends Controller
      */
     public function store(Request $request)
     {
+        if (!in_array(Auth::user()->category, ['systemadmin', 'supplier'])) {
+            abort(403);
+        }
+
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:raw_materials,name',
             'quantity' => 'required|integer|min:1',
-            'unit_price' => 'required|string|max:50',
-            'type' => 'required|string|max:100',  // Added validation for 'type'
+            'unit_price' => 'required|numeric|min:0',
+            'type' => 'required|string|max:100',
         ]);
 
-        $rawMaterial = new Rawmaterial();
-        $rawMaterial->name = $request->name;
-        $rawMaterial->quantity = $request->quantity;
-        $rawMaterial->unit_price = $request->unit_price;
-        $rawMaterial->type = $request->type;  // Save the 'type'
-        $rawMaterial->user_id = Auth::id();
-        $rawMaterial->save();
+        RawMaterial::create([
+            'name' => $request->name,
+            'quantity' => $request->quantity,
+            'unit_price' => $request->unit_price,
+            'type' => $request->type,
+            'user_id' => Auth::id(),
+        ]);
 
         return redirect()->route('raw_materials.index')->with('success', 'Raw material created successfully.');
     }
@@ -56,33 +64,35 @@ class RawMaterialController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Rawmaterial $rawmaterial)  // changed param name to match model
+    public function edit(RawMaterial $rawMaterial)
     {
-        if (Auth::user()->category === 'supplier') {
+        // Allow only the owner (supplier) or systemadmin to edit
+        $user = Auth::user();
+        if ($user->category !== 'systemadmin' && $rawMaterial->user_id !== $user->id) {
             abort(403);
         }
 
-        return view('raw_materials.edit', compact('rawmaterial'));
+        return view('raw_materials.edit', ['material' => $rawMaterial]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, RawMaterial $rawMaterial)
     {
-        if (Auth::user()->category === 'supplier') {
+        $user = Auth::user();
+        if ($user->category !== 'systemadmin' && $rawMaterial->user_id !== $user->id) {
             abort(403);
         }
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:raw_materials,name,' . $rawMaterial->id,
             'quantity' => 'required|integer|min:1',
-            'unit_price' => 'required|string|max:50',
-            'type' => 'required|string|max:100',  // Added validation for 'type'
+            'unit_price' => 'required|numeric|min:0',
+            'type' => 'required|string|max:100',
         ]);
 
-        $rawMaterial = Rawmaterial::findOrFail($id);
-        $rawMaterial->update($request->only(['name', 'quantity', 'unit_price', 'type']));  // Include 'type'
+        $rawMaterial->update($request->only(['name', 'quantity', 'unit_price', 'type']));
 
         return redirect()->route('raw_materials.index')->with('success', 'Raw material updated successfully.');
     }
@@ -90,26 +100,41 @@ class RawMaterialController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(RawMaterial $rawMaterial)
     {
-        if (Auth::user()->category === 'supplier') {
+        $user = Auth::user();
+        if ($user->category !== 'systemadmin' && $rawMaterial->user_id !== $user->id) {
             abort(403);
         }
 
-        $rawMaterial = Rawmaterial::findOrFail($id);
         $rawMaterial->delete();
 
         return redirect()->route('raw_materials.index')->with('success', 'Raw material deleted successfully.');
     }
-    public function approve(RawMaterial $material)
-{
-    $material->update(['status' => 'approved']);
-    return back()->with('success', 'Material approved successfully');
-}
 
-public function reject(RawMaterial $material)
-{
-    $material->update(['status' => 'rejected']);
-    return back()->with('success', 'Material rejected');
-}
+    /**
+     * Approve a raw material (systemadmin only)
+     */
+    public function approve(RawMaterial $rawMaterial)
+    {
+        if (Auth::user()->category !== 'systemadmin') {
+            abort(403);
+        }
+
+        $rawMaterial->update(['status' => 'approved']);
+        return back()->with('success', 'Material approved successfully');
+    }
+
+    /**
+     * Reject a raw material (systemadmin only)
+     */
+    public function reject(RawMaterial $rawMaterial)
+    {
+        if (Auth::user()->category !== 'systemadmin') {
+            abort(403);
+        }
+
+        $rawMaterial->update(['status' => 'rejected']);
+        return back()->with('success', 'Material rejected');
+    }
 }
