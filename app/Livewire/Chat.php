@@ -1,71 +1,6 @@
 <?php
 
-/*namespace App\Livewire;
 
-use Livewire\Component;
-use App\Models\User;
-use App\Models\ChatMessage;
-use Illuminate\Support\Facades\Auth;
-
-class Chat extends Component
-{
-
-    protected $layout = 'layouts.app';
-
-    public $users;
-    public $selectedUser;
-    public $newMessage;
-    public $messages;
-
-    public function mount()
-    {
-        $this->users = User::whereNot('id', Auth::id())->latest()->get();
-        $this->selectedUser = $this->users->first();
-        $this->loadMessages();
-        
-    }
-    public function selectUser($id)
-    {
-        $this->selectedUser = User::find($id);
-          $this->loadMessages();
-    }
-
-    public function loadMessages(){
-        $this->messages = chatmessage::query()
-            ->where(function($q) {
-                $q->where('sender_id', Auth::id())
-                      ->where('receiver_id', $this->selectedUser->id);
-            })
-            ->orWhere(function($q) {
-                $q->where('sender_id', $this->selectedUser->id)
-                      ->where('receiver_id', Auth::id());
-            })
-            ->get();
-
-    }
-
-    
-    public function submit(){
-        if(!$this->newMessage) return;
-
-        $message = ChatMessage::create([
-            'sender_id' => Auth::id(),
-            'receiver_id' => $this->selectedUser->id,
-            'message' => $this->newMessage
-        ]);
-
-        $this->messages->push($message);
-
-        $this->newMessage = '';
-
-    }
-    public function render(){
-        return view ("livewire.chat");
-    }
-    
-
-       
-}*/
 
 namespace App\Livewire;
 
@@ -73,6 +8,7 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\ChatMessage;
 use Illuminate\Support\Facades\Auth;
+use App\Events\MessageSent;
 
 class Chat extends Component
 {
@@ -81,6 +17,7 @@ class Chat extends Component
     public $newMessage = '';
     public $messages;
     public $searchTerm = '';
+    public $loginID;
 
     // Define validation rules
     protected $rules = [
@@ -99,6 +36,7 @@ class Chat extends Component
         if ($this->users->isNotEmpty()) {
             $this->selectedUser = $this->users->first();
             $this->loadMessages();
+            $this->loginID = Auth::id();
         }
     }
 
@@ -163,6 +101,33 @@ class Chat extends Component
         } catch (\Exception $e) {
             $this->addError('newMessage', 'Failed to send message: '.$e->getMessage());
         }
+       broadcast(new MessageSent(auth()->user(), $message))->toOthers();
+
+    }
+
+    public function getListeners()
+    {
+        return [
+            "echo-private:chat.{$this->loginID},message.sent" => 'newChatMessageNotification',
+        ];
+    }
+
+    public function newChatMessageNotification($payload)
+    {
+        /*if ($message['sender_id'] ==$this->selectedUser->id) {
+            $messageObj = ChatMessage::find($message['id']);
+             $this->messages->push($messageObj);
+        }*/
+
+        //$message = ChatMessage::find($event['id']);
+        //if ($message) {
+          //  $this->messages->push($message);
+          //  $this->dispatch('message-received', ['message' => $message]);
+        //}
+        if ($payload['sender_id'] == $this->selectedUser->id) {
+        $messageObj = ChatMessage::find($payload['id']);
+        $this->messages->push($messageObj);
+        $this->dispatch('message-received');}
     }
 
     public function render()

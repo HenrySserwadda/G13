@@ -1,4 +1,24 @@
 @props(['messages'=>[],'users' =>[],'selectedUser'=>null])
+
+@php
+    // Function to generate WhatsApp-like avatar
+    function generateAvatar($name, $size = 40) {
+        $colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A8', '#33FFF5'];
+        $initials = '';
+        $words = explode(' ', $name);
+        
+        foreach ($words as $word) {
+            $initials .= strtoupper(substr($word, 0, 1));
+            if (strlen($initials) >= 2) break;
+        }
+        
+        $colorIndex = crc32($name) % count($colors);
+        $bgColor = $colors[$colorIndex];
+        
+        return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='$size' height='$size' viewBox='0 0 100 100'><rect width='100' height='100' rx='50' fill='$bgColor'/><text x='50' y='60' font-size='40' text-anchor='middle' fill='white'>$initials</text></svg>";
+    }
+@endphp
+
 <div class="chat-wrapper">
     <div class="chat-container">
         <!-- Left sidebar - Contacts list -->
@@ -14,7 +34,7 @@
                 <div class="contact {{ $selectedUser && $selectedUser->id == $user->id ? 'active' : '' }}" 
                      wire:click="selectUser({{ $user->id }})">
                     <div class="contact-avatar">
-                        <img src="{{ $user->avatar }}" alt="User Avatar">
+                        <img src="{{ $user->avatar ?? generateAvatar($user->name) }}" alt="User Avatar">
                     </div>
                     <div class="contact-info">
                         <h4>{{ $user->name }}</h4>
@@ -34,7 +54,7 @@
                 <div class="chat-header">
                     <div class="chat-user">
                         <div class="user-avatar">
-                            <img src="{{ $selectedUser->avatar }}" alt="User Avatar" class="avatar-img">
+                            <img src="{{ $selectedUser->avatar ?? generateAvatar($selectedUser->name) }}" alt="User Avatar" class="avatar-img">
                         </div>
                         <div class="user-info">
                             <h3>{{ $selectedUser->name }}</h3>
@@ -54,30 +74,30 @@
                     </div>
                 </div>
                 
-               <div class="messages" id="messages">
-    @foreach($messages as $message)
-    <div class="message {{ $message->sender_id == auth()->id() ? 'sent' : 'received' }}">
-        @if($message->sender_id != auth()->id())
-        <div class="message-avatar">
-            <img src="{{ $message->sender->avatar }}" alt="User Avatar" class="avatar-img">
-        </div>
-        @endif
-        <div class="message-content">
-            <p>{{ $message->message }}</p>
-            <span class="message-time">
-                {{ $message->created_at->format('h:i A') }}
-                @if($message->sender_id == auth()->id())
-                <span class="message-status">
-                    <svg viewBox="0 0 24 24" width="16" height="16">
-                        <path fill="currentColor" d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41 4.24 4.24 8.49-8.48z"></path>
-                    </svg>
-                </span>
-                @endif
-            </span>
-        </div>
-    </div>
-    @endforeach
-</div>
+                <div class="messages" id="messages">
+                    @foreach($messages as $message)
+                    <div class="message {{ $message->sender_id == auth()->id() ? 'sent' : 'received' }}">
+                        @if($message->sender_id != auth()->id())
+                        <div class="message-avatar">
+                            <img src="{{ $message->sender->avatar ?? generateAvatar($message->sender->name, 28) }}" alt="User Avatar" class="avatar-img">
+                        </div>
+                        @endif
+                        <div class="message-content">
+                            <p>{{ $message->message }}</p>
+                            <span class="message-time">
+                                {{ $message->created_at->format('h:i A') }}
+                                @if($message->sender_id == auth()->id())
+                                <span class="message-status">
+                                    <svg viewBox="0 0 24 24" width="16" height="16">
+                                        <path fill="currentColor" d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41 4.24 4.24 8.49-8.48z"></path>
+                                    </svg>
+                                </span>
+                                @endif
+                            </span>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
                 
                 <div class="message-input">
                     <form wire:submit="submit">
@@ -146,7 +166,7 @@
 </script>
 @endpush
 
-<!-- Keep your existing styles -->
+<!-- existing styles -->
 <!--@push('styles')-->
 
 <style>
