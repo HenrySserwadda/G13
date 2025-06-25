@@ -64,6 +64,19 @@
                        required>
             </div>
 
+            <!-- Unit -->
+            <div>
+                <label for="unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <i class="fas fa-ruler mr-2"></i>Unit
+                </label>
+                <select name="unit" id="unit"
+                        class="w-full mt-1 p-2 border rounded shadow-sm dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                        required>
+                    <option value="pcs">pcs</option>
+                    <option value="meters">meters</option>
+                </select>
+            </div>
+
             <!-- Unit Price -->
             <div>
                 <label for="unit_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

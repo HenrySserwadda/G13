@@ -38,6 +38,7 @@
         <div>
             <label for="on_hand" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity On Hand</label>
             <input type="number" name="on_hand" id="on_hand" min="0" value="{{ old('on_hand') }}" required class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <span id="available-quantity" class="text-xs text-gray-500 dark:text-gray-400"></span>
         </div>
         <div>
             <label for="on_order" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity On Order</label>
@@ -91,4 +92,24 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+@endpush
+
+@push('scripts')
+<script>
+    const rawMaterialQuantities = @json($rawMaterialQuantities ?? []);
+    document.addEventListener('DOMContentLoaded', function() {
+        const materialSelect = document.getElementById('raw_material_id');
+        const availableQuantitySpan = document.getElementById('available-quantity');
+        function updateAvailableQuantity() {
+            const selectedId = materialSelect.value;
+            if (rawMaterialQuantities[selectedId] !== undefined) {
+                availableQuantitySpan.textContent = `Available: ${rawMaterialQuantities[selectedId]}`;
+            } else {
+                availableQuantitySpan.textContent = '';
+            }
+        }
+        materialSelect.addEventListener('change', updateAvailableQuantity);
+        updateAvailableQuantity();
+    });
+</script>
 @endpush

@@ -24,8 +24,8 @@ class InventoryController extends Controller
     public function create()
     {
         $rawMaterials = RawMaterial::all();
-
-        return view('inventories.create', compact('rawMaterials'));
+        $rawMaterialQuantities = $rawMaterials->pluck('quantity', 'id');
+        return view('inventories.create', compact('rawMaterials', 'rawMaterialQuantities'));
     }
 
     public function store(Request $request)

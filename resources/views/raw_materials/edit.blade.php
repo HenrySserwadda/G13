@@ -47,6 +47,16 @@
                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring focus:ring-blue-500">
         </div>
 
+        <div class="mb-4">
+            <label for="unit" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Unit</label>
+            <select name="unit" id="unit"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring focus:ring-blue-500"
+                    required>
+                <option value="pcs" {{ old('unit', $material->unit) == 'pcs' ? 'selected' : '' }}>pcs</option>
+                <option value="meters" {{ old('unit', $material->unit) == 'meters' ? 'selected' : '' }}>meters</option>
+            </select>
+        </div>
+
         <div class="mb-6">
             <label for="unit_price" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Unit Price (UGX)</label>
             <input type="number" step="0.01" name="unit_price" id="unit_price" value="{{ old('unit_price', $material->unit_price) }}"
