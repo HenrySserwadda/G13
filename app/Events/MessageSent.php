@@ -7,31 +7,23 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\User;
+use Illuminate\Broadcasting\PrivateChannel;
 
 class MessageSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * The user who sent the message
-     * @var User
-     */
     public $user;
-
-    /**
-     * The message content
-     * @var string
-     */
     public $message;
 
     /**
      * Create a new event instance.
      *
-     * @param User $user
-     * @param string $message
+     * @param  mixed  $user
+     * @param  mixed  $message
+     * @return void
      */
-    public function __construct(User $user, string $message)
+    public function __construct($user, $message)
     {
         $this->user = $user;
         $this->message = $message;
@@ -40,12 +32,11 @@ class MessageSent implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return Channel|array
+     * @return \Illuminate\Broadcasting\Channel|array
      */
     public function broadcastOn()
     {
-        return new Channel('chat-channel');
-        // or for private channels: return new PrivateChannel('chat-channel');
+        return new PrivateChannel('chat.' . $this->message->receiver_id);
     }
 
     /**
@@ -66,13 +57,10 @@ class MessageSent implements ShouldBroadcast
     public function broadcastWith()
     {
         return [
-            'user' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-                // include any other user fields you need
-            ],
-            'message' => $this->message,
-            'timestamp' => now()->toDateTimeString()
+            'id' => $this->message->id,
+            'sender_id' => $this->message->sender_id,
+            'receiver_id' => $this->message->receiver_id,
+            'message' => $this->message->message,
         ];
     }
 }

@@ -116,11 +116,10 @@
                 
                     @auth
                         <a
-                            href="{{ uri('/redirect') }}"  class="btn btn-outline-light me-2">
+                            href="{{ url('/dashboard') }}"  class="btn btn-outline-light me-2">
                                                    
                             Dashboard
                         </a>
-                      
                     @else
                         <a
                             href="{{ route('login') }}"  class="btn btn-outline-light me-2"
@@ -149,7 +148,7 @@
     <section class="hero-section">
         <div class="container">
             <h1 class="display-3 fw-bold mb-4">Welcome to Durabag</h1>
-            <p class="lead mb-5"><em>The bags you dream of</em></p>
+            <p class="lead mb-5">The bags you dream of</p>
             <a href="#about" class="btn btn-primary btn-lg px-4 me-2">Discover More</a>
            
         </div>

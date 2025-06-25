@@ -8,4 +8,9 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        hmr: {
+            overlay: false // Disable HMR overlay if needed
+        }
+    }
 });

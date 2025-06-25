@@ -1,11 +1,18 @@
 <?php
 
+use App\Livewire\Chat;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Http\Controllers\Systemadmin;
+use App\Http\Controllers\SystemadminController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\RawMaterialController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\CartController;
    
     
 
@@ -49,29 +56,48 @@ Route::get('/dashboard/systemadmin',function(){
    // $users=User::all()->latest();//this reruns a view for the system admin to see the users by the latest one that has been added but i am going to work on it so that it does eager loading
     return view('dashboard.systemadmin');
  })->middleware(['auth', 'verified'])->name('dashboard.systemadmin');
+ Route::resource('inventories', InventoryController::class)->middleware('auth');
+
 
  //routes for added dashboard kinds
 
  //original dashboard
 Route::get('/dashboard', function (){
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard'); */
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+    Route::get('/chat', \App\Livewire\Chat::class)->name('chat');
 });
 
 require __DIR__.'/auth.php';
 
 
-Route::get('/chat', [ChatController::class, 'index'])->middleware('auth');
 
 //Route::middleware(['auth','systemadmin'])->group(function () {
-    Route::get('/dashboard/pending-users', [Systemadmin::class, 'pendingUsers'])->name('dashboard.pending-users');
-//});//remember to comment out the middleware and se if the thing still works as expected
+   // Route::get('/dashboard/pending-users', [SystemadminController::class, 'pendingUsers'])->name('dashboard.pending-users');
+   // Route::post('/approve', [SystemadminController::class, 'approve'])->name('approve');
+    //Route::post('/reject', [SystemadminController::class, 'reject'])->name('reject');
+    //Route::get('/redirect', [SystemadminController::class, 'redirectToDashboard']);
+//}); // remember to comment out the middleware and see if the thing still works as expected
 
-Route::post('/approve', [Systemadmin::class,'approve'])->name('approve');
-Route::post('/reject', [Systemadmin::class,'reject'])->name('reject');
-Route::get('/redirect',[User::class,'redirectToDashboard']);
+ 
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('raw_materials', RawMaterialController::class);
+});
+
+Route::resource('products', ProductController::class)->middleware('auth');
+Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add')->middleware('auth');
+
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->name('logout');
+
+
+
