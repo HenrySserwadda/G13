@@ -24,7 +24,12 @@
         <!-- Left sidebar - Contacts list -->
         <div class="contacts-list">
             <div class="chat-header">
-                <h3>Chats</h3>
+                <div class="header-user">
+                    <div class="user-avatar">
+                        @livewire('avatar-upload', ['user' => auth()->user()], key(auth()->id()))
+                    </div>
+                    <h3>Chats</h3>
+                </div>
             </div>
             <div class="search-box">
                 <input type="text" wire:model.live="searchTerm" placeholder="Search or start new chat">
@@ -34,7 +39,7 @@
                 <div class="contact {{ $selectedUser && $selectedUser->id == $user->id ? 'active' : '' }}" 
                      wire:click="selectUser({{ $user->id }})">
                     <div class="contact-avatar">
-                        <img src="{{ $user->avatar ?? generateAvatar($user->name) }}" alt="User Avatar">
+                        <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : generateAvatar($user->name, 32) }}" alt="User Avatar" class="contact-avatar-img">
                     </div>
                     <div class="contact-info">
                         <h4>{{ $user->name }}</h4>
@@ -54,7 +59,7 @@
                 <div class="chat-header">
                     <div class="chat-user">
                         <div class="user-avatar">
-                            <img src="{{ $selectedUser->avatar ?? generateAvatar($selectedUser->name) }}" alt="User Avatar" class="avatar-img">
+                            <img src="{{ $selectedUser->avatar ? asset('storage/' . $selectedUser->avatar) : generateAvatar($selectedUser->name) }}" class="avatar-img" alt="Avatar">
                         </div>
                         <div class="user-info">
                             <h3>{{ $selectedUser->name }}</h3>
@@ -79,7 +84,7 @@
                     <div class="message {{ $message->sender_id == auth()->id() ? 'sent' : 'received' }}">
                         @if($message->sender_id != auth()->id())
                         <div class="message-avatar">
-                            <img src="{{ $message->sender->avatar ?? generateAvatar($message->sender->name, 28) }}" alt="User Avatar" class="avatar-img">
+                            <img src="{{ $message->sender->avatar ? asset('storage/' . $message->sender->avatar) : generateAvatar($message->sender->name, 28) }}" alt="User Avatar" class="avatar-img">
                         </div>
                         @endif
                         <div class="message-content">
@@ -142,35 +147,8 @@
     </div>
 </div>
 
-@push('scripts')
-<script>
-    document.addEventListener('livewire:init', () => {
-        // Auto-scroll when new message is added
-        Livewire.hook('message.processed', (message) => {
-            if (message.component.fingerprint.name === 'chat') {
-                const messagesDiv = document.getElementById('messages');
-                if (messagesDiv) {
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                }
-            }
-        });
-        
-        // Initial scroll
-        setTimeout(() => {
-            const messagesDiv = document.getElementById('messages');
-            if (messagesDiv) {
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }
-        }, 100);
-    });
-</script>
-@endpush
-
-<!-- existing styles -->
-<!--@push('styles')-->
-
+@push('styles')
 <style>
-    
     .chat-wrapper {
         height: calc(100vh - 60px); /* Adjust based on your layout */
     }
@@ -208,6 +186,15 @@
         border-bottom: 1px solid #e1e1e1;
     }
     
+    .header-user {
+        display: flex;
+        align-items: center;
+    }
+    
+    .header-user h3 {
+        margin-left: 10px;
+    }
+    
     .search-box input {
         width: 100%;
         padding: 8px 10px;
@@ -233,23 +220,39 @@
         background: #e9e9e9;
     }
     
-    .contact-avatar img, .user-avatar img, .message-avatar img {
-        border-radius: 50%;
+    .contact-avatar {
+        position: relative;
         margin-right: 10px;
+    }
+    
+    .contact-avatar-img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    .user-avatar img, .message-avatar img {
+        border-radius: 50%;
+        object-fit: cover;
     }
     
     .contact-info {
         flex: 1;
+        min-width: 0; /* Allows text truncation */
     }
     
     .contact-info h4 {
         margin: 0;
-        font-size: 16px;
+        font-size: 15px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     .contact-info p {
         margin: 3px 0 0;
-        font-size: 13px;
+        font-size: 12px;
         color: #777;
         white-space: nowrap;
         overflow: hidden;
@@ -257,8 +260,9 @@
     }
     
     .contact-time {
-        font-size: 12px;
+        font-size: 11px;
         color: #999;
+        white-space: nowrap;
     }
     
     /* Chat header specific styles */

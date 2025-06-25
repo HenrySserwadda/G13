@@ -2,6 +2,13 @@
 
 return [
 
+    'temporary_file_upload' => [
+    'disk' => 'local',
+    'rules' => ['file', 'image', 'max:1024'], // 1MB Max
+    'directory' => 'livewire-tmp',
+    'middleware' => 'throttle:60,1', // 60 uploads per minute
+],
+
     /*
     |---------------------------------------------------------------------------
     | Class Namespace
