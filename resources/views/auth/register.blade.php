@@ -4,7 +4,7 @@
 
         <!-- Name -->
         <div>
-            <x-input-label for="name" :value="__('Full Name')" />
+            <x-input-label for="name" :value="__('Name')" />
             <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
@@ -14,17 +14,6 @@
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-        
-        <!-- Category -->
-        <div class="mt-4">
-            <x-input-label for="category" :value="__('Category')" />
-            <label><input type="radio" name="category" value="staff"{{ old('category')=='staff'?'checked':'' }}>Staff</label><br>
-            <label><input type="radio" name="category" value="wholesaler" {{ old('category')=='wholesaler'?'checked':'' }}>Wholesaler</label><br>
-            <label><input type="radio" name="category" value="supplier" {{ old('category')=='supplier'?'checked':'' }}>Supplier</label><br>
-            <label><input type="radio" name="category" value="retailer" {{ old('category')=='retailer'?'checked':'' }}>Retailer</label><br>
-            <label><input type="radio" name="category" value="customer" {{ old('category')=='customer'?'checked':'' }}>Customer</label>
-            <br><x-input-error :messages="$errors->get('category')" class="mt-2" />
         </div>
 
         <!-- Password -->
