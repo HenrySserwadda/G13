@@ -6,11 +6,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
+
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -74,5 +76,29 @@ public function generateDefaultAvatar()
     
     return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' rx='50' fill='$bgColor'/><text x='50' y='60' font-size='50' text-anchor='middle' fill='white'>$initials</text></svg>";
 }
+
+
+   public function redirectToDashboard()
+{
+    switch($this->category) {
+        case 'staff':
+            return '/dashboard/staff';
+        case 'supplier':
+            return '/dashboard/supplier';
+        case 'wholesaler':
+            return '/dashboard/wholesaler';
+        case 'retailer':
+            return '/dashboard/retailer';
+        case 'systemadmin':
+            return '/dashboard/systemadmin';
+        default:
+            return '/dashboard/customer';
+    }
+}
+public function inventories()
+{
+    return $this->hasMany(Inventory::class);
+}
+
 
 }
