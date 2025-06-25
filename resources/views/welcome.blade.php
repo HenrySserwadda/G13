@@ -172,83 +172,13 @@
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">Why Choose Durabag?</h2>
-                <p class="lead text-muted">We combine quality materials with exceptional craftsmanship</p>
-            </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="feature-box">
-                        <div class="feature-icon">
-                            <i class="fas fa-award"></i>
-                        </div>
-                        <h4>Premium Quality</h4>
-                        <p>We use only the finest materials to ensure your bag lasts for years to come.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="feature-box">
-                        <div class="feature-icon">
-                            <i class="fas fa-tshirt"></i>
-                        </div>
-                        <h4>Eco-Friendly</h4>
-                        <p>Our manufacturing process is sustainable and environmentally conscious.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="feature-box">
-                        <div class="feature-icon">
-                            <i class="fas fa-headset"></i>
-                        </div>
-                        <h4>Excellent Support</h4>
-                        <p>Our customer service team is always ready to assist you with any questions.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-  
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4 mb-lg-0">
-                    <h5 class="mb-4"><i class="fas fa-bag-shopping me-2"></i>Durabag</h5>
-                    <p>Manufacturing premium quality bags since 2025. We take pride in our craftsmanship and customer satisfaction.</p>
-                    <div class="social-icons mt-4">
-                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-               
-                
-                <div class="col-lg-4">
-                    <h5 class="mb-4">Newsletter</h5>
-                    <p>Subscribe to get updates on new products and special offers.</p>
-                    <form class="mt-3">
-                        <div class="input-group">
-                            <input type="email" class="form-control" placeholder="Your email">
-                            <button class="btn btn-light" type="submit">Subscribe</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <hr class="mt-4 mb-4 bg-light">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-0">&copy; 2025 Durabag. All rights reserved.</p>
-                </div>
-               
-            </div>
-        </div>
-    </footer>
+<<<<<<< Updated upstream
+   
+   
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+=======
+   
+>>>>>>> Stashed changes

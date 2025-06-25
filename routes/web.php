@@ -61,7 +61,7 @@ Route::get('/dashboard/systemadmin',function(){
 
  //routes for added dashboard kinds
 
- /* //original dashboard
+ //original dashboard
 Route::get('/dashboard', function (){
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
