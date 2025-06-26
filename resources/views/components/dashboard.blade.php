@@ -24,6 +24,17 @@
                             <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" />
                             <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">DURABAG</span>
                         </a>
+                        <!-- Cart Link -->
+                        @php $user = Auth::user(); @endphp
+                        @if($user && in_array($user->category, ['wholesaler', 'retailer']))
+                        <a href="{{ route('cart.show') }}" class="relative ml-4 inline-flex items-center px-3 py-2 text-sm font-medium text-blue-700 bg-blue-100 rounded hover:bg-blue-200 dark:bg-gray-800 dark:text-blue-300 dark:hover:bg-gray-700">
+                            <i class="fas fa-shopping-cart mr-1"></i> Cart
+                            @php $cart = session('cart', []); $cartCount = array_sum(array_column($cart, 'quantity')); @endphp
+                            @if($cartCount > 0)
+                                <span class="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">{{ $cartCount }}</span>
+                            @endif
+                        </a>
+                        @endif
                     </div>
                     <div class="flex items-center">
                         <div class="flex items-center ms-3">
@@ -231,10 +242,10 @@
             @endif
             
             <!-- Main Content Container -->
-            <div class="bg-white rounded-lg shadow-sm p-4 md:p-6 mb-6 dark:bg-gray-800 dark:border dark:border-gray-700">
+            <div class="bg-white rounded-lg shadow-sm p-4 md:p-6 mb-6 border border-gray-200">
                 <!-- Content Wrapper with optional header -->
                 @hasSection('content-header')
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b border-gray-200">
                     @yield('content-header')
                 </div>
                 @endif
@@ -246,7 +257,7 @@
                 
                 <!-- Optional footer -->
                 @hasSection('content-footer')
-                <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="mt-6 pt-4 border-t border-gray-200">
                     @yield('content-footer')
                 </div>
                 @endif
@@ -254,7 +265,7 @@
             
             <!-- Optional Secondary Content Area -->
             @hasSection('secondary-content')
-            <div class="bg-white rounded-lg shadow-sm p-4 md:p-6 mb-6 dark:bg-gray-800 dark:border dark:border-gray-700">
+            <div class="bg-white rounded-lg shadow-sm p-4 md:p-6 mb-6">
                 @yield('secondary-content')
             </div>
             @endif

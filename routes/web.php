@@ -13,6 +13,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
    
     
 
@@ -94,10 +95,17 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::resource('products', ProductController::class)->middleware('auth');
-Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add')->middleware('auth');
+Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
+Route::post('/cart/update/{productId}', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove/{productId}', [CartController::class, 'remove'])->name('cart.remove');
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
+
+// Checkout
+Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
+Route::post('/checkout', [CheckoutController::class, 'placeOrder'])->name('checkout.place');
 
 
 

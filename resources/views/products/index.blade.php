@@ -36,8 +36,8 @@
 @section('content')
     <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 dark:text-white">
-                <i class="fas fa-shopping-bag mr-2"></i> Our Bag Collection
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-shopping-bag mr-3"></i> Our Bag Collection
             </h1>
 
             @auth
@@ -60,7 +60,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             @forelse($products as $product)
-                <div class="product-card bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl">
+                <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl">
                     <div class="product-image-container">
                         @if($product->image)
                             <img src="{{ asset('storage/'.$product->image) }}" 
@@ -71,22 +71,22 @@
                                          {{ asset('storage/'.$product->image) }} 2x"> <!-- For high DPI displays -->
                         @else
                             <div class="no-image-placeholder">
-                                <i class="fas fa-camera text-5xl text-gray-400 dark:text-gray-500"></i>
+                                <i class="fas fa-camera text-5xl text-gray-400"></i>
                             </div>
                         @endif
                     </div>
                     
                     <div class="p-5">
                         <div class="flex justify-between items-start">
-                            <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-2">{{ $product->name }}</h2>
-                            <div class="text-lg font-bold text-blue-600 dark:text-blue-400">UGX {{ number_format($product->price) }}</div>
+                            <h2 class="text-xl font-bold text-gray-800 mb-2">{{ $product->name }}</h2>
+                            <div class="text-lg font-bold text-blue-600">UGX {{ number_format($product->price) }}</div>
                         </div>
                         
-                        <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{{ $product->description }}</p>
+                        <p class="text-gray-600 mb-4 line-clamp-2">{{ $product->description }}</p>
 
                         <div class="flex space-x-3">
                             <a href="{{ route('products.show', $product->id) }}" 
-                               class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-4 py-2 rounded-lg flex items-center transition-colors duration-300 flex-1 justify-center">
+                               class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center transition-colors duration-300 flex-1 justify-center">
                                 <i class="fas fa-eye mr-2"></i> View
                             </a>
 
@@ -95,7 +95,7 @@
                                     <form action="{{ route('cart.add', $product->id) }}" method="POST" class="flex-1">
                                         @csrf
                                         <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center transition-colors duration-300">
-                                            <i class="fas fa-cart-plus mr-2"></i> Cart
+                                            <i class="fas fa-cart-plus mr-2"></i> Add to Cart
                                         </button>
                                     </form>
                                 @endif
@@ -126,13 +126,13 @@
                             @endauth
                         </div>
                         @if(Auth::user() && Auth::user()->category === 'systemadmin')
-                            <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">Quantity: {{ $product->quantity ?? 0 }}</div>
+                            <div class="mt-2 text-xs text-gray-500">Quantity: {{ $product->quantity ?? 0 }}</div>
                         @endif
                     </div>
                 </div>
             @empty
                 <div class="col-span-full text-center py-12">
-                    <div class="text-gray-500 dark:text-gray-400 text-xl">
+                    <div class="text-gray-500 text-xl">
                         <i class="fas fa-box-open text-5xl mb-4"></i>
                         <p class="text-2xl font-light">No products available yet</p>
                         @auth
