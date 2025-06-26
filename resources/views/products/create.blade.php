@@ -75,6 +75,17 @@
                        placeholder="Enter price">
             </div>
 
+            <!-- Quantity -->
+            <div class="mb-4">
+                <label class="block mb-2 font-medium text-gray-700 dark:text-gray-300">
+                    <i class="fas fa-cubes mr-2"></i>Quantity
+                </label>
+                <input type="number" name="quantity" min="0"
+                       class="w-full px-3 py-2 border rounded shadow-sm dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                       value="{{ old('quantity', 0) }}"
+                       placeholder="Enter quantity">
+            </div>
+
             <!-- Product Image -->
             <div class="mb-6">
                 <label class="block mb-2 font-medium text-gray-700 dark:text-gray-300">

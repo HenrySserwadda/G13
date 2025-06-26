@@ -41,6 +41,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|max:2048',
+            'quantity' => 'nullable|integer|min:0',
         ]);
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
@@ -69,6 +70,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|max:2048',
+            'quantity' => 'nullable|integer|min:0',
         ]);
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
