@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('suppliers', function (Blueprint $table) {
-            $table->id();
+            $table->foreignId('supplier_id')->constrained(); // auto foreign key
             $table->string('address');
             $table->string('materialTypes');
             $table->timestamps();
