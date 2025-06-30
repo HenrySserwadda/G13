@@ -54,7 +54,7 @@ class RegisteredUserController extends Controller
                
         if($requiresApproval){
             Notification::route('mail','janedoe@example.com')->notify(new NewUserPendingApproval($user));
-            return redirect(route('login')->with('message','Registration succesful! Please wait for admin approval. You wll be notified by email.'));
+            return redirect()->route('login')->with('message','Registration succesful! Please wait for admin approval. You will be notified by email.');
         }
 
         //event(new Registered($user));

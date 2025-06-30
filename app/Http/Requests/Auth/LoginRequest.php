@@ -29,6 +29,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => ['required', 'string', 'email'],
+            'userid'=>['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -41,13 +42,16 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
-        $user=\App\Models\User::where('email', $this->email)->first();
+        $user=User::where('email', $this->email)->first();
 
-        if (!$user ||!\Hash::check($this->password, $user->password)) {
+        if (!$user ||!\Hash::check($this->password, $user->password )) {
             throw ValidationException::withMessages(['email'=>__('The details you provided are incorrect')]);
         }
+        if($this->userid!==$user->userid){
+            throw ValidationException::withMessages(['email'=>__('User identification number incorrect.')]);
+        }
         if($user->status !=='approved'){
-            throw \Illuminate\Validation\ValidationonException::withMessages(['email'=>__('Your account has not yet been approved')]);
+            throw ValidationException::withMessages(['email'=>__('Your account has not yet been approved')]);
         }
         Auth::login($user,$this->boolean('remember'));
         RateLimiter::clear($this->throttleKey());

@@ -22,7 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'category'
+        'category',
+        'userid'
     ];
 
     /**
@@ -74,13 +75,18 @@ class User extends Authenticatable
 
     public function redirectToDashboard(User $user)
     {
-        switch($user->category) {
+        $category = trim(preg_replace('/[\r\n]+/', '', $user->category));
+        switch($category) {
             case 'staff':
                 return redirect()->route('dashboard.staff');
             case 'supplier':
                 return redirect()->route('dashboard.supplier');
             case 'wholesaler':
+                if($user->status=='pending'){
+                    return redirect()->route('insertpdf');
+                }else{
                 return redirect()->route('dashboard.wholesaler');
+                }
             case 'retailer':
                 return redirect()->route('dashboard.retailer');
             case 'systemadmin':
@@ -89,5 +95,9 @@ class User extends Authenticatable
                 return redirect()->route('dashboard.customer');
             
         }
+    }
+
+    public function orders(){
+        return $this->hasMany(Order::class);
     }
 }

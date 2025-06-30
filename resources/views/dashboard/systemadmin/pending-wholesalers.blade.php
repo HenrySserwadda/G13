@@ -47,7 +47,7 @@
     </x-slot>
     <x-slot name="users">
     <li>
-        <a href="{{ route('dashboard.systemadmin.all-users') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+        <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
                 <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
             </svg>
@@ -56,7 +56,37 @@
         </a>
     </li>
     </x-slot>
-    <x-slot name="content">
-        
-    </x-slot>
+        <x-slot name="content">
+        <table class="w-full table-auto text-left border-collapse dark:text-white">
+            <thead>
+                <tr class="max-w-m pt-16">
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Approve</th> 
+                    <th>Reject</th>    
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($users as $user)
+                    @if($user->category=='wholesaler')
+                        <tr class="max-w-m">
+                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->email }}</td>
+                            <td>
+                                <form method="POST" action="{{ route('approve',$user->id) }}"><x-primary-button>Approve</x-primary-button>
+                                @csrf
+                                </form>
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ route('reject',$user->id) }}"><x-primary-button>Reject</x-primary-button>
+                                @csrf
+                                </form>
+                            </td>
+                        </tr>
+                    @endif
+                @endforeach
+            </tbody>
+        </table>
+        </x-slot>
+            
 </x-dashboardappearance>

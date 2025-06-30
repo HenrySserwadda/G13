@@ -6,8 +6,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Models\systemadmin;
 use App\Models\User;
-class UserApprovedWithNotification extends Notification
+class AccountDeleted extends Notification
 {
     use Queueable;
     public $user;
@@ -16,7 +17,7 @@ class UserApprovedWithNotification extends Notification
      */
     public function __construct($user)
     {
-        $this->user=$user;
+        //
     }
 
     /**
@@ -35,12 +36,10 @@ class UserApprovedWithNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Registration Request Approved')
-            ->greeting('Hello, '.$this->user->name)
-            ->line('Your request to join the durabag supply chain management system has been approved. Please find your user identification number below.')
-            ->line('User Identification number: '.$this->user->userid)
-            ->action('Proceed to login', url('/login'))
-            ;
+            ->subject('Account Deleted')
+            ->line('Hello, '.$this->user->name)
+            ->line('This email serves to inform you that your account in the Durabag system has been deleted. Henceforth, you will no longer be able to access our system.')
+            ->line('Thank you for using our application!');
     }
 
     /**

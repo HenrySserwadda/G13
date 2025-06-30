@@ -42,7 +42,7 @@ class NewUserPendingApproval extends Notification
             ->line('Name: ' . $this->user->name)
             ->line('Email: ' . $this->user->email)
             ->line('Category: ' . $this->user->category)
-            ->action('View Pending Users', url('/dashboard/pending-users'))
+            ->action('View Pending Users', url('/dashboard/systemadmin/pending-users'))
             ->line('Please log in to approve or reject this user.');
     }
 

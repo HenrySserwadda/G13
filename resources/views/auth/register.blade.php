@@ -60,4 +60,6 @@
             </x-primary-button>
         </div>
     </form>
+    <p>{{ $message }}</p>
+    <!-- how o i add an event listener here to actually send the message i had put earlier -->
 </x-guest-layout>

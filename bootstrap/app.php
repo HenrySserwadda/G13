@@ -11,7 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias(['systemadmin'=>\App\Http\Controllers\Systemadmin::class]);
+        $middleware->alias(['systemadmin'=>\App\Http\Middleware\SystemadminMiddleware::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
