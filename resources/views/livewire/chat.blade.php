@@ -1,7 +1,6 @@
-@props(['messages'=>[],'users' =>[],'selectedUser'=>null])
+@props(['messages'=>[], 'users' =>[], 'selectedUser'=>null])
 
 @php
-    // Function to generate WhatsApp-like avatar
     function generateAvatar($name, $size = 40) {
         $colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A8', '#33FFF5'];
         $initials = '';
@@ -56,6 +55,7 @@
         <!-- Right side - Chat area -->
         <div class="chat-area">
             @if($selectedUser)
+                <!-- Your existing chat UI when a user is selected -->
                 <div class="chat-header">
                     <div class="chat-user">
                         <div class="user-avatar">
@@ -131,6 +131,7 @@
                     </form>
                 </div>
             @else
+                <!-- Empty state when no chat is selected -->
                 <div class="no-chat-selected">
                     <div class="empty-state">
                         <div class="empty-icon">
@@ -146,6 +147,7 @@
         </div>
     </div>
 </div>
+
 
 @push('styles')
 <style>

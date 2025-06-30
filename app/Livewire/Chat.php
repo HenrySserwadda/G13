@@ -1,7 +1,4 @@
 <?php
-
-
-
 namespace App\Livewire;
 
 use Livewire\Component;
@@ -18,13 +15,12 @@ class Chat extends Component
     public $messages;
     public $searchTerm = '';
     public $loginID;
+    public $showEmptyState = true;
 
-    // Define validation rules
     protected $rules = [
         'newMessage' => 'required|string|max:1000'
     ];
 
-    // Custom validation messages
     protected $validationMessages = [
         'newMessage.required' => 'Message cannot be empty',
         'newMessage.max' => 'Message is too long (max 1000 characters)'
@@ -32,12 +28,9 @@ class Chat extends Component
 
     public function mount()
     {
+        $this->loginID = Auth::id();
         $this->loadUsers();
-        if ($this->users->isNotEmpty()) {
-            $this->selectedUser = $this->users->first();
-            $this->loadMessages();
-            $this->loginID = Auth::id();
-        }
+        $this->messages = collect();
     }
 
     public function loadUsers()
@@ -53,14 +46,10 @@ class Chat extends Component
             ->get();
     }
 
-    public function updatedSearchTerm()
-    {
-        $this->loadUsers();
-    }
-
     public function selectUser($userId)
     {
         $this->selectedUser = User::findOrFail($userId);
+        $this->showEmptyState = false;
         $this->loadMessages();
         $this->dispatch('chat-selected');
     }
@@ -84,7 +73,6 @@ class Chat extends Component
 
     public function submit()
     {
-        // Validate with custom error messages
         $validated = $this->validate($this->rules, $this->validationMessages);
 
         try {
@@ -98,11 +86,11 @@ class Chat extends Component
             $this->reset('newMessage');
             $this->dispatch('message-sent');
             
+            event(new MessageSent(auth()->user(), $message));
+            
         } catch (\Exception $e) {
             $this->addError('newMessage', 'Failed to send message: '.$e->getMessage());
         }
-       event(new MessageSent(auth()->user(), $message));
-
     }
 
     public function getListeners()
@@ -114,25 +102,17 @@ class Chat extends Component
 
     public function newChatMessageNotification($message)
     {
-        /*if ($message['sender_id'] ==$this->selectedUser->id) {
+        if ($this->selectedUser && $message['sender_id'] == $this->selectedUser->id) {
             $messageObj = ChatMessage::find($message['id']);
-             $this->messages->push($messageObj);
-        }*/
-
-        //$message = ChatMessage::find($event['id']);
-        //if ($message) {
-          //  $this->messages->push($message);
-          //  $this->dispatch('message-received', ['message' => $message]);
-        //}
-        if ($message['sender_id'] == $this->selectedUser->id) {
-        $messageObj = ChatMessage::find($message['id']);
-        $this->messages->push($messageObj);
-        //$this->dispatch('message-received');}
-    }}
+            $this->messages->push($messageObj);
+            $this->dispatch('message-received');
+        }
+    }
 
     public function render()
     {
-        return view('livewire.chat')
-            ->layout('layouts.app');
+        
+         return view('livewire.chat')
+        ->layout('layouts.app');
     }
 }
