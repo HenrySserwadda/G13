@@ -8,13 +8,13 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
+use App\Models\User;           // Correct User model
+use App\Models\ChatMessage;
 
 class MessageSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $user;
-    public $message;
 
     /**
      * Create a new event instance.
@@ -23,10 +23,10 @@ class MessageSent implements ShouldBroadcast
      * @param  mixed  $message
      * @return void
      */
-    public function __construct($user, $message)
+    public function __construct(public User $user, public ChatMessage $message)
     {
-        $this->user = $user;
-        $this->message = $message;
+        //$this->user = $user;
+        //$this->message = $message;
     }
 
     /**
@@ -34,7 +34,7 @@ class MessageSent implements ShouldBroadcast
      *
      * @return \Illuminate\Broadcasting\Channel|array
      */
-    public function broadcastOn()
+    public function broadcastOn(): array
     {
         return new PrivateChannel('chat.' . $this->message->receiver_id);
     }

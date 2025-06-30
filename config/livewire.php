@@ -164,4 +164,17 @@ return [
     */
 
     'pagination_theme' => 'tailwind',
+
+    /*
+    |---------------------------------------------------------------------------
+    | Broadcast Driver
+    |---------------------------------------------------------------------------
+    |
+    | This value determines which broadcast driver Livewire will use to send
+    | events to the frontend. You can choose from 'pusher', 'redis', 'log',
+    | 'null', or 'reverb' (for local development).
+    |
+    */
+
+    'broadcast_driver' => env('BROADCAST_DRIVER', 'reverb'),
 ];

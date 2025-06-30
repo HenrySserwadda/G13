@@ -101,18 +101,18 @@ class Chat extends Component
         } catch (\Exception $e) {
             $this->addError('newMessage', 'Failed to send message: '.$e->getMessage());
         }
-       broadcast(new MessageSent(auth()->user(), $message))->toOthers();
+       event(new MessageSent(auth()->user(), $message));
 
     }
 
     public function getListeners()
     {
         return [
-            "echo-private:chat.{$this->loginID},message.sent" => 'newChatMessageNotification',
+            "echo-private:chat.{$this->loginID},MessageSent" => 'newChatMessageNotification',
         ];
     }
 
-    public function newChatMessageNotification($payload)
+    public function newChatMessageNotification($message)
     {
         /*if ($message['sender_id'] ==$this->selectedUser->id) {
             $messageObj = ChatMessage::find($message['id']);
@@ -124,11 +124,11 @@ class Chat extends Component
           //  $this->messages->push($message);
           //  $this->dispatch('message-received', ['message' => $message]);
         //}
-        if ($payload['sender_id'] == $this->selectedUser->id) {
-        $messageObj = ChatMessage::find($payload['id']);
+        if ($message['sender_id'] == $this->selectedUser->id) {
+        $messageObj = ChatMessage::find($message['id']);
         $this->messages->push($messageObj);
-        $this->dispatch('message-received');}
-    }
+        //$this->dispatch('message-received');}
+    }}
 
     public function render()
     {
