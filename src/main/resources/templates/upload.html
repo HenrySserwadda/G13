@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Vendor Application Upload</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .form-container { border: 1px solid #ddd; padding: 20px; border-radius: 5px; }
+        .instructions { margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Vendor Application Submission</h1>
+    
+    <div class="instructions">
+        <h3>Instructions:</h3>
+        <p>Please upload your completed vendor application in PDF format. The application should include:</p>
+        <ul>
+            <li>Company information</li>
+            <li>Financial statements</li>
+            <li>References</li>
+            <li>Certifications and licenses</li>
+        </ul>
+    </div>
+    
+    <div class="form-container">
+     <form id="uploadForm" enctype="multipart/form-data" method="post" action="/upload">
+    <input type="file" name="file" required>
+    <button type="submit">Submit</button>
+</form>
+<div id="submitMessage" style="color: green; display: none;">Submitted!</div>
+    </div>
+
+<script>
+document.getElementById('uploadForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent normal form submission
+
+    var formData = new FormData(this);
+
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            document.getElementById('submitMessage').style.display = 'block';
+        } else {
+            alert('Submission failed.');
+        }
+    })
+    .catch(error => {
+        alert('An error occurred.');
+    });
+});
+</script>
+
+</body>
+</html>

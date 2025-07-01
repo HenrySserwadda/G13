@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Application Result</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .result { border: 1px solid #ddd; padding: 20px; border-radius: 5px; margin-top: 20px; }
+        .success { background-color: #d4edda; }
+        .error { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>Application Processing Result</h1>
+    
+    <div class="result" th:classappend="${application.status == 'APPROVED'} ? 'success' : 'error'">
+        <p th:text="${message}"></p>
+        
+        <h3>Application Details:</h3>
+        <p><strong>Company:</strong> <span th:text="${application.companyName}"></span></p>
+        <p><strong>Status:</strong> <span th:text="${application.status}"></span></p>
+        
+        <div th:if="${application.status == 'VISIT_SCHEDULED'}">
+            <p><strong>Scheduled Visit:</strong> <span th:text="${application.visitScheduledDate}"></span></p>
+        </div>
+        
+        <a href="/">Submit another application</a>
+    </div>
+</body>
+</html>
