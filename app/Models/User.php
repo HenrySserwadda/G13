@@ -112,9 +112,9 @@ public function inventories()
             return $prefix.$nextNumber;
     }
 
-   public function redirectToDashboard(User $user): string 
+    public function redirectToDashboard(): string 
     {
-        $category = trim(preg_replace('/[\r\n]+/', '', $user->category));
+        $category = trim(preg_replace('/[\r\n]+/', '', $this->category));
 
         switch ($category) {
             case 'staff':
@@ -122,7 +122,7 @@ public function inventories()
             case 'supplier':
                 return route('dashboard.supplier'); 
             case 'wholesaler':
-                if ($user->status == 'pending') {
+                if ($this->status == 'pending') {
                     return route('insertpdf'); 
                 } else {
                     return route('dashboard.wholesaler'); 

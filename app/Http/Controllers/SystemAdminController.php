@@ -6,11 +6,36 @@ use Illuminate\Http\Request;
 
 class SystemadminController extends Controller
 {
+    /**
+     * Show the form for making a user a system administrator.
+     */
+    public function makeSystemAdministrator()
+    {
+        $users = \App\Models\User::all();
+        return view('dashboard.systemadmin.make-system-administrator', compact('users'));
+    }
+    /**
+     * Remove the specified user from storage.
+     */
+    public function destroy($id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+        $user->delete();
+        return redirect()->route('dashboard.systemadmin.all-users')->with('success', 'User deleted successfully.');
+    }
+    /**
+     * Display a listing of all users for the system admin dashboard.
+     */
+    public function allUsers()
+    {
+        $users = \App\Models\User::all();
+        return view('dashboard.systemadmin.all-users', compact('users'));
+    }
     public function pendingUsers()
     {
         // Example: Get users with 'pending' status
         $pendingUsers = \App\Models\User::where('status', 'pending')->get();
-        return view('dashboard.pending-users', compact('pendingUsers'));
+        return view('dashboard.systemadmin.pending-users', ['users' => $pendingUsers]);
     }
 
     public function approve(Request $request)

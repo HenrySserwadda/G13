@@ -1,3 +1,4 @@
+
  
 <?php
 
@@ -81,12 +82,16 @@ require __DIR__.'/auth.php';
 
 
 
-//Route::middleware(['auth','systemadmin'])->group(function () {
-   // Route::get('/dashboard/pending-users', [SystemadminController::class, 'pendingUsers'])->name('dashboard.pending-users');
-   // Route::post('/approve', [SystemadminController::class, 'approve'])->name('approve');
-    //Route::post('/reject', [SystemadminController::class, 'reject'])->name('reject');
-    //Route::get('/redirect', [SystemadminController::class, 'redirectToDashboard']);
-//}); // remember to comment out the middleware and see if the thing still works as expected
+
+// Systemadmin dashboard user management routes
+Route::middleware(['auth', 'verified'])->prefix('dashboard/systemadmin')->name('dashboard.systemadmin.')->group(function () {
+    Route::get('/all-users', [SystemadminController::class, 'allUsers'])->name('all-users');
+    Route::get('/pending-users', [SystemadminController::class, 'pendingUsers'])->name('pending-users');
+    Route::get('/make-system-administrator', [SystemadminController::class, 'makeSystemAdministrator'])->name('make-system-administrator');
+    Route::post('/make-systemadmin/{id}', [SystemadminController::class, 'makeSystemadmin'])->name('make-systemadmin');
+    Route::post('/approve/{id}', [SystemadminController::class, 'approve'])->name('approve');
+    Route::post('/reject/{id}', [SystemadminController::class, 'reject'])->name('reject');
+});
 
  
 
@@ -113,5 +118,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/my-orders', [\App\Http\Controllers\UserOrderController::class, 'index'])->name('user-orders.index');
     Route::get('/my-orders/{id}', [\App\Http\Controllers\UserOrderController::class, 'show'])->name('user-orders.show');
 });
+
+ //Route for deleting a user (used in all-users.blade.php)
+Route::delete('/dashboard/systemadmin/delete/{id}', [SystemadminController::class, 'destroy'])->name('delete');
 
 

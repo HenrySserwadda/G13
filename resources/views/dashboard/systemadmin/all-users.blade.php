@@ -1,5 +1,7 @@
 {{-- filepath: resources/views/dashboard/systemadmin/all-users.blade.php --}}
 @extends('components.dashboard')
+@section('title', 'All Users - DURABAG')
+
 
 @section('content')
     <div class="flex border-b border-gray-200 dark:border-gray-700 mb-6">
@@ -59,6 +61,7 @@
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">
                     <form method="POST" action="{{ route('delete', $user->id) }}">
                         @csrf
+                        @method('DELETE')
                         <x-primary-button>Delete</x-primary-button>
                     </form>
                 </td>
