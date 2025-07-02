@@ -8,6 +8,7 @@ use App\Models\Wholesaler;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\UserController;
    
     
 
@@ -26,8 +27,8 @@ Route::post('/insertpdf',[Wholesaler::class,'checkpdf']);
 
  //new routes i am adding for the different dashboards based on user type
 Route::get('/dashboard/staff',function(){
-    return view('staff');
- })->middleware(['auth', 'verified'])->name('dashboard.staff');
+    return view('dashboard.staff');
+ })->middleware(['auth', 'verified','staff'])->name('dashboard.staff');
 
 Route::get('/dashboard/customer',function(){
     return view('dashboard/customer');
@@ -45,7 +46,7 @@ Route::get('/dashboard/wholesaler',function(){
 Route::get('/dashboard/systemadmin',function(){
    // $users=User::all()->latest();//this reruns a view for the system admin to see the users by the latest one that has been added but i am going to work on it so that it does eager loading
     return view('dashboard.systemadmin');
- })->middleware(['auth', 'verified'])->name('dashboard.systemadmin');
+ })->middleware(['auth', 'verified','systemadmin'])->name('dashboard.systemadmin');
 
  /* //original dashboard
 Route::get('/dashboard', function (){
@@ -71,7 +72,7 @@ Route::middleware(['auth','systemadmin'])->group(function () {
 
 Route::post('/approve/{id}', [SystemAdminController::class,'approve'])->name('approve');
 Route::post('/reject/{id}', [SystemAdminController::class,'reject'])->name('reject');
-Route::get('/redirect',[User::class,'redirectToDashboard']);
+Route::get('/redirect',[UserController::class,'toDashboard']);
 
 Route::post('/delete/{id}',[SystemAdminController::class,'delete'])->name('delete');
 

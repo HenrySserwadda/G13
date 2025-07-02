@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\User;   
 use App\Notifications\UserApprovedWithNotification;
 use App\Notifications\AccountDeleted;
-use Illuminate\Notifications\Notification;
+// use Illuminate\Notifications\Notification;
 use App\Notifications\NewSystemAdmin;
-use Illuminate\Support\Facades;
+use Illuminate\Support\Facades\Notification;
 use View;
 
 
@@ -26,7 +26,9 @@ class SystemAdminController extends Controller
     }
     
     public function makeSystemAdministrator(){
-        $users=User::where('status','approved')->get();
+        $users=User::where('status','approved')
+            ->where('category','!=','systemadmin')
+            ->get();
         return view('dashboard.systemadmin.make-system-administrator',compact('users'));
     }
 
@@ -52,11 +54,15 @@ class SystemAdminController extends Controller
     }
 
     public function makeSystemAdmin($id){
-        $user=User::findOrFail($id)->where('status','approved');
-        $user->category='systemadmin';
-        $user->userid=Systemadmin::generateSystemAdminId($id); 
-        // $user->notify(new NewSystemAdmin($user));
-        Notification::route('mail',$user->email)->notify(new NewSystemAdmin($user));
+        $user=User::findOrFail($id);
+        if($user->status=='approved'){
+            $user->category='systemadmin';
+            $user->userid=Systemadmin::generateSystemAdminId($id); 
+            $user->is_admin=true;
+            $user->save();
+        // Notification::route('mail',$user->email)->notify(new NewSystemAdmin($user));
+            $user->notify(new NewSystemAdmin($user));
+        }
         return back()->with('success', 'New System admin');
     }
 }

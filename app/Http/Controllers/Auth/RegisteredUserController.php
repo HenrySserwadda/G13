@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\NewCustomerRegistered;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -57,7 +58,12 @@ class RegisteredUserController extends Controller
             return redirect()->route('login')->with('message','Registration succesful! Please wait for admin approval. You will be notified by email.');
         }
 
-        //event(new Registered($user));
+        //here the customer email since for them they dont require the approval
+        if(!$requiresApproval){
+            $user->notify(new NewCustomerRegistered($user));
+        }
+
+        event(new Registered($user));
 
 //since i have deleted the original dashboard i modify this to lead to different dashboards based on user category
        

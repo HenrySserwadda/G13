@@ -7,7 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+use Http\Controllers;
 class User extends Authenticatable 
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -73,29 +73,31 @@ class User extends Authenticatable
             return $prefix.$nextNumber;
     }
 
-    public function redirectToDashboard(User $user)
+   public function redirectToDashboard(User $user): string 
     {
         $category = trim(preg_replace('/[\r\n]+/', '', $user->category));
-        switch($category) {
+
+        switch ($category) {
             case 'staff':
-                return redirect()->route('dashboard.staff');
+                return route('dashboard.staff'); 
             case 'supplier':
-                return redirect()->route('dashboard.supplier');
+                return route('dashboard.supplier'); 
             case 'wholesaler':
-                if($user->status=='pending'){
-                    return redirect()->route('insertpdf');
-                }else{
-                return redirect()->route('dashboard.wholesaler');
+                if ($user->status == 'pending') {
+                    return route('insertpdf'); 
+                } else {
+                    return route('dashboard.wholesaler'); 
                 }
             case 'retailer':
-                return redirect()->route('dashboard.retailer');
+                return route('dashboard.retailer'); 
             case 'systemadmin':
-                return redirect()->route('dashboard.systemadmin');
+                return route('dashboard.systemadmin'); 
             default:
-                return redirect()->route('dashboard.customer');
-            
+                return route('dashboard.customer'); 
         }
     }
+
+    
 
     public function orders(){
         return $this->hasMany(Order::class);
