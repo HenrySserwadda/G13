@@ -15,7 +15,6 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\UserController;
    
     
 
@@ -114,20 +113,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/my-orders', [\App\Http\Controllers\UserOrderController::class, 'index'])->name('user-orders.index');
     Route::get('/my-orders/{id}', [\App\Http\Controllers\UserOrderController::class, 'show'])->name('user-orders.show');
 });
-Route::post('/approve/{id}', [SystemAdminController::class,'approve'])->name('approve');
-Route::post('/reject/{id}', [SystemAdminController::class,'reject'])->name('reject');
-Route::get('/redirect',[UserController::class,'toDashboard']);
-
-Route::post('/delete/{id}',[SystemAdminController::class,'delete'])->name('delete');
-
-
-Route::post('/dashboard.systemadmin.make-systemadmin/{id}',[SystemAdminController::class,'makeSystemAdmin'])->name('dashboard.systemadmin.make-systemadmin');
-
-Route::get('/delivery-information',function(){
-    return view('/delivery-information');
-});
-
-Route::get('/cart',[CartController::class,'cart'])
-    ->name('cart');
 
 
