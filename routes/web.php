@@ -1,3 +1,4 @@
+ 
 <?php
 
 use App\Livewire\Chat;
@@ -107,5 +108,10 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
 Route::post('/checkout', [CheckoutController::class, 'placeOrder'])->name('checkout.place');
 
+// User orders (wholesaler/retailer)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/my-orders', [\App\Http\Controllers\UserOrderController::class, 'index'])->name('user-orders.index');
+    Route::get('/my-orders/{id}', [\App\Http\Controllers\UserOrderController::class, 'show'])->name('user-orders.show');
+});
 
 
