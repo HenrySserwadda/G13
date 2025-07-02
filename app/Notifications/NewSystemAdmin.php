@@ -7,14 +7,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\User;
-class UserApprovedWithNotification extends Notification
+class NewSystemAdmin extends Notification
 {
     use Queueable;
     public $user;
     /**
      * Create a new notification instance.
      */
-    public function __construct($user)
+    public function __construct(User $user)
     {
         $this->user=$user;
     }
@@ -35,12 +35,12 @@ class UserApprovedWithNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Registration Request Approved')
+            ->subject('New System Admin')
             ->greeting('Hello, '.$this->user->name)
-            ->line('Your request to join the durabag supply chain management system has been approved. Please find your user identification number below.')
-            ->line('User Identification number: '.$this->user->userid)
-            ->action('Proceed to login', url('/login'))
-            ;
+            ->line('This is to inform you that you have been made a system administrator for our Durabag supply chain management system.')
+            ->line('Here is your new user identification number: '.$this->user->userid)
+            ->action('Login', url('/login'));
+            
     }
 
     /**

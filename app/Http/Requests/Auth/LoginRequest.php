@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\User;
 
 class LoginRequest extends FormRequest
 {
@@ -28,6 +29,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => ['required', 'string', 'email'],
+            'userid'=>['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -40,18 +42,21 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
+        $user=User::where('email', $this->email)->first();
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
-            throw ValidationException::withMessages([
+        if (!$user ||!\Hash::check($this->password, $user->password )) {
+            throw ValidationException::withMessages(['email'=>__('The details you provided are incorrect')]);
+            /* throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
-            ]);
+            ]); */
         }
 
         RateLimiter::clear($this->throttleKey());
     }
-
+    }
     /**
      * Ensure the login request is not rate limited.
      *

@@ -47,7 +47,7 @@
     </x-slot>
     <x-slot name="users">
     <li>
-        <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+        <a href="{{ route('dashboard.systemadmin.all-users') }}"class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
                 <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
             </svg>
@@ -57,29 +57,72 @@
     </li>
     </x-slot>
         <x-slot name="content">
-        <table class="max-w-xl">
+        <div class="flex border-b border-gray-200 dark:border-gray-700 mb-6">
+                <!-- all users -->
+                <a href="{{ route('dashboard.systemadmin.all-users') }}"
+                   class="py-2 px-4 text-sm font-medium text-center transition-colors duration-200
+                          @if(Request::routeIs('dashboard.systemadmin.all-users'))
+                              text-blue-600 border-b-2 border-blue-600 dark:text-blue-500 dark:border-blue-500
+                          @else
+                              text-gray-500 hover:text-gray-700 hover:border-gray-300
+                              dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500
+                          @endif
+                          whitespace-nowrap cursor-pointer">
+                    All users
+                </a>
+
+                <!-- pending -->
+                <a href="{{ route('dashboard.systemadmin.pending-users') }}"
+                   class="py-2 px-4 text-sm font-medium text-center transition-colors duration-200
+                          @if(Request::routeIs('dashboard.systemadmin.pending-users'))
+                              text-blue-600 border-b-2 border-blue-600 dark:text-blue-500 dark:border-blue-500
+                          @else
+                              text-gray-500 hover:text-gray-700 hover:border-gray-300
+                              dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500
+                          @endif
+                          whitespace-nowrap cursor-pointer">
+                    Pending users
+                </a>
+
+                <!-- to make-system-admin -->
+                <a href="{{ route('dashboard.systemadmin.make-system-administrator') }}"
+                   class="py-2 px-4 text-sm font-medium text-center transition-colors duration-200
+                          @if(Request::routeIs('dashboard.systemadmin.make-system-administrator'))
+                              text-blue-600 border-b-2 border-blue-600 dark:text-blue-500 dark:border-blue-500
+                          @else
+                              text-gray-500 hover:text-gray-700 hover:border-gray-300
+                              dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500
+                          @endif
+                          whitespace-nowrap cursor-pointer">
+                    Make System Admin
+                </a>
+            </div>
+        <table class="w-full table-auto text-left border-collapse dark:text-white">
             <thead>
-                <tr class="max-w-m">
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Approve/Reject</th> 
-                    <th>Email</th>
+                <tr class="max-w-m pt-16">
+                    <th class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">Name</th>
+                    <th class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">Category</th>
+                    <th class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">Approve</th> 
+                    <th class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">Reject</th>
+                    <th class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">Email</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($users as $user)
                     <tr class="max-w-m">
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->category }}</td>
-                        <td>
-                            <form action="{{ uri('approve',$user->id) }}"><button>Approve</button>
-                            @csrf
-                            </form>
-                            <form action="{{ uri('reject',$user->id) }}"><button>Reject</button>
+                        <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->name }}</td>
+                        <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->category }}</td>
+                        <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">
+                            <form method="POST" action="{{ route('approve',$user->id) }}"><x-primary-button>Approve</x-primary-button>
                             @csrf
                             </form>
                         </td>
-                        <td>{{ $user->email }}</td>
+                        <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">
+                            <form method="POST" action="{{ route('reject',$user->id) }}"><x-primary-button>Reject</x-primary-button>
+                            @csrf
+                            </form>
+                        </td>
+                        <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->email }}</td>
                     </tr>
                 @endforeach
             </tbody>
