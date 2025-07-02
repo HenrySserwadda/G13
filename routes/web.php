@@ -1,14 +1,20 @@
+ 
 <?php
 
 use App\Livewire\Chat;
-use App\Http\Controllers\CartController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SystemAdminController;
-use App\Models\Wholesaler;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
+use App\Http\Controllers\Systemadmin;
+use App\Http\Controllers\SystemadminController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\RawMaterialController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UserController;
    
     
@@ -19,17 +25,23 @@ Route::get('/', function () {
 Route::get('/about', function(){
     return view('about');
 });
-
- //need to find an appropriate place to put this route. more work should be done here
-Route::get('/about', function(){
-    return view('about');
-});
-Route::post('/insertpdf',[Wholesaler::class,'checkpdf']);
-
+//need to find an appropriate place to put this route, most probably in the auth thingy, i dont know yet
+Route::get('/companyid',function(){
+    return view('companyid');
+ });
+ //need to find an appropriate place to put this route
+Route::get('/insertpdf',function(){
+    /* request()->validate([
+        'wholesalerpdf'=>['required'],
+    ]); 
+    i am trying to insert server side validation so that a pdf must be entered in order
+     for the registration of a whole saler to work but the page refuses to load entirely when i do so*/
+    return view('insertpdf');
+ });
  //new routes i am adding for the different dashboards based on user type
 Route::get('/dashboard/staff',function(){
-    return view('dashboard.staff');
- })->middleware(['auth', 'verified','staff'])->name('dashboard.staff');
+    return view('staff');
+ })->middleware(['auth', 'verified'])->name('dashboard.staff');
 
 Route::get('/dashboard/customer',function(){
     return view('dashboard/customer');
@@ -43,16 +55,19 @@ Route::get('/dashboard/wholesaler',function(){
     return view('dashboard.wholesaler');
  })->middleware(['auth', 'verified'])->name('dashboard.wholesaler');
 
-
 Route::get('/dashboard/systemadmin',function(){
    // $users=User::all()->latest();//this reruns a view for the system admin to see the users by the latest one that has been added but i am going to work on it so that it does eager loading
     return view('dashboard.systemadmin');
- })->middleware(['auth', 'verified','systemadmin'])->name('dashboard.systemadmin');
+ })->middleware(['auth', 'verified'])->name('dashboard.systemadmin');
+ Route::resource('inventories', InventoryController::class)->middleware('auth');
 
- /* //original dashboard
-Route::get('/dashboard', function (){
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard'); */
+
+ //routes for added dashboard kinds
+
+ //original dashboard
+//Route::get('/dashboard', function (){
+   // return view('dashboard');
+//})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -66,14 +81,39 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 
-Route::get('/chat', [ChatController::class, 'index'])->middleware('auth');
 
-Route::middleware(['auth','systemadmin'])->group(function () {
-    Route::get('/dashboard/systemadmin/pending-users', [SystemAdminController::class, 'pendingUsers'])->name('dashboard.systemadmin.pending-users');
-    Route::get('/dashboard/systemadmin/all-users', [SystemAdminController::class, 'allUsers'])->name('dashboard.systemadmin.all-users');
-    Route::get('/dashboard/systemadmin/make-system-administrator', [SystemAdminController::class,'makeSystemAdministrator'])->name('dashboard.systemadmin.make-system-administrator');
+//Route::middleware(['auth','systemadmin'])->group(function () {
+   // Route::get('/dashboard/pending-users', [SystemadminController::class, 'pendingUsers'])->name('dashboard.pending-users');
+   // Route::post('/approve', [SystemadminController::class, 'approve'])->name('approve');
+    //Route::post('/reject', [SystemadminController::class, 'reject'])->name('reject');
+    //Route::get('/redirect', [SystemadminController::class, 'redirectToDashboard']);
+//}); // remember to comment out the middleware and see if the thing still works as expected
+
+ 
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('raw_materials', RawMaterialController::class);
 });
 
+Route::resource('products', ProductController::class)->middleware('auth');
+Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
+Route::post('/cart/update/{productId}', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove/{productId}', [CartController::class, 'remove'])->name('cart.remove');
+
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->name('logout');
+
+// Checkout
+Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
+Route::post('/checkout', [CheckoutController::class, 'placeOrder'])->name('checkout.place');
+
+// User orders (wholesaler/retailer)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/my-orders', [\App\Http\Controllers\UserOrderController::class, 'index'])->name('user-orders.index');
+    Route::get('/my-orders/{id}', [\App\Http\Controllers\UserOrderController::class, 'show'])->name('user-orders.show');
+});
 Route::post('/approve/{id}', [SystemAdminController::class,'approve'])->name('approve');
 Route::post('/reject/{id}', [SystemAdminController::class,'reject'])->name('reject');
 Route::get('/redirect',[UserController::class,'toDashboard']);
@@ -89,3 +129,5 @@ Route::get('/delivery-information',function(){
 
 Route::get('/cart',[CartController::class,'cart'])
     ->name('cart');
+
+
