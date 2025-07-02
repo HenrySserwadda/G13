@@ -14,7 +14,7 @@
             </a>
         </li>
     </x-slot>
-    <x-slot name="inventory">
+    <x-slot name="inventory"> 
         <li>
             <a href="{{ route('inventories.index') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-database-fill" viewBox="0 0 16 16">
