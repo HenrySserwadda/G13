@@ -1,5 +1,6 @@
 package com.vendor.validator.Controller;
 
+import com.vendor.validator.Model.ValidationResult;
 import com.vendor.validator.Model.Vendor;
 import com.vendor.validator.Service.VendorService;
 import com.vendor.validator.Service.VisitSchedulerService;
@@ -33,8 +34,12 @@ public class VendorController {
             for (Vendor v : vendors) {
                 Map<String, Object> result = new LinkedHashMap<>();
                 result.put("vendor", v.name);
-                result.put("valid", vendorService.isValid(v));
-                if (vendorService.isValid(v)) {
+
+                ValidationResult validation = VendorService.validate(v);
+
+                result.put("valid", validation.isValid());
+                result.put("reasons", validation.getReasons());
+                if (validation.isValid()) {
                     result.put("visitDate", visitSchedulerService.generateVisitDate(v));
                 }
                 response.add(result);
