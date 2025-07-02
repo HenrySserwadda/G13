@@ -40,7 +40,7 @@ Route::get('/insertpdf',function(){
  });
  //new routes i am adding for the different dashboards based on user type
 Route::get('/dashboard/staff',function(){
-    return view('staff');
+    return view('dashboard.staff');
  })->middleware(['auth', 'verified'])->name('dashboard.staff');
 
 Route::get('/dashboard/customer',function(){

@@ -59,6 +59,9 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse ($materials as $material)
+                @php
+                    $isSupplierMaterial = isset($material->user) && $material->user->category === 'supplier';
+                @endphp
                 <tr class="hover:bg-gray-50 transition duration-150">
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900">
@@ -86,7 +89,9 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex justify-end space-x-3">
-                            @if(Auth::user()->id === $material->user_id || Auth::user()->category === 'systemadmin')
+                            @if(Auth::user()->category === 'staff')
+                                <span class="text-xs text-gray-400 italic">View Only</span>
+                            @elseif(Auth::user()->id === $material->user_id || Auth::user()->category === 'systemadmin')
                                 <a href="{{ route('raw_materials.edit', $material) }}" 
                                    class="text-blue-600 hover:text-blue-900 transition duration-150"
                                    title="Edit">

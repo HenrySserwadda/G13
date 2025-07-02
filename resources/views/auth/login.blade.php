@@ -15,9 +15,9 @@
         </div>
         <!-- User id -->
         <div>
-            <x-input-label for="userid" :value="__('User Identification Number')" />
-            <x-text-input id="userid" class="block mt-1 w-full" type="text" name="userid" :value="old('userid')" required/>
-            <x-input-error :messages="$errors->get('userid')" class="mt-2" />
+            <x-input-label for="user_id" :value="__('User Identification Number')" />
+            <x-text-input id="user_id" class="block mt-1 w-full" type="text" name="user_id" :value="old('user_id')" required/>
+            <x-input-error :messages="$errors->get('user_id')" class="mt-2" />
         </div>
 
         <!-- Password -->

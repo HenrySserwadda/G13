@@ -39,7 +39,7 @@ class NewCustomerRegistered extends Notification
             ->subject('User identification number')
             ->greeting('Hello, '.$this->user->name)
             ->line('This email contains your user identification number necessary for you to login to the durabag system.')
-            ->line('User identification number: '.$this->user->userid)
+            ->line('User identification number: '.$this->user->user_id)
             ->action('Proceed to login', url('/login'))
             ->line('Thank you for using our application!');
     }

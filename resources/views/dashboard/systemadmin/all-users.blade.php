@@ -55,7 +55,7 @@
         @foreach($users as $user)
             <tr>
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->name }}</td>
-                <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->userid }}</td>
+                <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->user_id }}</td>
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->category }}</td>
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->email }}</td>
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">

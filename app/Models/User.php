@@ -26,7 +26,8 @@ class User extends Authenticatable
 
         'avatar',
         'category',
-        'userid'
+        'user_id'
+    // Use 'user_id' as the user identification string, but do not use it for Eloquent relationships
     ];
 
     /**
@@ -97,19 +98,18 @@ public function inventories()
     }
 
     public static function generateUserId(string $category){
-            $prefix=strtoupper(substr($category,0,1));
-            $lastUser=User::where('category',$category)
-            ->whereNotNull('userid')
-            ->orderBy('userid','desc')->first();
+        $prefix = strtoupper(substr($category,0,1));
+        $lastUser = User::where('category', $category)
+            ->whereNotNull('user_id')
+            ->orderBy('user_id', 'desc')->first();
 
-            if($lastUser && preg_match('/\d+/',$lastUser->userid,$matches)){
-                $lastNumber=(int)$matches[0];
-            }
-            else{
-                $lastNumber=0;
-            }
-            $nextNumber=str_pad($lastNumber+1,4,'0',STR_PAD_LEFT);
-            return $prefix.$nextNumber;
+        if($lastUser && preg_match('/\d+/', $lastUser->user_id, $matches)){
+            $lastNumber = (int)$matches[0];
+        } else {
+            $lastNumber = 0;
+        }
+        $nextNumber = str_pad($lastNumber+1, 4, '0', STR_PAD_LEFT);
+        return $prefix.$nextNumber;
     }
 
     public function redirectToDashboard(): string 

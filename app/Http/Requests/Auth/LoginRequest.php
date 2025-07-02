@@ -29,7 +29,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => ['required', 'string', 'email'],
-            'userid'=>['required', 'string'],
+            'user_id'=>['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }

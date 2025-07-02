@@ -47,13 +47,13 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'category'=>$request->category,
             'status'=>$requiresApproval?'pending':'approved',
-            'userid'=>$requiresApproval?null:User::generateUserId($request->category),
+            'user_id'=>$requiresApproval?null:User::generateUserId($request->category),
         ]);
         //here is where the logic for sending mail to admin to approve pending users
                
         if($requiresApproval){
             Notification::route('mail','janedoe@example.com')->notify(new NewUserPendingApproval($user));
-            return redirect(route('login')->with('message','Registration succesful! Please wait for admin approval. You wll be notified by email.'));
+            return redirect()->route('login')->with('message','Registration successful! Please wait for admin approval. You will be notified by email.');
         }
 
         //event(new Registered($user));
@@ -62,6 +62,6 @@ class RegisteredUserController extends Controller
        
         Auth::login($user);
 
-        return redirect($user->redirectToDashboard($user));
+        return redirect($user->redirectToDashboard());
     }
 }
