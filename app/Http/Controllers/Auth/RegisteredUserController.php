@@ -34,15 +34,13 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-       
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'category'=>['required','in:supplier,retailer,customer,wholesaler,staff']
         ]);
-        $requiresApproval=in_array($request->category,['supplier','wholesaler','retailer','staff']);
-
+        $requiresApproval=in_array($request->category,['supplier','retailer','wholesaler','staff']);
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -55,22 +53,15 @@ class RegisteredUserController extends Controller
                
         if($requiresApproval){
             Notification::route('mail','janedoe@example.com')->notify(new NewUserPendingApproval($user));
-            return redirect()->route('login')->with('message','Registration succesful! Please wait for admin approval. You will be notified by email.');
+            return redirect(route('login')->with('message','Registration succesful! Please wait for admin approval. You wll be notified by email.'));
         }
 
-        //here the customer email since for them they dont require the approval
-        if(!$requiresApproval){
-            $user->notify(new NewCustomerRegistered($user));
-        }
-
-        event(new Registered($user));
+        //event(new Registered($user));
 
 //since i have deleted the original dashboard i modify this to lead to different dashboards based on user category
        
         Auth::login($user);
-        return redirect($user->redirectToDashboard($user));
 
-        
+        return redirect($user->redirectToDashboard($user));
     }
-    
 }

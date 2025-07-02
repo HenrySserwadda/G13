@@ -44,19 +44,19 @@ class LoginRequest extends FormRequest
         $this->ensureIsNotRateLimited();
         $user=User::where('email', $this->email)->first();
 
+        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+            RateLimiter::hit($this->throttleKey());
+
         if (!$user ||!\Hash::check($this->password, $user->password )) {
             throw ValidationException::withMessages(['email'=>__('The details you provided are incorrect')]);
+            /* throw ValidationException::withMessages([
+                'email' => trans('auth.failed'),
+            ]); */
         }
-        if($this->userid!==$user->userid){
-            throw ValidationException::withMessages(['email'=>__('User identification number incorrect.')]);
-        }
-        if($user->status !=='approved'){
-            throw ValidationException::withMessages(['email'=>__('Your account has not yet been approved')]);
-        }
-        Auth::login($user,$this->boolean('remember'));
+
         RateLimiter::clear($this->throttleKey());
     }
-
+    }
     /**
      * Ensure the login request is not rate limited.
      *
