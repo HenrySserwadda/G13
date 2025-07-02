@@ -1,7 +1,10 @@
 {{-- filepath: resources/views/products/index.blade.php --}}
 @extends('components.dashboard')
 
+
 @section('title', 'Products - DURABAG')
+@section('page-title', 'Products')
+@section('page-description', 'Browse and manage all available products in the shop.')
 
 @push('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

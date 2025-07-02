@@ -128,7 +128,7 @@ public function inventories()
                     return route('dashboard.wholesaler'); 
                 }
             case 'retailer':
-                return route('dashboard.retailer'); 
+                return route('dashboard.wholesaler'); 
             case 'systemadmin':
                 return route('dashboard.systemadmin'); 
             default:
