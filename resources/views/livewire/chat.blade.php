@@ -1,5 +1,3 @@
-@props(['messages'=>[], 'users' =>[], 'selectedUser'=>null])
-
 @php
     function generateAvatar($name, $size = 40) {
         $colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A8', '#33FFF5'];
@@ -35,7 +33,7 @@
             </div>
             <div class="contacts">
                 @foreach($users as $user)
-                <div class="contact {{ $selectedUser && $selectedUser->id == $user->id ? 'active' : '' }}" 
+                <div class="contact {{ $selectedUserId == $user->id ? 'active' : '' }}"
                      wire:click="selectUser({{ $user->id }})">
                     <div class="contact-avatar">
                         <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : generateAvatar($user->name, 32) }}" alt="User Avatar" class="contact-avatar-img">
@@ -54,7 +52,7 @@
 
         <!-- Right side - Chat area -->
         <div class="chat-area">
-            @if($selectedUser)
+            @if($selectedUserId && isset($selectedUser) && $selectedUser)
                 <!-- Your existing chat UI when a user is selected -->
                 <div class="chat-header">
                     <div class="chat-user">
@@ -81,17 +79,17 @@
                 
                 <div class="messages" id="messages">
                     @foreach($messages as $message)
-                    <div class="message {{ $message->sender_id == auth()->id() ? 'sent' : 'received' }}">
-                        @if($message->sender_id != auth()->id())
+                    <div class="message {{ $message['sender_id'] == auth()->id() ? 'sent' : 'received' }}">
+                        @if($message['sender_id'] != auth()->id())
                         <div class="message-avatar">
-                            <img src="{{ $message->sender->avatar ? asset('storage/' . $message->sender->avatar) : generateAvatar($message->sender->name, 28) }}" alt="User Avatar" class="avatar-img">
+                            <img src="{{ isset($message['sender']['avatar']) && $message['sender']['avatar'] ? asset('storage/' . $message['sender']['avatar']) : generateAvatar($message['sender']['name'] ?? 'User', 28) }}" alt="User Avatar" class="avatar-img">
                         </div>
                         @endif
                         <div class="message-content">
-                            <p>{{ $message->message }}</p>
+                            <p>{{ $message['message'] }}</p>
                             <span class="message-time">
-                                {{ $message->created_at->format('h:i A') }}
-                                @if($message->sender_id == auth()->id())
+                                {{ \Carbon\Carbon::parse($message['created_at'])->format('h:i A') }}
+                                @if($message['sender_id'] == auth()->id())
                                 <span class="message-status">
                                     <svg viewBox="0 0 24 24" width="16" height="16">
                                         <path fill="currentColor" d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41 4.24 4.24 8.49-8.48z"></path>
@@ -146,350 +144,348 @@
             @endif
         </div>
     </div>
-</div>
 
-
-@push('styles')
-<style>
-    .chat-wrapper {
-        height: calc(100vh - 60px); /* Adjust based on your layout */
-    }
-    
-    .chat-container {
-        display: flex;
-        height: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-        border: 1px solid #e1e1e1;
-        box-shadow: 0 1px 1px rgba(0,0,0,0.08);
-        font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
-    }
-   
-    .contacts-list {
-        width: 30%;
-        border-right: 1px solid #e1e1e1;
-        background: #f7f7f7;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .chat-area {
-        width: 70%;
-        display: flex;
-        flex-direction: column;
-        background: #e5ddd5;
-        background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_a4be512e7195b6b733d9110b408f075d.png');
-        position: relative;
-    }
-    
-    .chat-header {
-        padding: 10px 15px;
-        background: #ededed;
-        border-bottom: 1px solid #e1e1e1;
-    }
-    
-    .header-user {
-        display: flex;
-        align-items: center;
-    }
-    
-    .header-user h3 {
-        margin-left: 10px;
-    }
-    
-    .search-box input {
-        width: 100%;
-        padding: 8px 10px;
-        border: none;
-        border-radius: 20px;
-        background: white;
-    }
-    
-    .contacts {
-        flex: 1;
-        overflow-y: auto;
-    }
-    
-    .contact {
-        display: flex;
-        padding: 10px 15px;
-        border-bottom: 1px solid #e1e1e1;
-        cursor: pointer;
-        align-items: center;
-    }
-    
-    .contact:hover, .contact.active {
-        background: #e9e9e9;
-    }
-    
-    .contact-avatar {
-        position: relative;
-        margin-right: 10px;
-    }
-    
-    .contact-avatar-img {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-    
-    .user-avatar img, .message-avatar img {
-        border-radius: 50%;
-        object-fit: cover;
-    }
-    
-    .contact-info {
-        flex: 1;
-        min-width: 0; /* Allows text truncation */
-    }
-    
-    .contact-info h4 {
-        margin: 0;
-        font-size: 15px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .contact-info p {
-        margin: 3px 0 0;
-        font-size: 12px;
-        color: #777;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .contact-time {
-        font-size: 11px;
-        color: #999;
-        white-space: nowrap;
-    }
-    
-    /* Chat header specific styles */
-    .chat-area .chat-header {
-        padding: 10px 16px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    
-    .chat-user {
-        display: flex;
-        align-items: center;
-        flex: 1;
-    }
-    
-    .user-avatar {
-        margin-right: 15px;
-    }
-    
-    .avatar-img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-    
-    .user-info {
-        flex: 1;
-    }
-    
-    .user-info h3 {
-        margin: 0;
-        font-size: 16px;
-        font-weight: 500;
-        color: #333;
-    }
-    
-    .status-indicator {
-        margin: 2px 0 0;
-        font-size: 13px;
-        color: #667781;
-        display: flex;
-        align-items: center;
-    }
-    
-    .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        margin-right: 6px;
-    }
-    
-    .status-dot.online {
-        background-color: #4ad504;
-    }
-    
-    .chat-actions {
-        display: flex;
-    }
-    
-    .action-btn {
-        background: none;
-        border: none;
-        color: #54656f;
-        cursor: pointer;
-        padding: 8px;
-        margin-left: 10px;
-    }
-    
-    .messages {
-        flex: 1;
-        padding: 20px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_a4be512e7195b6b733d9110b408f075d.png');
-        background-repeat: repeat;
-    }
-    
-    .message {
-        max-width: 65%;
-        margin-bottom: 15px;
-        display: flex;
-        position: relative;
-    }
-    
-    .message.received {
-        align-self: flex-start;
-    }
-    
-    .message.sent {
-        align-self: flex-end;
-        flex-direction: row-reverse;
-    }
-    
-    .message-avatar {
-        align-self: flex-end;
-        margin-right: 8px;
-    }
-    
-    .message-avatar img {
-        width: 28px;
-        height: 28px;
-    }
-    
-    .message-content {
-        padding: 8px 12px;
-        border-radius: 7.5px;
-        position: relative;
-        word-wrap: break-word;
-        max-width: 100%;
-    }
-    
-    .message.received .message-content {
-        background: white;
-        margin-left: 10px;
-        border-top-left-radius: 0;
-    }
-    
-    .message.sent .message-content {
-        background: #dcf8c6;
-        margin-right: 10px;
-        border-top-right-radius: 0;
-    }
-    
-    .message-time {
-        font-size: 11px;
-        color: #667781;
-        display: inline-block;
-        margin-left: 8px;
-        margin-top: 4px;
-        float: right;
-        clear: both;
-    }
-    
-    .message-status {
-        margin-left: 4px;
-        vertical-align: middle;
-    }
-    
-    .message-input {
-        display: flex;
-        padding: 10px;
-        background: #f0f0f0;
-        align-items: center;
-        border-top: 1px solid #e1e1e1;
-    }
-    
-    .input-actions {
-        display: flex;
-        margin-right: 10px;
-    }
-    
-    .emoji-btn, .attachment-btn {
-        background: none;
-        border: none;
-        color: #54656f;
-        cursor: pointer;
-        padding: 8px;
-    }
-    
-    .message-field {
-        flex: 1;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 20px;
-        background: white;
-        font-size: 15px;
-        outline: none;
-    }
-    
-    .send-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: #54656f;
-        margin-left: 10px;
-        padding: 8px;
-    }
-    
-    .no-chat-selected {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-        background: #f8f9fa;
-    }
-    
-    .empty-state {
-        text-align: center;
-        padding: 20px;
-    }
-    
-    .empty-icon {
-        margin-bottom: 20px;
-    }
-    
-    .empty-state h3 {
-        font-size: 24px;
-        color: #41525d;
-        margin-bottom: 8px;
-    }
-    
-    .empty-state p {
-        color: #667781;
-        font-size: 14px;
-    }
-</style>
-@endpush
-
-@push('scripts')
-<script>
-    document.addEventListener('livewire:init', () => {
-        Livewire.on('message-sent', () => {
-            const messagesDiv = document.getElementById('messages');
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        });
+    @push('styles')
+    <style>
+        .chat-wrapper {
+            height: calc(100vh - 60px); /* Adjust based on your layout */
+        }
         
-        Livewire.on('chat-selected', () => {
-            setTimeout(() => {
+        .chat-container {
+            display: flex;
+            height: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            border: 1px solid #e1e1e1;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.08);
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+        }
+       
+        .contacts-list {
+            width: 30%;
+            border-right: 1px solid #e1e1e1;
+            background: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-area {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+            background: #e5ddd5;
+            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_a4be512e7195b6b733d9110b408f075d.png');
+            position: relative;
+        }
+        
+        .chat-header {
+            padding: 10px 15px;
+            background: #ededed;
+            border-bottom: 1px solid #e1e1e1;
+        }
+        
+        .header-user {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-user h3 {
+            margin-left: 10px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 20px;
+            background: white;
+        }
+        
+        .contacts {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .contact {
+            display: flex;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e1e1e1;
+            cursor: pointer;
+            align-items: center;
+        }
+        
+        .contact:hover, .contact.active {
+            background: #e9e9e9;
+        }
+        
+        .contact-avatar {
+            position: relative;
+            margin-right: 10px;
+        }
+        
+        .contact-avatar-img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .user-avatar img, .message-avatar img {
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .contact-info {
+            flex: 1;
+            min-width: 0; /* Allows text truncation */
+        }
+        
+        .contact-info h4 {
+            margin: 0;
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .contact-info p {
+            margin: 3px 0 0;
+            font-size: 12px;
+            color: #777;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .contact-time {
+            font-size: 11px;
+            color: #999;
+            white-space: nowrap;
+        }
+        
+        /* Chat header specific styles */
+        .chat-area .chat-header {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chat-user {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .user-avatar {
+            margin-right: 15px;
+        }
+        
+        .avatar-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-info h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .status-indicator {
+            margin: 2px 0 0;
+            font-size: 13px;
+            color: #667781;
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        
+        .status-dot.online {
+            background-color: #4ad504;
+        }
+        
+        .chat-actions {
+            display: flex;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            color: #54656f;
+            cursor: pointer;
+            padding: 8px;
+            margin-left: 10px;
+        }
+        
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_a4be512e7195b6b733d9110b408f075d.png');
+            background-repeat: repeat;
+        }
+        
+        .message {
+            max-width: 65%;
+            margin-bottom: 15px;
+            display: flex;
+            position: relative;
+        }
+        
+        .message.received {
+            align-self: flex-start;
+        }
+        
+        .message.sent {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            align-self: flex-end;
+            margin-right: 8px;
+        }
+        
+        .message-avatar img {
+            width: 28px;
+            height: 28px;
+        }
+        
+        .message-content {
+            padding: 8px 12px;
+            border-radius: 7.5px;
+            position: relative;
+            word-wrap: break-word;
+            max-width: 100%;
+        }
+        
+        .message.received .message-content {
+            background: white;
+            margin-left: 10px;
+            border-top-left-radius: 0;
+        }
+        
+        .message.sent .message-content {
+            background: #dcf8c6;
+            margin-right: 10px;
+            border-top-right-radius: 0;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: #667781;
+            display: inline-block;
+            margin-left: 8px;
+            margin-top: 4px;
+            clear: both;
+        }
+        
+        .message-status {
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+        
+        .message-input {
+            display: flex;
+            padding: 10px;
+            background: #f0f0f0;
+            align-items: center;
+            border-top: 1px solid #e1e1e1;
+        }
+        
+        .input-actions {
+            display: flex;
+            margin-right: 10px;
+        }
+        
+        .emoji-btn, .attachment-btn {
+            background: none;
+            border: none;
+            color: #54656f;
+            cursor: pointer;
+            padding: 8px;
+        }
+        
+        .message-field {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            background: white;
+            font-size: 15px;
+            outline: none;
+        }
+        
+        .send-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #54656f;
+            margin-left: 10px;
+            padding: 8px;
+        }
+        
+        .no-chat-selected {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .empty-icon {
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            font-size: 24px;
+            color: #41525d;
+            margin-bottom: 8px;
+        }
+        
+        .empty-state p {
+            color: #667781;
+            font-size: 14px;
+        }
+    </style>
+    @endpush
+
+    @push('scripts')
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('message-sent', () => {
                 const messagesDiv = document.getElementById('messages');
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }, 100);
+            });
+            
+            Livewire.on('chat-selected', () => {
+                setTimeout(() => {
+                    const messagesDiv = document.getElementById('messages');
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }, 100);
+            });
         });
-    });
-</script>
-@endpush
+    </script>
+    @endpush
+</div>

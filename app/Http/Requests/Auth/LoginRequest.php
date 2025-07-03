@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class LoginRequest extends FormRequest
 {
@@ -47,7 +48,7 @@ class LoginRequest extends FormRequest
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
-        if (!$user ||!\Hash::check($this->password, $user->password )) {
+        if (!$user || !Hash::check($this->password, $user->password )) {
             throw ValidationException::withMessages(['email'=>__('The details you provided are incorrect')]);
             /* throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
