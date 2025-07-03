@@ -1,7 +1,10 @@
 {{-- filepath: resources/views/products/index.blade.php --}}
 @extends('components.dashboard')
 
+
 @section('title', 'Products - DURABAG')
+@section('page-title', 'Products')
+@section('page-description', 'Browse and manage all available products in the shop.')
 
 @push('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -91,7 +94,7 @@
                             </a>
 
                             @auth
-                                @if(Auth::user()->category !== 'systemadmin')
+                                @if(Auth::user()->category === 'wholesaler' || Auth::user()->category === 'retailer')
                                     <form action="{{ route('cart.add', $product->id) }}" method="POST" class="flex-1">
                                         @csrf
                                         <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center transition-colors duration-300">
@@ -125,7 +128,7 @@
                                 </a>
                             @endauth
                         </div>
-                        @if(Auth::user() && Auth::user()->category === 'systemadmin')
+                        @if(Auth::user() && Auth::user()->category === 'systemadmin' || Auth::user()->category === 'staff')
                             <div class="mt-2 text-xs text-gray-500">Quantity: {{ $product->quantity ?? 0 }}</div>
                         @endif
                     </div>

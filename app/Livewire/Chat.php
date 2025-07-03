@@ -6,16 +6,18 @@ use App\Models\User;
 use App\Models\ChatMessage;
 use Illuminate\Support\Facades\Auth;
 use App\Events\MessageSent;
+use Livewire\Attributes\Url;
 
 class Chat extends Component
 {
+    public static string $layout = 'layouts.app';
     public $users;
-    public $selectedUser;
     public $newMessage = '';
-    public $messages;
+    public $messages = [];
     public $searchTerm = '';
     public $loginID;
-    public $showEmptyState = true;
+    #[Url]
+    public $selectedUserId = null;
 
     protected $rules = [
         'newMessage' => 'required|string|max:1000'
@@ -30,7 +32,7 @@ class Chat extends Component
     {
         $this->loginID = Auth::id();
         $this->loadUsers();
-        $this->messages = collect();
+        $this->messages = [];
     }
 
     public function loadUsers()
@@ -48,45 +50,49 @@ class Chat extends Component
 
     public function selectUser($userId)
     {
-        $this->selectedUser = User::findOrFail($userId);
-        $this->showEmptyState = false;
+        $this->selectedUserId = $userId;
         $this->loadMessages();
         $this->dispatch('chat-selected');
     }
 
     public function loadMessages()
     {
-        if (!$this->selectedUser) return;
-        
+        if (!$this->selectedUserId) return;
+        $selectedUser = User::find($this->selectedUserId);
         $this->messages = ChatMessage::with(['sender', 'receiver'])
-            ->where(function($query) {
+            ->where(function($query) use ($selectedUser) {
                 $query->where('sender_id', Auth::id())
-                    ->where('receiver_id', $this->selectedUser->id);
+                    ->where('receiver_id', $selectedUser->id);
             })
-            ->orWhere(function($query) {
-                $query->where('sender_id', $this->selectedUser->id)
+            ->orWhere(function($query) use ($selectedUser) {
+                $query->where('sender_id', $selectedUser->id)
                     ->where('receiver_id', Auth::id());
             })
             ->orderBy('created_at', 'asc')
-            ->get();
+            ->get()
+            ->toArray();
     }
 
     public function submit()
     {
         $validated = $this->validate($this->rules, $this->validationMessages);
-
+        $selectedUser = $this->selectedUserId ? User::find($this->selectedUserId) : null;
+        if (!$selectedUser) {
+            $this->addError('newMessage', 'No user selected.');
+            return;
+        }
         try {
             $message = ChatMessage::create([
                 'sender_id' => Auth::id(),
-                'receiver_id' => $this->selectedUser->id,
+                'receiver_id' => $selectedUser->id,
                 'message' => $validated['newMessage']
             ])->load('sender', 'receiver');
 
-            $this->messages->push($message);
+            $this->messages[] = $message->toArray();
             $this->reset('newMessage');
             $this->dispatch('message-sent');
             
-            event(new MessageSent(auth()->user(), $message));
+            event(new MessageSent(Auth::user(), $message));
             
         } catch (\Exception $e) {
             $this->addError('newMessage', 'Failed to send message: '.$e->getMessage());
@@ -102,17 +108,26 @@ class Chat extends Component
 
     public function newChatMessageNotification($message)
     {
-        if ($this->selectedUser && $message['sender_id'] == $this->selectedUser->id) {
+        $selectedUser = $this->selectedUserId ? User::find($this->selectedUserId) : null;
+        if ($selectedUser && $message['sender_id'] == $selectedUser->id) {
             $messageObj = ChatMessage::find($message['id']);
-            $this->messages->push($messageObj);
+            $this->messages[] = $messageObj ? $messageObj->toArray() : null;
             $this->dispatch('message-received');
         }
     }
 
+    public function updatedSelectedUserId($value)
+    {
+        $this->loadMessages();
+        $this->dispatch('chat-selected');
+    }
+
     public function render()
     {
-        
-         return view('livewire.chat')
-        ->layout('layouts.app');
+        $selectedUser = $this->selectedUserId ? User::find($this->selectedUserId) : null;
+        return view('livewire.chat', [
+            'selectedUser' => $selectedUser,
+            
+        ]);
     }
 }

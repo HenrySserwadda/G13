@@ -15,9 +15,17 @@ class RawMaterialController extends Controller
     {
         $user = Auth::user();
 
-        $materials = $user->category === 'systemadmin'
-            ? RawMaterial::with('user')->paginate(10)
-            : RawMaterial::where('user_id', $user->id)->with('user')->paginate(10);
+        if ($user->category === 'systemadmin') {
+            $materials = RawMaterial::with('user')->paginate(10);
+        } elseif ($user->category === 'staff') {
+            // Staff can view all raw materials added by suppliers
+            $materials = RawMaterial::whereHas('user', function($query) {
+                $query->where('category', 'supplier');
+            })->with('user')->paginate(10);
+        } else {
+            // Suppliers and others see only their own
+            $materials = RawMaterial::where('user_id', $user->id)->with('user')->paginate(10);
+        }
 
         return view('raw_materials.index', compact('materials'));
     }

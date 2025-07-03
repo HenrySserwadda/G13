@@ -38,7 +38,7 @@ class UserApprovedWithNotification extends Notification
             ->subject('Registration Request Approved')
             ->greeting('Hello, '.$this->user->name)
             ->line('Your request to join the durabag supply chain management system has been approved. Please find your user identification number below.')
-            ->line('User Identification number: '.$this->user->userid)
+            ->line('User Identification number: '.$this->user->user_id)
             ->action('Proceed to login', url('/login'))
             ;
     }

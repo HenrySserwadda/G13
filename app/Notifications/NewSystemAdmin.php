@@ -38,7 +38,7 @@ class NewSystemAdmin extends Notification
             ->subject('New System Admin')
             ->greeting('Hello, '.$this->user->name)
             ->line('This is to inform you that you have been made a system administrator for our Durabag supply chain management system.')
-            ->line('Here is your new user identification number: '.$this->user->userid)
+            ->line('Here is your new user identification number: '.$this->user->user_id)
             ->action('Login', url('/login'));
             
     }

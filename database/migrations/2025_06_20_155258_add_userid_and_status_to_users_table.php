@@ -15,7 +15,6 @@ return new class extends Migration
             $table->string('userid')->nullable()->unique()->after('email');
             $table->boolean('is_admin')->after('userid');
             $table->enum('status',['pending','approved','rejected'])->after('is_admin');
-            
         });
     }
 

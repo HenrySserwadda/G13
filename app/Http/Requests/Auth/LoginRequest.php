@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class LoginRequest extends FormRequest
 {
@@ -29,7 +30,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => ['required', 'string', 'email'],
-            'userid'=>['required', 'string'],
+            'user_id'=>['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -44,6 +45,7 @@ class LoginRequest extends FormRequest
     $this->ensureIsNotRateLimited();
 
     $user = User::where('email', $this->email)->first();
+
 
     if (!$user ||
         !\Hash::check($this->password, $user->password) ||
