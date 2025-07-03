@@ -16,6 +16,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\UserController;
    
     
 
@@ -26,9 +27,6 @@ Route::get('/about', function(){
     return view('about');
 });
 //need to find an appropriate place to put this route, most probably in the auth thingy, i dont know yet
-Route::get('/companyid',function(){
-    return view('companyid');
- });
  //need to find an appropriate place to put this route
 Route::get('/insertpdf',function(){
     /* request()->validate([
@@ -40,7 +38,7 @@ Route::get('/insertpdf',function(){
  });
  //new routes i am adding for the different dashboards based on user type
 Route::get('/dashboard/staff',function(){
-    return view('staff');
+    return view('dashboard.staff');
  })->middleware(['auth', 'verified'])->name('dashboard.staff');
 
 Route::get('/dashboard/customer',function(){
@@ -68,6 +66,7 @@ Route::get('/dashboard/systemadmin',function(){
 //Route::get('/dashboard', function (){
    // return view('dashboard');
 //})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/redirect',[UserController::class,'toDashboard'])->middleware('auth','verified')->name('redirect');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -75,7 +74,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
-    Route::get('/chat', \App\Livewire\Chat::class)->name('chat');
+    Route::get('/chat', Chat::class)->name('chat');
 });
 
 require __DIR__.'/auth.php';
@@ -88,7 +87,7 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard/systemadmin')->name('
     Route::get('/all-users', [SystemadminController::class, 'allUsers'])->name('all-users');
     Route::get('/pending-users', [SystemadminController::class, 'pendingUsers'])->name('pending-users');
     Route::get('/make-system-administrator', [SystemadminController::class, 'makeSystemAdministrator'])->name('make-system-administrator');
-    Route::post('/make-systemadmin/{id}', [SystemadminController::class, 'makeSystemadmin'])->name('make-systemadmin');
+    Route::post('/make-systemadmin/{id}', [SystemadminController::class, 'makeSystemAdmin'])->name('make-systemadmin');
     Route::post('/approve/{id}', [SystemadminController::class, 'approve'])->name('approve');
     Route::post('/reject/{id}', [SystemadminController::class, 'reject'])->name('reject');
 });
@@ -120,6 +119,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
  //Route for deleting a user (used in all-users.blade.php)
-Route::delete('/dashboard/systemadmin/delete/{id}', [SystemadminController::class, 'destroy'])->name('delete');
+Route::delete('/dashboard/systemadmin/delete/{id}', [SystemadminController::class, 'delete'])->name('delete');
 
 

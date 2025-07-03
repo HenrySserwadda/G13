@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Notifications\AccountDeleted;
+use App\Notifications\NewSystemAdmin;
+use App\Notifications\UserApprovedWithNotification;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Systemadmin;
 class SystemadminController extends Controller
 {
     /**
@@ -11,70 +16,71 @@ class SystemadminController extends Controller
      */
     public function makeSystemAdministrator()
     {
-        $users = \App\Models\User::all();
+        $users = User::where('status','approved')
+            ->where('category','!=','systemadmin')
+            ->get();
         return view('dashboard.systemadmin.make-system-administrator', compact('users'));
     }
     /**
      * Remove the specified user from storage.
      */
-    public function destroy($id)
+    public function delete($id)
     {
-        $user = \App\Models\User::findOrFail($id);
+        $user = User::findOrFail($id);
         $user->delete();
-        return redirect()->route('dashboard.systemadmin.all-users')->with('success', 'User deleted successfully.');
+        $user->notify(new AccountDeleted(($user)));
+        return redirect()->route('dashboard.systemadmin.all-users')
+            ->with('success', 'User deleted successfully.');
     }
     /**
      * Display a listing of all users for the system admin dashboard.
      */
     public function allUsers()
     {
-        $users = \App\Models\User::all();
+        $users = User::where('status','approved')->get();
         return view('dashboard.systemadmin.all-users', compact('users'));
     }
     public function pendingUsers()
     {
-        // Example: Get users with 'pending' status
-        $pendingUsers = \App\Models\User::where('status', 'pending')->get();
-        return view('dashboard.systemadmin.pending-users', ['users' => $pendingUsers]);
+        $users = User::where('status', 'pending')->get();
+        return view('dashboard.systemadmin.pending-users', compact('users'));
     }
 
-    public function approve(Request $request)
+    public function approve($id)
     {
         // Example: Approve a user by ID
-        $user = \App\Models\User::findOrFail($request->input('user_id'));
+        $user = User::findOrFail($id);
         $user->status = 'approved';
+        $user->userid=User::generateUserId($user->category);
+        $user->notify(new UserApprovedWithNotification($user));
         $user->save();
-        // Optionally, send notification here
-        return redirect()->route('dashboard.pending-users')->with('success', 'User approved successfully.');
+        return redirect()->route('dashboard.systemadmin.pending-users')
+            ->with('success', 'User approved successfully.');
     }
 
-    public function reject(Request $request)
+    public function reject($id)
     {
-        // Example: Reject a user by ID
-        $user = \App\Models\User::findOrFail($request->input('user_id'));
+        $user = User::findOrFail($id);
         $user->status = 'rejected';
         $user->save();
-        // Optionally, send notification here
-        return redirect()->route('dashboard.pending-users')->with('success', 'User rejected successfully.');
+        return redirect()->route('dashboard.systemadmin.pending-users')
+            ->with('success', 'User rejected successfully.');
+    }
+    public function makeSystemAdmin($id){
+        $user=User::findOrFail($id);
+        if($user->status==='approved'){
+            $user->category='systemadmin';
+            $user->userid=Systemadmin::generateSystemAdminId($id);
+            $user->is_admin=true;
+            $user->notify(new NewSystemAdmin($user));
+            $user->save();
+            return redirect()->route('dashboard.systemadmin.make-system-administrator')
+                ->with('success', 'User made system administrator successfully.');
+        } else{
+            return redirect()->route('dashboard.systemadmin.make-system-administrator')
+                ->with('success','User not eligible');
+        }
+    
     }
 
-    public function redirectToDashboard()
-    {
-        // Example: Redirect user to their dashboard based on category
-        $user = \Illuminate\Support\Facades\Auth::user();
-        switch ($user->category) {
-            case 'systemadmin':
-                return redirect()->route('dashboard.systemadmin');
-            case 'staff':
-                return redirect()->route('dashboard.staff');
-            case 'customer':
-                return redirect()->route('dashboard.customer');
-            case 'supplier':
-                return redirect()->route('dashboard.supplier');
-            case 'wholesaler':
-                return redirect()->route('dashboard.wholesaler');
-            default:
-                return redirect('/');
-        }
-    }
 }

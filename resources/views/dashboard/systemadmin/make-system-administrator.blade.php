@@ -11,7 +11,7 @@
                               text-blue-600 border-b-2 border-blue-600 dark:text-blue-500 dark:border-blue-500
                           @else
                               text-gray-500 hover:text-gray-700 hover:border-gray-300
-                              dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500
+                              dark:text-gray-700 dark:hover:text-gray-200 dark:hover:border-gray-500
                           @endif
                           whitespace-nowrap cursor-pointer">
                     All users
@@ -24,7 +24,7 @@
                               text-blue-600 border-b-2 border-blue-600 dark:text-blue-500 dark:border-blue-500
                           @else
                               text-gray-500 hover:text-gray-700 hover:border-gray-300
-                              dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500
+                              dark:text-gray-700 dark:hover:text-gray-200 dark:hover:border-gray-500
                           @endif
                           whitespace-nowrap cursor-pointer">
                     Pending users
@@ -37,13 +37,13 @@
                               text-blue-600 border-b-2 border-blue-600 dark:text-blue-500 dark:border-blue-500
                           @else
                               text-gray-500 hover:text-gray-700 hover:border-gray-300
-                              dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500
+                              dark:text-gray-700 dark:hover:text-gray-200 dark:hover:border-gray-500
                           @endif
                           whitespace-nowrap cursor-pointer">
                     Make System Admin
                 </a>
             </div>
-        <table class="w-full table-auto text-left border-gray-300 border-collapse dark:text-white">
+        <table class="w-full table-auto text-left border-gray-300 border-collapse ">
             <tr>
                 <th class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">Name</th>
                 <th class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">Category</th>
