@@ -110,7 +110,7 @@
                     
                     @auth
                         <!-- Orders -->
-                        @if(in_array(Auth::user()->category, ['supplier', 'systemadmin', 'staff']))
+                        @if(in_array(Auth::user()->category, ['supplier']))
                         <li>
                             <a href="#" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
                                 <i class="fas fa-shopping-cart w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
@@ -131,6 +131,15 @@
                                     $userOrderCount = \App\Models\Order::where('user_id', Auth::id())->count();
                                 @endphp
                                 <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-200 rounded-full">{{ $userOrderCount }}</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if(Auth::user()->category === 'staff' || Auth::user()->category === 'systemadmin')
+                          <li>
+                            <a href="{{route('orders.manage.index')}}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                                <i class="fas fa-shopping-cart w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
+                                <span class="flex-1 ms-3 whitespace-nowrap">Manage Orders</span>
+                              
                             </a>
                         </li>
                         @endif
@@ -174,13 +183,21 @@
                             </a>
                         </li>
                         
-                        @elseif(in_array(Auth::user()->category, ['systemadmin', 'staff', 'wholesaler','retailer']))
+                        @elseif(in_array(Auth::user()->category, ['systemadmin', 'staff']))
                         <li>
                             <a href="#" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
                                 <i class="fas fa-warehouse w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                                 <span class="flex-1 ms-3 whitespace-nowrap">Inventory</span>
                             </a>
                         </li>
+                        @elseif(Auth::user()->category === 'wholesaler' || Auth::user()->category === 'retailer')
+                        <li>
+                            <a href="{{ route('wholesaler-retailer-inventory.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                                <i class="fas fa-warehouse w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
+                                <span class="flex-1 ms-3 whitespace-nowrap">Inventory</span>
+                            </a>
+                        </li>
+                        
                         @endif
 
                         <!-- Reports -->
