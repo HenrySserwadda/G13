@@ -4,9 +4,12 @@
 <p>chat</p>
 
 <script>
-    Echo.channel('chat-channel')
+    // Get the authenticated user's ID from a backend variable
+    const userId = {{ auth()->id() }};
+    // Listen on the correct private channel and event name
+    window.Echo.private('chat.' + userId)
         .listen('.message.sent', (e) => {
-            document.getElementById('messages').innerHTML += `<p><strong>${e.user.name}:</strong> ${e.message}</p>`;
+            document.getElementById('messages').innerHTML += `<p><strong>${e.user.name ?? e.sender_id}:</strong> ${e.message}</p>`;
         });
 
     function sendMessage() {
