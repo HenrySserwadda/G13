@@ -17,7 +17,7 @@ class AccountDeleted extends Notification
      */
     public function __construct($user)
     {
-        //
+        $this->user=$user;
     }
 
     /**

@@ -52,11 +52,18 @@ class RegisteredUserController extends Controller
         //here is where the logic for sending mail to admin to approve pending users
                
         if($requiresApproval){
-            Notification::route('mail','janedoe@example.com')->notify(new NewUserPendingApproval($user));
-            return redirect()->route('login')->with('message','Registration successful! Please wait for admin approval. You will be notified by email.');
+            Notification::route('mail','bluey@hometown.com')
+                ->notify(new NewUserPendingApproval($user));
+            return redirect()->route('login')
+                ->with('message','Registration succesful! Please wait for admin approval. You wll be notified by email.');
+            
         }
-
-        //event(new Registered($user));
+        if(!$requiresApproval){
+            $user->status='approved';
+            $user->userid=User::generateUserId('customer');
+            $user->notify(new NewCustomerRegistered($user));
+        } 
+        event(new Registered($user));
 
 //since i have deleted the original dashboard i modify this to lead to different dashboards based on user category
        

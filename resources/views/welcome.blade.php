@@ -116,7 +116,7 @@
                 
                     @auth
                         <a
-                            href="{{ uri('/redirect') }}"  class="btn btn-outline-light me-2">
+                            href="{{ route('redirect') }}"  class="btn btn-outline-light me-2">
                                                    
                             Dashboard
                         </a>

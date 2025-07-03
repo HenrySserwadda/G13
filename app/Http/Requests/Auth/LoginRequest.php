@@ -41,23 +41,33 @@ class LoginRequest extends FormRequest
      * @throws \Illuminate\Validation\ValidationException
      */
     public function authenticate(): void
-    {
-        $this->ensureIsNotRateLimited();
-        $user=User::where('email', $this->email)->first();
+{
+    $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+    $user = User::where('email', $this->email)->first();
 
-        if (!$user || !Hash::check($this->password, $user->password )) {
-            throw ValidationException::withMessages(['email'=>__('The details you provided are incorrect')]);
-            /* throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
-            ]); */
-        }
 
-        RateLimiter::clear($this->throttleKey());
+    if (!$user ||
+        !\Hash::check($this->password, $user->password) ||
+        $this->userid !== $user->userid) {
+        RateLimiter::hit($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'email' => __('The details you provided are incorrect'),
+        ]);
     }
+
+    if ($user->status !== 'approved') {
+        throw ValidationException::withMessages([
+            'email' => __('Your account has not yet been approved'),
+        ]);
     }
+
+    Auth::login($user, $this->boolean('remember'));
+
+    RateLimiter::clear($this->throttleKey());
+}
+
     /**
      * Ensure the login request is not rate limited.
      *

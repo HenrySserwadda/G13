@@ -10,17 +10,6 @@ export default defineConfig({
         }),
     
         tailwindcss()
-
-    /* css: {
-        postcss: {
-            plugins: [
-                require('tailwindcss'),
-                require('autoprefixer'),
-            ],
-        },
-    }, */
-
-
     ],
     server: {
         hmr: {
@@ -28,3 +17,4 @@ export default defineConfig({
         }
     }
 });
+
