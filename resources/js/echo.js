@@ -1,3 +1,14 @@
+// Echo is initialized globally in bootstrap.js. Do not re-initialize here.
+// You can add custom Echo listeners or helpers here if needed, but do not set window.Echo again.
+
+// Always use window.Echo, not Echo directly.
+if (typeof window.Echo !== 'undefined') {
+    // Example: window.Echo.private('some-channel').listen('SomeEvent', (e) => { /* ... */ });
+    // Add your custom listeners here
+} else {
+    console.warn('window.Echo is not defined. Make sure bootstrap.js is loaded first.');
+}
+
 /*import Echo from 'laravel-echo';
 
 import Pusher from 'pusher-js';

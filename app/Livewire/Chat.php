@@ -92,7 +92,7 @@ class Chat extends Component
             $this->reset('newMessage');
             $this->dispatch('message-sent');
             
-            event(new MessageSent(Auth::user(), $message));
+            broadcast(new MessageSent(Auth::user(), $message));
             
         } catch (\Exception $e) {
             $this->addError('newMessage', 'Failed to send message: '.$e->getMessage());
@@ -102,7 +102,7 @@ class Chat extends Component
     public function getListeners()
     {
         return [
-            "echo-private:chat.{$this->loginID},MessageSent" => 'newChatMessageNotification',
+            "echo-private:chat.{$this->loginID},.message.sent" => 'newChatMessageNotification',
         ];
     }
 

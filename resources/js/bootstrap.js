@@ -1,5 +1,6 @@
 import Echo from 'laravel-echo';
 
+// Initialize Echo globally for Livewire and all frontend code
 window.Echo = new Echo({
     broadcaster: 'reverb',
     key: import.meta.env.VITE_REVERB_APP_KEY,
@@ -8,6 +9,7 @@ window.Echo = new Echo({
     wssPort: import.meta.env.VITE_REVERB_PORT || 8080,
     forceTLS: (import.meta.env.VITE_REVERB_SCHEME || 'http') === 'https',
     enabledTransports: ['ws', 'wss'],
+    // Add authorizer here if you use private channels and need custom auth
 });
 
 /**

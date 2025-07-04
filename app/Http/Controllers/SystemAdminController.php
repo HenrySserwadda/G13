@@ -51,7 +51,10 @@ class SystemadminController extends Controller
         // Example: Approve a user by ID
         $user = User::findOrFail($id);
         $user->status = 'approved';
+
         $user->user_id=User::generateUserId($user->category);
+
+        
         $user->notify(new UserApprovedWithNotification($user));
         $user->save();
         return redirect()->route('dashboard.systemadmin.pending-users')
