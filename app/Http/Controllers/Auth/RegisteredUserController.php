@@ -60,7 +60,7 @@ class RegisteredUserController extends Controller
         }
         if(!$requiresApproval){
             $user->status='approved';
-            $user->userid=User::generateUserId('customer');
+            $user->user_id=User::generateUserId('customer');
             $user->notify(new NewCustomerRegistered($user));
         } 
         event(new Registered($user));

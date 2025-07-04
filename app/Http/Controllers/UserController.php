@@ -12,7 +12,7 @@ class UserController extends Controller
         if (!$user) {
             return redirect()->route('login');
         }
-        $dashboardUrl = $user->redirectToDashboard($user);
+        $dashboardUrl = $user->redirectToDashboard();
         return redirect($dashboardUrl);
     }
 }

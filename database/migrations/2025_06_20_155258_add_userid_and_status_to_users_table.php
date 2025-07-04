@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('userid')->nullable()->unique()->after('email');
-            $table->boolean('is_admin')->after('userid');
+            $table->boolean('is_admin')->after('user_id');
             $table->enum('status',['pending','approved','rejected'])->after('is_admin');
         });
     }

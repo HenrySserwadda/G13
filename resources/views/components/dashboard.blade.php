@@ -210,13 +210,13 @@
                             </button>
                             <ul id="reports-dropdown" class="hidden py-2 space-y-2">
                                 <li>
-                                    <a href="#" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Sales</a>
+                                    <a href="{{ route('reports.sales') }}" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Sales</a>
                                 </li>
                                 <li>
                                     <a href="#" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Inventory</a>
                                 </li>
                                 <li>
-                                    <a href="#" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Financial</a>
+                                    <a href="{{ route('reports.products') }}" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Products</a>
                                 </li>
                             </ul>
                         </li>

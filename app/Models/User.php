@@ -96,7 +96,7 @@ public function inventories()
     }
 
     public static function generateUserId(string $category){
-        $prefix = strtoupper(substr($category,0,1));
+        $prefix = strtoupper(substr($category,0,2));
         $lastUser = User::where('category', $category)
             ->whereNotNull('user_id')
             ->orderBy('user_id', 'desc')->first();

@@ -18,11 +18,15 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         
-             Role::create(['name' => 'systemadmin']);
-Role::create(['name' => 'supplier']);
-Role::create(['name' => 'staff']);
+        Role::create(['name' => 'systemadmin']);
+        Role::create(['name' => 'supplier']);
+        Role::create(['name' => 'staff']);
+        Permission::create(['name' => 'manage raw materials']);
 
-Permission::create(['name' => 'manage raw materials']);
+
+        $this->call([
+            OrdersandProductsSeeder::class
+        ]);
     }
 }
 // Additional users

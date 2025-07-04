@@ -13,7 +13,7 @@ class SupplierUserSeeder extends Seeder
     {
         $suppliers = [
             [
-                'userid' => Str::uuid()->toString(),
+                'user_id' => Str::uuid()->toString(),
                 'name' => 'Supplier One',
                 'email' => 'supplier1@example.com',
                 'category' => 'supplier',
@@ -26,7 +26,7 @@ class SupplierUserSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'userid' => Str::uuid()->toString(),
+                'user_id' => Str::uuid()->toString(),
                 'name' => 'Supplier Two',
                 'email' => 'supplier2@example.com',
                 'category' => 'supplier',
@@ -39,7 +39,7 @@ class SupplierUserSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'userid' => Str::uuid()->toString(),
+                'user_id' => Str::uuid()->toString(),
                 'name' => 'Supplier Three',
                 'email' => 'supplier3@example.com',
                 'category' => 'supplier',

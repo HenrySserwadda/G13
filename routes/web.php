@@ -2,6 +2,7 @@
  
 <?php
 
+use App\Http\Controllers\ReportController;
 use App\Livewire\Chat;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
@@ -122,6 +123,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
  //Route for deleting a user (used in all-users.blade.php)
 Route::delete('/dashboard/systemadmin/delete/{id}', [SystemadminController::class, 'delete'])->name('delete');
 
+
+//Routes for the reports
+Route::get('/reports/products_report',[ReportController::class,'showPdtsByPrice'])->name('reports.products');
+Route::get('/reports/pdtsByPrice',[ReportController::class,'productsByPrice'])->name('reports.pdtsByPrice');
+
+Route::get('/reports/inventory',[ReportController::class,''])->name('reports.inventory');
+
+Route::get('reports/pdtsPerMonth',[ReportController::class,'productsOrderedPerMonth'])->name('reports.pdtsPerMonth');
+Route::get('/reports/sales',[ReportController::class,'showPdtsPerMonth'])->name('reports.sales');
+
 Route::middleware(['auth','verified'])->group(function(){
     Route::get('/manage-orders', [OrderManagementController::class, 'index'])->name('orders.manage.index');
     Route::get('/manage-orders/{id}', [OrderManagementController::class, 'show'])->name('orders.manage.show');
@@ -131,6 +142,7 @@ Route::middleware(['auth','verified'])->group(function(){
 Route::middleware(['auth','verified'])->group(function(){
     Route::resource('wholesaler-retailer-inventory',WholesalerRetailerInventoryController::class);
 });
+
 
 
 
