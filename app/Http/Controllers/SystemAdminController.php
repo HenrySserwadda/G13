@@ -51,7 +51,7 @@ class SystemadminController extends Controller
         // Example: Approve a user by ID
         $user = User::findOrFail($id);
         $user->status = 'approved';
-        $user->userid=User::generateUserId($user->category);
+        $user->user_id=User::generateUserId($user->category);
         $user->notify(new UserApprovedWithNotification($user));
         $user->save();
         return redirect()->route('dashboard.systemadmin.pending-users')
@@ -70,7 +70,7 @@ class SystemadminController extends Controller
         $user=User::findOrFail($id);
         if($user->status==='approved'){
             $user->category='systemadmin';
-            $user->userid=Systemadmin::generateSystemAdminId($id);
+            $user->user_id=Systemadmin::generateSystemAdminId($id);
             $user->is_admin=true;
             $user->notify(new NewSystemAdmin($user));
             $user->save();

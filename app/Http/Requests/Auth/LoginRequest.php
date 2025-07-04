@@ -43,19 +43,15 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
 {
     $this->ensureIsNotRateLimited();
+        $user=User::where('email', $this->email)->first();
 
-    $user = User::where('email', $this->email)->first();
+        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+            RateLimiter::hit($this->throttleKey());
 
-
-    if (!$user ||
-        !\Hash::check($this->password, $user->password) ||
-        $this->userid !== $user->userid) {
-        RateLimiter::hit($this->throttleKey());
-
-        throw ValidationException::withMessages([
-            'email' => __('The details you provided are incorrect'),
-        ]);
-    }
+        if (!$user ||!\Hash::check($this->password, $user->password )) {
+            throw ValidationException::withMessages(['email'=>__('The details you provided are incorrect')]);
+        
+        }
 
     if ($user->status !== 'approved') {
         throw ValidationException::withMessages([
@@ -67,7 +63,7 @@ class LoginRequest extends FormRequest
 
     RateLimiter::clear($this->throttleKey());
 }
-
+}
     /**
      * Ensure the login request is not rate limited.
      *
