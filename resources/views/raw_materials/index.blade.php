@@ -12,7 +12,7 @@
             <p class="mt-1 text-sm text-gray-500">Manage your raw materials </p>
         </div>
         
-        @if (Auth::user()->category === 'supplier' || Auth::user()->category === 'systemadmin')
+        @if (Auth::user()->category === 'supplier' )
             <a href="{{ route('raw_materials.create') }}" 
                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition duration-150">
                 <i class="fas fa-plus mr-2"></i> Add New Material
@@ -26,8 +26,16 @@
         </div>
     @endif
 
+
     <!-- Materials Table -->
     <div class="overflow-x-auto">
+        @auth
+            @if(Auth::user()->category === 'systemadmin' || Auth::user()->category === 'staff')
+             <h2 class="text-2xl font-bold mb-4">Raw Materials</h2>
+    <a href="{{ route('raw-material-orders.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded mb-4 inline-block">Place Raw Material Order</a>
+            @endif
+        @endauth
+        
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
@@ -89,15 +97,14 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex justify-end space-x-3">
-                            @if(Auth::user()->category === 'staff')
+                            @if(Auth::user()->category === 'staff' || Auth::user()->category === 'systemadmin')
                                 <span class="text-xs text-gray-400 italic">View Only</span>
-                            @elseif(Auth::user()->id === $material->user_id || Auth::user()->category === 'systemadmin')
+                            @elseif(Auth::user()->category === 'supplier' && Auth::user()->id === $material->user_id)
                                 <a href="{{ route('raw_materials.edit', $material) }}" 
                                    class="text-blue-600 hover:text-blue-900 transition duration-150"
                                    title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                @if(Auth::user()->category === 'systemadmin')
                                 <form action="{{ route('raw_materials.destroy', $material) }}" method="POST" 
                                       onsubmit="return confirm('Are you sure you want to delete this material?');">
                                     @csrf
@@ -108,7 +115,6 @@
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
-                                @endif
                             @else
                                 <span class="text-xs text-gray-400 italic">No Actions</span>
                             @endif

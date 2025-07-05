@@ -1,4 +1,5 @@
 
+
  
 <?php
 
@@ -20,6 +21,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderManagementController;
 use App\Http\Controllers\WholesalerRetailerInventoryController;
+use App\Http\Controllers\RawMaterialOrderController;
 use App\Models\Wholesaler;
 
 Route::get('/', function () {
@@ -141,6 +143,17 @@ Route::middleware(['auth','verified'])->group(function(){
 
 Route::middleware(['auth','verified'])->group(function(){
     Route::resource('wholesaler-retailer-inventory',WholesalerRetailerInventoryController::class);
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('raw-material-orders', RawMaterialOrderController::class);
+});
+
+// AJAX
+Route::middleware(['auth', 'verified'])->get('/supplier/{supplier}/raw-materials', function($supplierId) {
+    $materials = \App\Models\RawMaterial::where('user_id', $supplierId)
+        ->get(['id', 'name', 'quantity', 'unit_price', 'user_id']);
+    return response()->json($materials);
 });
 
 
