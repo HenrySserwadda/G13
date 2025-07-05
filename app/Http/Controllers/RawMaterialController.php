@@ -74,10 +74,11 @@ class RawMaterialController extends Controller
      */
     public function edit(RawMaterial $rawMaterial)
     {
-        // Allow only the owner (supplier) or systemadmin to edit
         $user = Auth::user();
-        if ($user->category !== 'systemadmin' && $rawMaterial->user_id !== $user->id) {
-            abort(403);
+        if (!((
+            $user->category === 'supplier' && $rawMaterial->user_id === $user->id
+        ) || $user->category === 'systemadmin')) {
+            abort(403, 'Unauthorized');
         }
 
         return view('raw_materials.edit', ['material' => $rawMaterial]);
@@ -111,12 +112,13 @@ class RawMaterialController extends Controller
     public function destroy(RawMaterial $rawMaterial)
     {
         $user = Auth::user();
-        if ($user->category !== 'systemadmin' && $rawMaterial->user_id !== $user->id) {
-            abort(403);
+        if (!((
+            $user->category === 'supplier' && $rawMaterial->user_id === $user->id
+        ) || $user->category === 'systemadmin')) {
+            abort(403, 'Unauthorized');
         }
 
         $rawMaterial->delete();
-
         return redirect()->route('raw_materials.index')->with('success', 'Raw material deleted successfully.');
     }
 

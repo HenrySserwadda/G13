@@ -23,6 +23,9 @@ class InventoryController extends Controller
 
     public function create()
     {
+        if (!in_array(Auth::user()->category, ['systemadmin', 'staff'])) {
+            abort(403, 'Unauthorized');
+        }
         $rawMaterials = RawMaterial::all();
         $rawMaterialQuantities = $rawMaterials->pluck('quantity', 'id');
         return view('inventories.create', compact('rawMaterials', 'rawMaterialQuantities'));
@@ -30,6 +33,9 @@ class InventoryController extends Controller
 
     public function store(Request $request)
     {
+        if (!in_array(Auth::user()->category, ['systemadmin', 'staff'])) {
+            abort(403, 'Unauthorized');
+        }
         $request->validate([
             'raw_material_id' => 'required|exists:raw_materials,id',
             'on_hand' => 'required|integer|min:0',
@@ -50,7 +56,9 @@ class InventoryController extends Controller
 
     public function edit(Inventory $inventory)
     {
-        $this->authorize('update', $inventory); // Optional policy if added
+        if (!in_array(Auth::user()->category, ['systemadmin', 'staff'])) {
+            abort(403, 'Unauthorized');
+        }
         $rawMaterials = RawMaterial::where('user_id', Auth::id())->get();
 
         return view('inventories.edit', compact('inventory', 'rawMaterials'));
@@ -58,8 +66,9 @@ class InventoryController extends Controller
 
     public function update(Request $request, Inventory $inventory)
     {
-        $this->authorize('update', $inventory); // Optional
-
+        if (!in_array(Auth::user()->category, ['systemadmin', 'staff'])) {
+            abort(403, 'Unauthorized');
+        }
         $request->validate([
             'on_hand' => 'required|integer|min:0',
             'on_order' => 'required|integer|min:0',

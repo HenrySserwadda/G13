@@ -11,6 +11,12 @@
         </div>
     @endif
 
+    @if(session('inventory_added_from_order'))
+        <div class="mb-6 bg-blue-100 dark:bg-blue-900 border-l-4 border-blue-500 dark:border-blue-700 text-blue-700 dark:text-blue-100 p-4 rounded">
+            <i class="fas fa-info-circle mr-2"></i> {{ session('inventory_added_from_order') }}
+        </div>
+    @endif
+
     @if(Auth::user()->category === 'supplier' || Auth::user()->category === 'systemadmin')
         <div class="mb-6 flex justify-between items-center">
             <div>
@@ -41,7 +47,7 @@
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         On Hand
                     </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         On Order
                     </th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -56,7 +62,7 @@
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Expected
                     </th>
-                    @if(Auth::user()->category === 'supplier' || Auth::user()->category === 'systemadmin')
+                    @if(Auth::user()->category === 'staff' || Auth::user()->category === 'systemadmin')
                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Actions
                     </th>
@@ -119,7 +125,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {{ $inventory->expected_delivery ? \Carbon\Carbon::parse($inventory->expected_delivery)->format('M d, Y') : 'N/A' }}
                     </td>
-                    @if(Auth::user()->category === 'supplier' || Auth::user()->category === 'systemadmin')
+                    @if(Auth::user()->category === 'staff' || Auth::user()->category === 'systemadmin')
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex justify-end space-x-2">
                             <a href="{{ route('inventories.edit', $inventory) }}" 
@@ -143,7 +149,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="{{ Auth::user()->category === 'supplier' || Auth::user()->category === 'systemadmin' ? 7 : 6 }}" class="px-6 py-4 text-center">
+                    <td colspan="{{ Auth::user()->category === 'staff' || Auth::user()->category === 'systemadmin' ? 7 : 6 }}" class="px-6 py-4 text-center">
                         <div class="flex flex-col items-center justify-center py-8">
                             <i class="fas fa-warehouse text-4xl text-gray-400 dark:text-gray-500 mb-2"></i>
                             <p class="text-gray-500 dark:text-gray-400">No inventory records found</p>
