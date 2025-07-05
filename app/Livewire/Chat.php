@@ -50,6 +50,13 @@ class Chat extends Component
 
     public function selectUser($userId)
     {
+        // Authorization check: ensure the selected user exists and is not the current user
+        $selectedUser = User::find($userId);
+        if (!$selectedUser || $selectedUser->id === Auth::id()) {
+            $this->addError('selectedUserId', 'Invalid user selected.');
+            return;
+        }
+        
         $this->selectedUserId = $userId;
         $this->loadMessages();
         $this->dispatch('chat-selected');
@@ -58,7 +65,14 @@ class Chat extends Component
     public function loadMessages()
     {
         if (!$this->selectedUserId) return;
+        
+        // Authorization check: ensure the selected user exists and is not the current user
         $selectedUser = User::find($this->selectedUserId);
+        if (!$selectedUser || $selectedUser->id === Auth::id()) {
+            $this->addError('selectedUserId', 'Invalid user selected.');
+            return;
+        }
+        
         $this->messages = ChatMessage::with(['sender', 'receiver'])
             ->where(function($query) use ($selectedUser) {
                 $query->where('sender_id', Auth::id())
@@ -77,10 +91,13 @@ class Chat extends Component
     {
         $validated = $this->validate($this->rules, $this->validationMessages);
         $selectedUser = $this->selectedUserId ? User::find($this->selectedUserId) : null;
-        if (!$selectedUser) {
-            $this->addError('newMessage', 'No user selected.');
+        
+        // Authorization check: ensure the selected user exists and is not the current user
+        if (!$selectedUser || $selectedUser->id === Auth::id()) {
+            $this->addError('newMessage', 'Invalid recipient selected.');
             return;
         }
+        
         try {
             $message = ChatMessage::create([
                 'sender_id' => Auth::id(),
@@ -108,11 +125,18 @@ class Chat extends Component
 
     public function newChatMessageNotification($message)
     {
+        // Authorization check: ensure the message is intended for the current user
+        if ($message['receiver_id'] != Auth::id()) {
+            return; // Ignore messages not intended for this user
+        }
+        
         $selectedUser = $this->selectedUserId ? User::find($this->selectedUserId) : null;
         if ($selectedUser && $message['sender_id'] == $selectedUser->id) {
             $messageObj = ChatMessage::find($message['id']);
-            $this->messages[] = $messageObj ? $messageObj->toArray() : null;
-            $this->dispatch('message-received');
+            if ($messageObj) {
+                $this->messages[] = $messageObj->toArray();
+                $this->dispatch('message-received');
+            }
         }
     }
 
@@ -124,10 +148,18 @@ class Chat extends Component
 
     public function render()
     {
-        $selectedUser = $this->selectedUserId ? User::find($this->selectedUserId) : null;
+        $selectedUser = null;
+        if ($this->selectedUserId) {
+            $selectedUser = User::find($this->selectedUserId);
+            // Authorization check: ensure the selected user exists and is not the current user
+            if (!$selectedUser || $selectedUser->id === Auth::id()) {
+                $selectedUser = null;
+                $this->selectedUserId = null;
+            }
+        }
+        
         return view('livewire.chat', [
             'selectedUser' => $selectedUser,
-            
         ]);
     }
 }

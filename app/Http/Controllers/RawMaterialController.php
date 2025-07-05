@@ -112,10 +112,12 @@ class RawMaterialController extends Controller
     public function destroy(RawMaterial $rawMaterial)
     {
         $user = Auth::user();
+
         if (!((
             $user->category === 'supplier' && $rawMaterial->user_id === $user->id
         ) || $user->category === 'systemadmin')) {
             abort(403, 'Unauthorized');
+
         }
 
         $rawMaterial->delete();

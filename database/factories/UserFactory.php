@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -23,11 +24,17 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $categories = ['Customer', 'Wholesaler', 'Retailer', 'Staff','Supplier'];
+        $selectedCategory = $this->faker->randomElement($categories);
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'category'=>$selectedCategory,
+            'user_id' => function (array $attributes) {
+                return User::generateUserId($attributes['category']);
+            },
             'remember_token' => Str::random(10),
         ];
     }

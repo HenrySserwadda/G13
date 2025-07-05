@@ -10,26 +10,18 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('user_id');
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->string('location');
             $table->string('mobile');
             $table->decimal('total', 10, 2);
             $table->timestamps();
         });
 
-        Schema::create('order_items', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->integer('quantity');
-            $table->decimal('price', 10, 2);
-            $table->timestamps();
-        });
     }
 
     public function down()
     {
-        Schema::dropIfExists('order_items');
         Schema::dropIfExists('orders');
     }
 }; 
