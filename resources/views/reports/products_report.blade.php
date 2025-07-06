@@ -1,6 +1,6 @@
 @extends('components.dashboard')
 @section('title', 'Users Report- DURABAG')
-@section('page-title', 'Sales Report')
+@section('page-title', 'Products Report')
 @section('page-description', 'Visual overview of products\' price')
 
 @section('content')
@@ -65,9 +65,11 @@
                 const row = document.createElement('tr');
 
                 const nameCell = document.createElement('td');
+                nameCell.className='py-2 px-4 border-b border-gray-200 dark:border-gray-700';
                 nameCell.textContent = item.name;
 
                 const priceCell = document.createElement('td');
+                priceCell.className='py-2 px-4 border-b border-gray-200 dark:border-gray-700';
                 priceCell.textContent = item.price;
 
                 row.appendChild(nameCell);
