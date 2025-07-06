@@ -119,6 +119,11 @@ class RawMaterialOrderController extends Controller
                 ->with('user')
                 ->latest()
                 ->get();
+        } elseif ($user->category === 'staff') {
+            // Staff can view all raw material orders
+            $orders = RawMaterialOrder::with(['user', 'supplier'])
+                ->latest()
+                ->get();
         } else {
             $orders = RawMaterialOrder::where('user_id', $user->id)
                 ->with('supplier')
@@ -130,6 +135,10 @@ class RawMaterialOrderController extends Controller
 
     public function create()
     {
+        // Allow systemadmin and staff to create raw material orders
+        if (!in_array(Auth::user()->category, ['systemadmin', 'staff'])) {
+            abort(403, 'Unauthorized');
+        }
         $suppliers = User::where('category', 'supplier')->get();
         $rawMaterials = RawMaterial::all();
         return view('raw_material_orders.create', compact('suppliers', 'rawMaterials'));
@@ -137,6 +146,11 @@ class RawMaterialOrderController extends Controller
 
     public function store(Request $request)
     {
+        // Allow systemadmin and staff to create raw material orders
+        if (!in_array(Auth::user()->category, ['systemadmin', 'staff'])) {
+            abort(403, 'Unauthorized');
+        }
+        
         $request->validate([
             'supplier_user_id' => 'required|exists:users,id',
             'items' => 'required|array|min:1',
@@ -165,7 +179,16 @@ class RawMaterialOrderController extends Controller
 
     public function show($id)
     {
+        $user = Auth::user();
         $order = RawMaterialOrder::with(['items.rawMaterial', 'supplier'])->findOrFail($id);
+        
+        // Staff can view all orders, others can only view their own
+        if ($user->category !== 'staff' && $user->category !== 'systemadmin') {
+            if ($order->user_id !== $user->id && $order->supplier_user_id !== $user->id) {
+                abort(403, 'Unauthorized');
+            }
+        }
+        
         return view('raw_material_orders.show', compact('order'));
     }
 }

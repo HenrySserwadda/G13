@@ -114,23 +114,16 @@
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
-                                    <!-- Quantity Edit for System Admin -->
-                                    <form action="{{ route('products.update', $product->id) }}" method="POST" class="flex items-center space-x-2 mt-2">
-                                        @csrf
-                                        @method('PUT')
-                                        <input type="number" name="quantity" value="{{ $product->quantity ?? 0 }}" min="0" class="w-20 px-2 py-1 border rounded dark:bg-gray-700 dark:text-white dark:border-gray-600">
-                                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs">Update Qty</button>
-                                    </form>
                                 @endif
+
+
                             @else
                                 <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center transition-colors duration-300 flex-1">
                                     <i class="fas fa-sign-in-alt mr-2"></i> Login
                                 </a>
                             @endauth
                         </div>
-                        @if(Auth::user() && Auth::user()->category === 'systemadmin' || Auth::user()->category === 'staff')
-                            <div class="mt-2 text-xs text-gray-500">Quantity: {{ $product->quantity ?? 0 }}</div>
-                        @endif
+
                     </div>
                 </div>
             @empty

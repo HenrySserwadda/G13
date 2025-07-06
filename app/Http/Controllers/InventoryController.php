@@ -13,12 +13,28 @@ class InventoryController extends Controller
     use AuthorizesRequests;
     public function index()
     {
-        $inventories = Inventory::with('rawMaterial')
-            ->where('user_id', Auth::id())
-            ->latest()
-            ->paginate(10);
+        $user = Auth::user();
+        
+        if ($user->category === 'staff') {
+            // Staff can view all inventories
+            $inventories = Inventory::with(['rawMaterial', 'user'])
+                ->latest()
+                ->paginate(10);
+        } else {
+            // Others can only view their own inventories
+            $inventories = Inventory::with('rawMaterial')
+                ->where('user_id', Auth::id())
+                ->latest()
+                ->paginate(10);
+        }
 
-        return view('inventories.index', compact('inventories'));
+        // Get products for inventory management (staff and systemadmin)
+        $products = null;
+        if (in_array($user->category, ['staff', 'systemadmin'])) {
+            $products = \App\Models\Product::latest()->get();
+        }
+
+        return view('inventories.index', compact('inventories', 'products'));
     }
 
     public function create()

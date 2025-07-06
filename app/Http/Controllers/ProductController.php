@@ -79,6 +79,62 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product updated!');
     }
 
+    // Update product quantity (for staff and systemadmin)
+    public function updateQuantity(Request $request, Product $product)
+    {
+        if (!in_array(Auth::user()->category, ['systemadmin', 'staff'])) {
+            abort(403, 'Unauthorized');
+        }
+
+        $request->validate([
+            'quantity' => 'required|integer|min:0',
+        ]);
+
+        $product->update(['quantity' => $request->quantity]);
+        return redirect()->back()->with('success', 'Product quantity updated!');
+    }
+
+    // Initiate remake for a product
+    public function initiateRemake(Request $request, Product $product)
+    {
+        if (!in_array(Auth::user()->category, ['systemadmin', 'staff'])) {
+            abort(403, 'Unauthorized');
+        }
+
+        $request->validate([
+            'remake_quantity' => 'required|integer|min:1',
+        ]);
+
+        $product->update([
+            'remake_quantity' => $request->remake_quantity,
+            'remake_status' => 'pending'
+        ]);
+
+        return redirect()->back()->with('success', 'Remake initiated for ' . $product->name);
+    }
+
+    // Update remake status
+    public function updateRemakeStatus(Request $request, Product $product)
+    {
+        if (!in_array(Auth::user()->category, ['systemadmin', 'staff'])) {
+            abort(403, 'Unauthorized');
+        }
+
+        $request->validate([
+            'remake_status' => 'required|in:pending,in_progress,completed,cancelled',
+        ]);
+
+        $product->update(['remake_status' => $request->remake_status]);
+
+        // If remake is completed, add the remake quantity to the product quantity
+        if ($request->remake_status === 'completed') {
+            $product->increment('quantity', $product->remake_quantity);
+            $product->update(['remake_quantity' => 0]);
+        }
+
+        return redirect()->back()->with('success', 'Remake status updated!');
+    }
+
     // Only systemadmin can delete
     public function destroy(Product $product)
     {

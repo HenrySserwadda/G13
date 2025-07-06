@@ -104,6 +104,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::resource('products', ProductController::class)->middleware('auth');
+Route::post('/products/{product}/update-quantity', [ProductController::class, 'updateQuantity'])->name('products.update-quantity');
+Route::post('/products/{product}/initiate-remake', [ProductController::class, 'initiateRemake'])->name('products.initiate-remake');
+Route::post('/products/{product}/update-remake-status', [ProductController::class, 'updateRemakeStatus'])->name('products.update-remake-status');
 Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
 Route::post('/cart/update/{productId}', [CartController::class, 'update'])->name('cart.update');
