@@ -9,4 +9,10 @@ class Staff extends Model
 {
     /** @use HasFactory<\Database\Factories\StaffFactory> */
     use HasFactory;
+    protected $fillable=[
+        'user_id'
+    ];
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
 }

@@ -48,12 +48,19 @@ class ReportController extends Controller
     public function productsByPrice(){
         $pdtsByPrice=DB::table('products')
             ->select('name','price')
-            ->orderByDesc('price')
             ->get();
         return response()->json($pdtsByPrice);
     }
     public function showPdtsByPrice(){
         return view('reports.products_report');
+    }
+    public function noOfOrders(){
+        $noOfOrders=DB::table('orders')
+            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),DB::raw("COUNT(*) as total"))
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+        return response()->json($noOfOrders);
     }
 }
 

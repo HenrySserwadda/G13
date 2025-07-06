@@ -1,4 +1,5 @@
 
+
  
 <?php
 
@@ -21,6 +22,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderManagementController;
 use App\Http\Controllers\WholesalerRetailerInventoryController;
 use App\Http\Controllers\MLController;
+use App\Http\Controllers\RawMaterialOrderController;
 use App\Models\Wholesaler;
 
 Route::get('/', function () {
@@ -103,6 +105,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::resource('products', ProductController::class)->middleware('auth');
+Route::post('/products/{product}/update-quantity', [ProductController::class, 'updateQuantity'])->name('products.update-quantity');
+Route::post('/products/{product}/initiate-remake', [ProductController::class, 'initiateRemake'])->name('products.initiate-remake');
+Route::post('/products/{product}/update-remake-status', [ProductController::class, 'updateRemakeStatus'])->name('products.update-remake-status');
 Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
 Route::post('/cart/update/{productId}', [CartController::class, 'update'])->name('cart.update');
@@ -131,6 +136,8 @@ Route::get('/reports/pdtsByPrice',[ReportController::class,'productsByPrice'])->
 
 Route::get('/reports/inventory',[ReportController::class,''])->name('reports.inventory');
 
+Route::get('/noOfOrders',[ReportController::class,'noOfOrders'])->name('noOfOrders');
+
 Route::get('reports/pdtsPerMonth',[ReportController::class,'productsOrderedPerMonth'])->name('reports.pdtsPerMonth');
 Route::get('/reports/sales',[ReportController::class,'showPdtsPerMonth'])->name('reports.sales');
 
@@ -153,6 +160,18 @@ Route::prefix('ml')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/recommendations/{product}', [MLController::class, 'getRecommendations'])->name('ml.recommendations');
     Route::post('/train', [MLController::class, 'trainModels'])->name('ml.train');
 });
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('raw-material-orders', RawMaterialOrderController::class);
+});
+
+// AJAX
+Route::middleware(['auth', 'verified'])->get('/supplier/{supplier}/raw-materials', function($supplierId) {
+    $materials = \App\Models\RawMaterial::where('user_id', $supplierId)
+        ->get(['id', 'name', 'quantity', 'unit_price', 'user_id']);
+    return response()->json($materials);
+});
+
+
 
 
 

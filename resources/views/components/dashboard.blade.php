@@ -110,20 +110,22 @@
                     
                     @auth
                         <!-- Orders -->
-                        @if(in_array(Auth::user()->category, ['supplier']))
+                        @if(Auth::user()->category === 'supplier')
                         <li>
-                            <a href="#" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                            <a href="{{ route('raw-material-orders.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
                                 <i class="fas fa-shopping-cart w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
-                                <span class="flex-1 ms-3 whitespace-nowrap">Orders</span>
+                                <span class="flex-1 ms-3 whitespace-nowrap">Manage Orders</span>
                                 @php
-                                    $orderCount = \App\Models\Order::where('user_id', Auth::id())->count();
+                                    $orderCount = \App\Models\RawMaterialOrder::where('supplier_user_id', Auth::id())
+                                        ->whereHas('user', function($q) { $q->whereIn('category', ['systemadmin', 'staff']); })
+                                        ->count();
                                 @endphp
                                 <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-200 rounded-full">{{ $orderCount }}</span>
                             </a>
                         </li>
                         @endif
                         @if(Auth::user()->category === 'wholesaler' || Auth::user()->category === 'retailer')
-                         <li>
+                        <li>
                             <a href="{{ route('user-orders.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
                                 <i class="fas fa-shopping-cart w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                                 <span class="flex-1 ms-3 whitespace-nowrap">Orders</span>
@@ -138,21 +140,31 @@
                           <li>
                             <a href="{{route('orders.manage.index')}}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
                                 <i class="fas fa-shopping-cart w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
-                                <span class="flex-1 ms-3 whitespace-nowrap">Manage Orders</span>
+                                <span class="flex-1 ms-3 whitespace-nowrap">Sales Orders</span>
                               
                             </a>
                         </li>
                         @endif
+                        @if(Auth::user()->category === 'systemadmin'|| Auth::user()->category === 'staff')
+                         <li>
+                            <a href="{{route('raw-material-orders.index')}}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                                <i class="fas fa-shopping-cart w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
+                                <span class="flex-1 ms-3 whitespace-nowrap">Raw Material Orders</span>
+                              
+                            </a>
+                         </li>
+                        @endif
+                         
                         
                         <li>
                             <a href="{{ route('chat') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
                                 <svg class="shrink-0 w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z"/>
-                                </svg>
-                                <span class="flex-1 ms-3 whitespace-nowrap">Chat</span>
+                            <path d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z"/>
+                        </svg>
+                        <span class="flex-1 ms-3 whitespace-nowrap">Chat</span>
                                 <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full">3</span>
-                            </a>
-                        </li>
+                        </a>
+                    </li>
 
                         <!-- Products -->
                         @if(in_array(Auth::user()->category, ['systemadmin', 'wholesaler', 'staff', 'retailer']))
@@ -175,7 +187,7 @@
                         @endif
 
                         <!-- Inventory -->
-                        @if(Auth::user()->category === 'supplier')
+                        @if(Auth::user()->category === 'systemadmin' || Auth::user()->category === 'staff')
                         <li>
                             <a href="{{ route('inventories.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
                                 <i class="fas fa-warehouse w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>

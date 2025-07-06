@@ -29,7 +29,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = Auth::user();
-        return redirect($user->redirectToDashboard($user));
+        return redirect($user->redirectToDashboard());
     }
 
     /**

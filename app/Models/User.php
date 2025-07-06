@@ -24,7 +24,8 @@ class User extends Authenticatable
         'password',
         'avatar',
         'category',
-        'user_id'
+        'user_id',
+        'status'
     // Use 'user_id' as the user identification string, but do not use it for Eloquent relationships
     ];
 
@@ -85,16 +86,6 @@ public function inventories()
     return $this->hasMany(Inventory::class);
 }
 
-
-    public function userDetails(): array{//function has to be called by objects 
-    // //and these objects should be the users themselves in order for their details to be seen on te profile icon on the dashboard
-        //but I dont know how to
-        return[
-            'name'=> $this->name,
-            'category'=>$this->category,
-        ];
-    }
-
     public static function generateUserId(string $category){
         $prefix = strtoupper(substr($category,0,2));
         $lastUser = User::where('category', $category)
@@ -134,7 +125,24 @@ public function inventories()
         }
     }
 
-    
+    public function customer(){
+        return $this->belongsTo(Customer::class, 'user_id', 'user_id');
+    }
+    public function supplier(){
+        return $this->belongsTo(Supplier::class, 'user_id', 'user_id');
+    }
+    public function staff(){
+        return $this->belongsTo(Staff::class, 'user_id', 'user_id');
+    }
+    public function retailer(){
+        return $this->belongsTo(Retailer::class, 'user_id', 'user_id');
+    }
+    public function wholesaler(){
+        return $this->belongsTo(Wholesaler::class, 'user_id', 'user_id');
+    }
+    public function systemadmin(){
+        return $this->belongsTo(Systemadmin::class,'user_id','user_id');
+    }
 
     public function orders(){
         return $this->hasMany(Order::class);

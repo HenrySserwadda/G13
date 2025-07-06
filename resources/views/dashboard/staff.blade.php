@@ -8,10 +8,18 @@
         <h1 class="text-2xl font-bold mb-4">Staff Dashboard</h1>
         <p class="mb-6">Welcome to the staff dashboard. Here you can manage your tasks and view important information.</p>
 
-        <div class="mb-8">
-            <a href="{{ route('raw_materials.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition duration-150">
-                <i class="fas fa-box mr-2"></i> View Raw Materials
-            </a>
+        <div class="mb-8 space-y-4">
+            <div class="flex flex-wrap gap-4">
+                <a href="{{ route('raw_materials.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition duration-150">
+                    <i class="fas fa-box mr-2"></i> View Raw Materials
+                </a>
+                <a href="{{ route('inventories.index') }}" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow transition duration-150">
+                    <i class="fas fa-warehouse mr-2"></i> View Inventory
+                </a>
+                <a href="{{ route('raw-material-orders.index') }}" class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow transition duration-150">
+                    <i class="fas fa-shopping-cart mr-2"></i> Raw Material Orders
+                </a>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
