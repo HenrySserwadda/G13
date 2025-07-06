@@ -225,10 +225,22 @@
                         <!-- Analytics -->
                         @if(in_array(Auth::user()->category, ['systemadmin', 'staff']))
                         <li>
-                            <a href="#" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                            <button type="button" class="flex items-center w-full p-2 text-base text-white transition duration-75 rounded-lg group hover:bg-primary-hover" aria-controls="analytics-dropdown" data-collapse-toggle="analytics-dropdown">
                                 <i class="fas fa-chart-line w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
-                                <span class="flex-1 ms-3 whitespace-nowrap">Analytics</span>
-                            </a>
+                                <span class="flex-1 ms-3 text-left whitespace-nowrap">Analytics</span>
+                                <i class="fas fa-chevron-down w-3 h-3 text-gray-300"></i>
+                            </button>
+                            <ul id="analytics-dropdown" class="hidden py-2 space-y-2">
+                                <li>
+                                    <a href="{{ route('ml.sales-analytics') }}" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Sales Analytics</a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('ml.recommendations', 1) }}" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Product Recommendations</a>
+                                </li>
+                                <li>
+                                    <a href="#" onclick="trainModels()" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Model Training</a>
+                                </li>
+                            </ul>
                         </li>
                         @endif
 
@@ -348,5 +360,31 @@
         });
     </script>
     @stack('scripts')
+    
+    <script>
+        function trainModels() {
+            if (confirm('This will retrain the ML models. This may take a few minutes. Continue?')) {
+                fetch('{{ route("ml.train") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Models trained successfully!');
+                    } else {
+                        alert('Error training models. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error training models. Please try again.');
+                });
+            }
+        }
+    </script>
 </body>
 </html>

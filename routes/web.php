@@ -20,6 +20,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderManagementController;
 use App\Http\Controllers\WholesalerRetailerInventoryController;
+use App\Http\Controllers\MLController;
 use App\Models\Wholesaler;
 
 Route::get('/', function () {
@@ -143,7 +144,15 @@ Route::middleware(['auth','verified'])->group(function(){
     Route::resource('wholesaler-retailer-inventory',WholesalerRetailerInventoryController::class);
 });
 
-
+//routes the machine learning scripts
+Route::prefix('ml')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/test', function() {
+        return 'ML route is working!';
+    })->name('ml.test');
+    Route::get('/sales-analytics', [MLController::class, 'salesAnalytics'])->name('ml.sales-analytics');
+    Route::get('/recommendations/{product}', [MLController::class, 'getRecommendations'])->name('ml.recommendations');
+    Route::post('/train', [MLController::class, 'trainModels'])->name('ml.train');
+});
 
 
 

@@ -18,7 +18,16 @@ class ProductController extends Controller
     // Show a single product (optional)
     public function show(Product $product)
     {
-        return view('products.show', compact('product'));
+        
+    $recommendations = json_decode(shell_exec(
+        escapeshellcmd(config('ml.python_path') . " " . 
+        config('ml.scripts_path') . "/recommendations.py " . 
+        $product->id
+    ), true));
+    
+    return view('products.show', compact('product', 'recommendations'));
+
+        //return view('products.show', compact('product'));
     }
 
     // Only systemadmin can access create form
