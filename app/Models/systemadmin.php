@@ -10,6 +10,9 @@ class Systemadmin extends Model
     /** @use HasFactory<\Database\Factories\SystemAdminFactory> */
     use HasFactory;
     /*  i am supposed to u a relationship here between the user and the systemadmin */
+    protected $fillable=[
+        'user_id'
+    ];
     public static function generateSystemAdminId($id){
         $prefix='SA';
         $lastUser = User::where('category', 'systemadmin')
@@ -24,6 +27,10 @@ class Systemadmin extends Model
         }
         $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
         return $prefix . $nextNumber;
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 }
 

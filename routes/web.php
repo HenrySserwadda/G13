@@ -130,6 +130,8 @@ Route::get('/reports/pdtsByPrice',[ReportController::class,'productsByPrice'])->
 
 Route::get('/reports/inventory',[ReportController::class,''])->name('reports.inventory');
 
+Route::get('/noOfOrders',[ReportController::class,'noOfOrders'])->name('noOfOrders');
+
 Route::get('reports/pdtsPerMonth',[ReportController::class,'productsOrderedPerMonth'])->name('reports.pdtsPerMonth');
 Route::get('/reports/sales',[ReportController::class,'showPdtsPerMonth'])->name('reports.sales');
 

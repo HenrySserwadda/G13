@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Customer;
+use App\Models\Staff;
 use App\Notifications\NewCustomerRegistered;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -38,9 +40,12 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'date_of_birth'=>['required_if:category,customer','date','before:today',],
             'category'=>['required','in:supplier,retailer,customer,wholesaler,staff']
         ]);
+
         $requiresApproval=in_array($request->category,['supplier','retailer','wholesaler','staff']);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -55,20 +60,44 @@ class RegisteredUserController extends Controller
             Notification::route('mail','bluey@hometown.com')
                 ->notify(new NewUserPendingApproval($user));
             return redirect()->route('login')
-                ->with('message','Registration succesful! Please wait for admin approval. You wll be notified by email.');
+                ->with('message','Registration successful! Please wait for admin approval. You will be notified by email.');
             
         }
-        if(!$requiresApproval){
-            $user->status='approved';
-            $user->user_id=User::generateUserId('customer');
+        if(!$requiresApproval && $request->category=='customer'){
+
+            Customer::create([
+            'user_id'=>$user->user_id,
+            'date_of_birth'=>$request->date_of_birth
+            ]);
             $user->notify(new NewCustomerRegistered($user));
         } 
+        if($request->category=='staff'){
+            Staff::create([
+
+            ]);
+        }
+        if($request->category=='wholesaler'){
+            Staff::create([
+
+            ]);
+        }
+        if($request->category=='retailer'){
+            Staff::create([
+
+            ]);
+        }
+        if($request->category=='supplier'){
+            Staff::create([
+
+            ]);
+        }
+
         event(new Registered($user));
+        Auth::login($user);
 
 //since i have deleted the original dashboard i modify this to lead to different dashboards based on user category
        
-        Auth::login($user);
-
+        
         return redirect($user->redirectToDashboard());
     }
 }

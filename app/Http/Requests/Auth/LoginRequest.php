@@ -43,19 +43,27 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
 {
     $this->ensureIsNotRateLimited();
-        $user=User::where('email', $this->email)->first();
+    $user=User::where('email', $this->email)->first();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
-
-        if (!$user ||!\Hash::check($this->password, $user->password )) {
-            throw ValidationException::withMessages(['email'=>__('The details you provided are incorrect')]);
+    if (!$user) {
+        RateLimiter::hit($this->throttleKey());
+        throw ValidationException::withMessages(['email'=>__('The details you provided are incorrect')]);
+    }
         
+    if(!\Hash::check($this->password, $user->password )){
+        RateLimiter::hit($this->throttleKey());
+        throw ValidationException::withMessages(['password'=>__('The password you provided is incorrect')]);
         }
 
+    if($this->user_id !== $user->user_id){
+        RateLimiter::hit($this->throttleKey());
+        throw ValidationException::withMessages(['user_id'=>__('User identification number incorrect')]);
+    }
+        
     if ($user->status !== 'approved') {
+        RateLimiter::hit($this->throttleKey());
         throw ValidationException::withMessages([
-            'email' => __('Your account has not yet been approved'),
+                'email' => __('Your account has not yet been approved'),
         ]);
     }
 
@@ -63,7 +71,7 @@ class LoginRequest extends FormRequest
 
     RateLimiter::clear($this->throttleKey());
 }
-}
+
     /**
      * Ensure the login request is not rate limited.
      *
