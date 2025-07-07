@@ -170,6 +170,8 @@ Route::middleware(['auth', 'verified'])->get('/supplier/{supplier}/raw-materials
     return response()->json($materials);
 });
 
+Route::post('/ml/custom-chart', [App\Http\Controllers\MLController::class, 'customChart'])->middleware(['auth', 'verified']);
+
 
 
 

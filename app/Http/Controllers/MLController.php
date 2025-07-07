@@ -69,4 +69,28 @@ class MLController extends Controller
         
         return response()->json(['status' => 'success', 'results' => $results]);
     }
+
+    public function customChart(Request $request)
+    {
+        $chartType = $request->input('chartType');
+        $xAxis = $request->input('xAxis');
+        $xAxis2 = $request->input('xAxis2');
+        $yAxis = $request->input('yAxis');
+
+        $script = config('ml.scripts_path') . '/custom_chart.py';
+        $python = config('ml.python_path');
+        $outputImage = public_path('images/custom_chart.png');
+
+        \Log::info('customChart python_path: ' . $python);
+        $cmd = "$python $script --chart_type \"$chartType\" --x_axis \"$xAxis\" --y_axis \"$yAxis\" --output \"$outputImage\"";
+        if (!empty($xAxis2)) {
+            $cmd .= " --x_axis2 \"$xAxis2\"";
+        }
+        \Log::info('customChart full command: ' . $cmd);
+        $output = shell_exec($cmd . ' 2>&1');
+        \Log::info('Custom chart output: ' . $output);
+
+        $imageUrl = asset('images/custom_chart.png');
+        return response()->json(['image' => $imageUrl]);
+    }
 }
