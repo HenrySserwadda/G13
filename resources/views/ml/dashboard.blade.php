@@ -1,4 +1,7 @@
-@extends('layouts.app')
+@extends('components.dashboard')
+
+@section('page-title', 'Sales Analytics Dashboard')
+@section('page-description', 'Machine Learning powered sales insights and analytics')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
