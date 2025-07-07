@@ -86,4 +86,43 @@ class SystemadminController extends Controller
     
     }
 
+    public function dashboard()
+    {
+        $userCount = \App\Models\User::count();
+        $productCount = \App\Models\Product::count();
+        $orderCount = \App\Models\Order::count();
+        $rawMaterialCount = \App\Models\RawMaterial::count();
+
+        // Recent activities: last 5 users, orders, and products (merged and sorted by created_at desc)
+        $recentUsers = \App\Models\User::orderBy('created_at', 'desc')->take(5)->get();
+        $recentOrders = \App\Models\Order::orderBy('created_at', 'desc')->take(5)->get();
+        $recentProducts = \App\Models\Product::orderBy('created_at', 'desc')->take(5)->get();
+
+        $activities = collect();
+        foreach ($recentUsers as $user) {
+            $activities->push((object)[
+                'description' => 'New user registered: ' . $user->name,
+                'icon' => 'user-plus',
+                'created_at' => $user->created_at,
+            ]);
+        }
+        foreach ($recentOrders as $order) {
+            $activities->push((object)[
+                'description' => 'New order placed: #' . $order->id,
+                'icon' => 'shopping-cart',
+                'created_at' => $order->created_at,
+            ]);
+        }
+        foreach ($recentProducts as $product) {
+            $activities->push((object)[
+                'description' => 'New product added: ' . $product->name,
+                'icon' => 'box-open',
+                'created_at' => $product->created_at,
+            ]);
+        }
+        $recentActivities = $activities->sortByDesc('created_at')->take(5);
+
+        return view('dashboard.systemadmin', compact('userCount', 'productCount', 'orderCount', 'rawMaterialCount', 'recentActivities', 'recentUsers'));
+    }
+
 }
