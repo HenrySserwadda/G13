@@ -34,6 +34,8 @@
                 <p>Check your recent activities and updates.</p>
             </div>
         </div>
+
+        @livewire('chat')
     </div>
 @endsection
    

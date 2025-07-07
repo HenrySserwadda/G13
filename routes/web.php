@@ -1,6 +1,3 @@
-
-
- 
 <?php
 
 use App\Http\Controllers\ReportController;
@@ -79,7 +76,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
-    Route::get('/chat', Chat::class)->name('chat');
+    Route::get('/chat', function () {
+        return view('chat-page');
+    })->middleware(['auth', 'verified'])->name('chat');
 });
 
 require __DIR__.'/auth.php';
