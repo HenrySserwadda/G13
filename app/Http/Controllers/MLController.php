@@ -144,4 +144,45 @@ class MLController extends Controller
 
         return view('ml.dashboard', compact('chartData'));
     }
+
+    public function predictSales(Request $request)
+    {
+        $monthsAhead = $request->input('months_ahead', 1);
+        $python = config('ml.python_path', 'python');
+        $script = base_path('ml-scripts/sales_forecast.py');
+        $cmd = "$python $script --months_ahead $monthsAhead";
+
+        $filters = [
+            'material' => 'material',
+            'size' => 'size',
+            'compartments' => 'compartments',
+            'laptop_compartment' => 'laptop_compartment',
+            'waterproof' => 'waterproof',
+            'style' => 'style',
+            'color' => 'color',
+            'month' => 'month',
+            'gender' => 'gender',
+        ];
+        foreach ($filters as $param => $arg) {
+            $value = $request->input($param);
+            if ($value !== null && $value !== '') {
+                $cmd .= " --$arg \"$value\"";
+            }
+        }
+
+        $cmd .= " --json";
+        $output = [];
+        $return_var = 0;
+        exec($cmd, $output, $return_var);
+        // Find the first line that looks like JSON and decode it
+        $jsonLine = null;
+        foreach ($output as $line) {
+            if (strpos(trim($line), '{') === 0) {
+                $jsonLine = $line;
+                break;
+            }
+        }
+        $data = $jsonLine ? json_decode($jsonLine, true) : null;
+        return response()->json($data);
+    }
 }

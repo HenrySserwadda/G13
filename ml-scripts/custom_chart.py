@@ -56,42 +56,34 @@ def main():
             print(f"Error: Missing columns in CSV: {', '.join(missing_cols)}")
             sys.exit(1)
 
+    month_order = ['January','February','March','April','May','June','July','August','September','October','November','December']
     # Prepare data for chart
     if args.y_axis == 'sales':
         # Frequency count logic
         if args.chart_type == 'pie':
-            data = df.groupby(group_cols).size()
-            labels = []
-            values = []
-            for idx, val in data.items():
-                if isinstance(idx, tuple):
-                    label = ' - '.join(str(i) for i in idx)
-                else:
-                    label = str(idx)
-                labels.append(label)
-                values.append(val)
+            if args.x_axis == 'Month of the year':
+                data = df.groupby(group_cols).size().reindex(month_order).fillna(0)
+                labels = list(data.index)
+                values = list(data.values)
+            else:
+                data = df.groupby(group_cols).size()
+                labels = []
+                values = []
+                for idx, val in data.items():
+                    if isinstance(idx, tuple):
+                        label = ' - '.join(str(i) for i in idx)
+                    else:
+                        label = str(idx)
+                    labels.append(label)
+                    values.append(val)
             chart_data = {
                 'type': 'pie',
                 'labels': labels,
                 'values': values
             }
         else:
-            data = df.groupby(group_cols).size()
-            if len(group_cols) == 2:
-                data = data.unstack()
-                labels = list(data.index)
-                datasets = []
-                for col in data.columns:
-                    datasets.append({
-                        'label': str(col),
-                        'data': [v if not pd.isna(v) else 0 for v in data[col]]
-                    })
-                chart_data = {
-                    'type': args.chart_type,
-                    'labels': [str(l) for l in labels],
-                    'datasets': datasets
-                }
-            else:
+            if args.x_axis == 'Month of the year':
+                data = df.groupby(group_cols).size().reindex(month_order).fillna(0)
                 labels = list(data.index)
                 values = list(data.values)
                 chart_data = {
@@ -99,40 +91,55 @@ def main():
                     'labels': [str(l) for l in labels],
                     'values': values
                 }
+            else:
+                data = df.groupby(group_cols).size()
+                if len(group_cols) == 2:
+                    data = data.unstack()
+                    labels = list(data.index)
+                    datasets = []
+                    for col in data.columns:
+                        datasets.append({
+                            'label': str(col),
+                            'data': [v if not pd.isna(v) else 0 for v in data[col]]
+                        })
+                    chart_data = {
+                        'type': args.chart_type,
+                        'labels': [str(l) for l in labels],
+                        'datasets': datasets
+                    }
+                else:
+                    labels = list(data.index)
+                    values = list(data.values)
+                    chart_data = {
+                        'type': args.chart_type,
+                        'labels': [str(l) for l in labels],
+                        'values': values
+                    }
     else:
         if args.chart_type == 'pie':
-            data = df.groupby(group_cols)[args.y_axis].sum()
-            labels = []
-            values = []
-            for idx, val in data.items():
-                if isinstance(idx, tuple):
-                    label = ' - '.join(str(i) for i in idx)
-                else:
-                    label = str(idx)
-                labels.append(label)
-                values.append(val)
+            if args.x_axis == 'Month of the year':
+                data = df.groupby(group_cols)[args.y_axis].sum().reindex(month_order).fillna(0)
+                labels = list(data.index)
+                values = list(data.values)
+            else:
+                data = df.groupby(group_cols)[args.y_axis].sum()
+                labels = []
+                values = []
+                for idx, val in data.items():
+                    if isinstance(idx, tuple):
+                        label = ' - '.join(str(i) for i in idx)
+                    else:
+                        label = str(idx)
+                    labels.append(label)
+                    values.append(val)
             chart_data = {
                 'type': 'pie',
                 'labels': labels,
                 'values': values
             }
         else:
-            data = df.groupby(group_cols)[args.y_axis].sum()
-            if len(group_cols) == 2:
-                data = data.unstack()
-                labels = list(data.index)
-                datasets = []
-                for col in data.columns:
-                    datasets.append({
-                        'label': str(col),
-                        'data': [v if not pd.isna(v) else 0 for v in data[col]]
-                    })
-                chart_data = {
-                    'type': args.chart_type,
-                    'labels': [str(l) for l in labels],
-                    'datasets': datasets
-                }
-            else:
+            if args.x_axis == 'Month of the year':
+                data = df.groupby(group_cols)[args.y_axis].sum().reindex(month_order).fillna(0)
                 labels = list(data.index)
                 values = list(data.values)
                 chart_data = {
@@ -140,6 +147,45 @@ def main():
                     'labels': [str(l) for l in labels],
                     'values': values
                 }
+            else:
+                data = df.groupby(group_cols)[args.y_axis].sum()
+                if len(group_cols) == 2 and args.x_axis == 'Month of the year':
+                    data = data.unstack()
+                    data = data.reindex(month_order).fillna(0)
+                    labels = list(data.index)
+                    datasets = []
+                    for col in data.columns:
+                        datasets.append({
+                            'label': str(col),
+                            'data': [v if not pd.isna(v) else 0 for v in data[col]]
+                        })
+                    chart_data = {
+                        'type': args.chart_type,
+                        'labels': [str(l) for l in labels],
+                        'datasets': datasets
+                    }
+                elif len(group_cols) == 2:
+                    data = data.unstack()
+                    labels = list(data.index)
+                    datasets = []
+                    for col in data.columns:
+                        datasets.append({
+                            'label': str(col),
+                            'data': [v if not pd.isna(v) else 0 for v in data[col]]
+                        })
+                    chart_data = {
+                        'type': args.chart_type,
+                        'labels': [str(l) for l in labels],
+                        'datasets': datasets
+                    }
+                else:
+                    labels = list(data.index)
+                    values = list(data.values)
+                    chart_data = {
+                        'type': args.chart_type,
+                        'labels': [str(l) for l in labels],
+                        'values': values
+                    }
 
     if args.json:
         print(json.dumps(to_py(chart_data)))

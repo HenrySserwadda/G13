@@ -58,8 +58,107 @@
             </div>
         </div>
         <button id="generateChartBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Generate Chart</button>
+        <div id="chartLoading" class="mt-4 flex items-center justify-center hidden">
+            <svg class="animate-spin h-6 w-6 text-blue-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            <span class="text-blue-600 font-semibold">Generating chart...</span>
+        </div>
         <canvas id="analyticsChart" class="my-4"></canvas>
         <button id="downloadChartBtn" class="bg-green-600 text-white px-4 py-2 rounded">Download Chart</button>
+
+        <!-- Sales Prediction UI -->
+        <div class="mt-8 p-4 bg-gray-50 rounded shadow">
+            <h3 class="text-lg font-semibold mb-2">Predict Future Sales</h3>
+            <form id="predictSalesForm" class="flex flex-wrap items-center gap-2">
+                <label for="monthsAhead" class="mr-2">Months ahead:</label>
+                <input type="number" id="monthsAhead" name="monthsAhead" min="1" max="12" value="1" class="border rounded px-2 py-1 w-20">
+                <label for="material" class="mr-2">Material:</label>
+                <select id="material" name="material" class="border rounded px-2 py-1">
+                    <option value="">All</option>
+                    <option value="Leather">Leather</option>
+                    <option value="Canvas">Canvas</option>
+                    <option value="Nylon">Nylon</option>
+                    <option value="Polyester">Polyester</option>
+                </select>
+                <label for="size" class="mr-2">Size:</label>
+                <select id="size" name="size" class="border rounded px-2 py-1">
+                    <option value="">All</option>
+                    <option value="Small">Small</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Large">Large</option>
+                </select>
+                <label for="compartments" class="mr-2">Compartments:</label>
+                <select id="compartments" name="compartments" class="border rounded px-2 py-1">
+                    <option value="">All</option>
+                    <option value="1.0">1.0</option>
+                    <option value="2.0">2.0</option>
+                    <option value="3.0">3.0</option>
+                </select>
+                <label for="laptopCompartment" class="mr-2">Laptop Compartment:</label>
+                <select id="laptopCompartment" name="laptopCompartment" class="border rounded px-2 py-1">
+                    <option value="">All</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+                <label for="waterproof" class="mr-2">Waterproof:</label>
+                <select id="waterproof" name="waterproof" class="border rounded px-2 py-1">
+                    <option value="">All</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+                <label for="style" class="mr-2">Style:</label>
+                <select id="style" name="style" class="border rounded px-2 py-1">
+                    <option value="">All</option>
+                    <option value="Tote">Tote</option>
+                    <option value="Backpack">Backpack</option>
+                    <option value="Messenger">Messenger</option>
+                </select>
+                <label for="color" class="mr-2">Color:</label>
+                <select id="color" name="color" class="border rounded px-2 py-1">
+                    <option value="">All</option>
+                    <option value="Green">Green</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Black">Black</option>
+                    <option value="Red">Red</option>
+                </select>
+                <label for="month" class="mr-2">Month:</label>
+                <select id="month" name="month" class="border rounded px-2 py-1">
+                    <option value="">All</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                </select>
+                <label for="gender" class="mr-2">Gender:</label>
+                <select id="gender" name="gender" class="border rounded px-2 py-1">
+                    <option value="">All</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Unisex">Unisex</option>
+                </select>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Predict</button>
+            </form>
+            <div id="predictionLoading" class="mt-4 flex items-center justify-center hidden">
+                <svg class="animate-spin h-6 w-6 text-blue-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+                <span class="text-blue-600 font-semibold">Loading prediction...</span>
+            </div>
+            <div id="predictionResult" class="mt-4 text-blue-800 font-bold"></div>
+            <canvas id="predictionChart" class="my-4"></canvas>
+            <button id="downloadPredictionChartBtn" class="bg-green-600 text-white px-4 py-2 rounded">Download Prediction Chart</button>
+        </div>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Monthly Sales Chart -->
@@ -107,6 +206,7 @@
     const chartData = @json($chartData);
 
     let chartInstance = null;
+    let predictionChartInstance = null;
 
     // Only render initial chart if chartData and chartData.type exist
     if (chartData && chartData.type) {
@@ -165,6 +265,7 @@
     }
 
     document.getElementById('generateChartBtn').onclick = function() {
+        document.getElementById('chartLoading').classList.remove('hidden');
         const chartType = document.getElementById('chartType').value;
         const xAxis = document.getElementById('xAxis').value;
         const xAxis2 = document.getElementById('xAxis2').value;
@@ -180,6 +281,7 @@
         })
         .then(response => response.json())
         .then(data => {
+            document.getElementById('chartLoading').classList.add('hidden');
             if (!data.chartData || !data.chartData.type) {
                 alert('No chart data returned from server.');
                 return;
@@ -242,6 +344,10 @@
             }
             const ctx = document.getElementById('analyticsChart').getContext('2d');
             chartInstance = new Chart(ctx, config);
+        })
+        .catch(err => {
+            document.getElementById('chartLoading').classList.add('hidden');
+            alert('Error generating chart. Please try again.');
         });
     };
 
@@ -275,6 +381,106 @@
         const link = document.createElement('a');
         link.href = canvas.toDataURL('image/png');
         link.download = 'chart.png';
+        link.click();
+    };
+
+    document.getElementById('predictSalesForm').onsubmit = function(e) {
+        e.preventDefault();
+        document.getElementById('predictionLoading').classList.remove('hidden');
+        const monthsAhead = document.getElementById('monthsAhead').value;
+        const material = document.getElementById('material').value;
+        const size = document.getElementById('size').value;
+        const compartments = document.getElementById('compartments').value;
+        const laptopCompartment = document.getElementById('laptopCompartment').value;
+        const waterproof = document.getElementById('waterproof').value;
+        const style = document.getElementById('style').value;
+        const color = document.getElementById('color').value;
+        const month = document.getElementById('month').value;
+        const gender = document.getElementById('gender').value;
+        fetch('/ml/predict-sales', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                months_ahead: monthsAhead,
+                material,
+                size,
+                compartments,
+                laptop_compartment: laptopCompartment,
+                waterproof,
+                style,
+                color,
+                month,
+                gender
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('predictionLoading').classList.add('hidden');
+            if (data && data.predictions && data.future_months) {
+                let html = '<ul>';
+                for (let i = 0; i < data.predictions.length; i++) {
+                    html += `<li>Month: <b>${data.future_months[i]}</b> — Predicted Sales: <b>${data.predictions[i].toFixed(2)}</b></li>`;
+                }
+                html += '</ul>';
+                document.getElementById('predictionResult').innerHTML = html;
+
+                // Draw prediction chart
+                const ctx = document.getElementById('predictionChart').getContext('2d');
+                if (predictionChartInstance) {
+                    predictionChartInstance.destroy();
+                }
+                predictionChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.future_months,
+                        datasets: [{
+                            label: 'Predicted Sales',
+                            data: data.predictions,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: true }
+                        },
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            } else if (data && data.error) {
+                document.getElementById('predictionResult').innerHTML = `<span class='text-red-600'>${data.error}</span>`;
+                if (predictionChartInstance) {
+                    predictionChartInstance.destroy();
+                }
+            } else {
+                document.getElementById('predictionResult').innerHTML = '<span class="text-red-600">No prediction data returned.</span>';
+                if (predictionChartInstance) {
+                    predictionChartInstance.destroy();
+                }
+            }
+        })
+        .catch(err => {
+            document.getElementById('predictionLoading').classList.add('hidden');
+            document.getElementById('predictionResult').innerHTML = '<span class="text-red-600">Error fetching prediction.</span>';
+            if (predictionChartInstance) {
+                predictionChartInstance.destroy();
+            }
+        });
+    };
+
+    document.getElementById('downloadPredictionChartBtn').onclick = function() {
+        const canvas = document.getElementById('predictionChart');
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'prediction_chart.png';
         link.click();
     };
 </script>
