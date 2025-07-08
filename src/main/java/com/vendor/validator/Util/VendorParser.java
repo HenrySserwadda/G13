@@ -22,11 +22,11 @@ public class VendorParser {
                 fields.get("name"),
                 fields.get("CEO"),
                 fields.get("email"),
-                Integer.parseInt(fields.get("phone")),
-                Integer.parseInt(fields.get("capital")),
-                Integer.parseInt(fields.get("revenue")),
-                Integer.parseInt(fields.get("debt")),
-                Integer.parseInt(fields.get("experience")),
+                Integer.parseInt(fields.get("phone").trim().replace(",", "")),
+                Integer.parseInt(fields.get("capital").trim().replace(",", "")),
+                Integer.parseInt(fields.get("revenue").trim().replace(",", "")),
+                Integer.parseInt(fields.get("debt").trim().replace(",", "")),
+                Integer.parseInt(fields.get("experience").trim().replace(",", "")),
                 Boolean.parseBoolean(fields.get("industrystandards")),
                 Boolean.parseBoolean(fields.get("license")),
                 Boolean.parseBoolean(fields.get("taxCertificate"))
@@ -47,8 +47,10 @@ public class VendorParser {
             }
 
             for (PDField field : form.getFields()) {
-                fieldValues.put(field.getFullyQualifiedName(), field.getValueAsString());
-            }
+            String key = field.getFullyQualifiedName().toLowerCase(); // make key lowercase
+            String value = field.getValueAsString();
+            fieldValues.put(key, value);
+        }
         }
 
         return fieldValues;

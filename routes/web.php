@@ -164,7 +164,21 @@ Route::middleware(['auth', 'verified'])->get('/supplier/{supplier}/raw-materials
     return response()->json($materials);
 });
 
+//Java Server Routes
 
+Route::post('/submit-vendor-pdf', function (Request $request) {
+    $response = Http::attach(
+        'file', file_get_contents($request->file('wholesalerpdf')->getRealPath()),
+        $request->file('wholesalerpdf')->getClientOriginalName()
+    )->post('http://localhost:8080/validate-file');
+
+    return $response->json(); // Return Java backend response
+});
+
+Route::get('/activate-java-server', function () {
+    // Trigger an actual Java endpoint here if needed
+    return ['message' => 'Validation result will be emailed shortly.'];
+});
 
 
 
