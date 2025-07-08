@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-/mvnw text eol=lf
-*.cmd text eol=crlf
-=======
 * text=auto eol=lf
 
 *.blade.php diff=html
@@ -13,4 +9,3 @@
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
->>>>>>> origin/main
