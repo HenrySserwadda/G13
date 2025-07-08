@@ -59,6 +59,7 @@
         </div>
         <button id="generateChartBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Generate Chart</button>
         <canvas id="analyticsChart" class="my-4"></canvas>
+        <button id="downloadChartBtn" class="bg-green-600 text-white px-4 py-2 rounded">Download Chart</button>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Monthly Sales Chart -->
@@ -268,5 +269,13 @@
             });
         }
     }
+
+    document.getElementById('downloadChartBtn').onclick = function() {
+        const canvas = document.getElementById('analyticsChart');
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'chart.png';
+        link.click();
+    };
 </script>
 @endpush
