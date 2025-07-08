@@ -58,7 +58,7 @@
             </div>
         </div>
         <button id="generateChartBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Generate Chart</button>
-        <div id="chartLoading" class="mt-4 flex items-center justify-center hidden">
+        <div id="chartLoading" class="hidden mt-4 items-center justify-center">
             <svg class="animate-spin h-6 w-6 text-blue-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
@@ -203,90 +203,15 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const chartData = @json($chartData);
+    document.addEventListener('DOMContentLoaded', function() {
+        const chartData = @json($chartData);
 
-    let chartInstance = null;
-    let predictionChartInstance = null;
+        let chartInstance = null;
+        let predictionChartInstance = null;
 
-    // Only render initial chart if chartData and chartData.type exist
-    if (chartData && chartData.type) {
-        let config;
-        if (chartData.type === 'pie') {
-            config = {
-                type: 'pie',
-                data: {
-                    labels: chartData.labels,
-                    datasets: [{
-                        data: chartData.values,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(255, 206, 86, 0.5)',
-                        ]
-                    }]
-                },
-                options: {
-                    animation: { animateScale: true }
-                }
-            };
-        } else if (chartData.datasets) {
-            config = {
-                type: chartData.type,
-                data: {
-                    labels: chartData.labels,
-                    datasets: chartData.datasets.map((ds, i) => ({
-                        label: ds.label,
-                        data: ds.data,
-                        backgroundColor: `rgba(${54 + i*50}, 162, 235, 0.5)`
-                    }))
-                },
-                options: {
-                    animation: { duration: 1500, easing: 'easeOutBounce' }
-                }
-            };
-        } else {
-            config = {
-                type: chartData.type,
-                data: {
-                    labels: chartData.labels,
-                    datasets: [{
-                        label: 'Value',
-                        data: chartData.values,
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)'
-                    }]
-                },
-                options: {
-                    animation: { duration: 1500, easing: 'easeOutBounce' }
-                }
-            };
-        }
-        const ctx = document.getElementById('analyticsChart').getContext('2d');
-        chartInstance = new Chart(ctx, config);
-    }
-
-    document.getElementById('generateChartBtn').onclick = function() {
-        document.getElementById('chartLoading').classList.remove('hidden');
-        const chartType = document.getElementById('chartType').value;
-        const xAxis = document.getElementById('xAxis').value;
-        const xAxis2 = document.getElementById('xAxis2').value;
-        const yAxis = document.getElementById('yAxis').value;
-
-        fetch('/ml/custom-chart', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ chartType, xAxis, xAxis2, yAxis })
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('chartLoading').classList.add('hidden');
-            if (!data.chartData || !data.chartData.type) {
-                alert('No chart data returned from server.');
-                return;
-            }
-            const chartData = data.chartData;
+        // Only render initial chart if chartData and chartData.type exist and canvas exists
+        const analyticsCanvas = document.getElementById('analyticsChart');
+        if (chartData && chartData.type && analyticsCanvas) {
             let config;
             if (chartData.type === 'pie') {
                 config = {
@@ -337,151 +262,254 @@
                     }
                 };
             }
-
-            // Destroy previous chart if exists
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-            const ctx = document.getElementById('analyticsChart').getContext('2d');
+            const ctx = analyticsCanvas.getContext('2d');
             chartInstance = new Chart(ctx, config);
-        })
-        .catch(err => {
-            document.getElementById('chartLoading').classList.add('hidden');
-            alert('Error generating chart. Please try again.');
-        });
-    };
-
-    function trainModels() {
-        if (confirm('This will retrain the ML models. This may take a few minutes. Continue?')) {
-            fetch('{{ route("ml.train") }}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    alert('Models trained successfully!');
-                    location.reload(); // Refresh to show new charts
-                } else {
-                    alert('Error training models. Please try again.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error training models. Please try again.');
-            });
         }
-    }
 
-    document.getElementById('downloadChartBtn').onclick = function() {
-        const canvas = document.getElementById('analyticsChart');
-        const link = document.createElement('a');
-        link.href = canvas.toDataURL('image/png');
-        link.download = 'chart.png';
-        link.click();
-    };
-
-    document.getElementById('predictSalesForm').onsubmit = function(e) {
-        e.preventDefault();
-        document.getElementById('predictionLoading').classList.remove('hidden');
-        const monthsAhead = document.getElementById('monthsAhead').value;
-        const material = document.getElementById('material').value;
-        const size = document.getElementById('size').value;
-        const compartments = document.getElementById('compartments').value;
-        const laptopCompartment = document.getElementById('laptopCompartment').value;
-        const waterproof = document.getElementById('waterproof').value;
-        const style = document.getElementById('style').value;
-        const color = document.getElementById('color').value;
-        const month = document.getElementById('month').value;
-        const gender = document.getElementById('gender').value;
-        fetch('/ml/predict-sales', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                months_ahead: monthsAhead,
-                material,
-                size,
-                compartments,
-                laptop_compartment: laptopCompartment,
-                waterproof,
-                style,
-                color,
-                month,
-                gender
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('predictionLoading').classList.add('hidden');
-            if (data && data.predictions && data.future_months) {
-                let html = '<ul>';
-                for (let i = 0; i < data.predictions.length; i++) {
-                    html += `<li>Month: <b>${data.future_months[i]}</b> — Predicted Sales: <b>${data.predictions[i].toFixed(2)}</b></li>`;
+        const generateChartBtn = document.getElementById('generateChartBtn');
+        if (generateChartBtn) {
+            generateChartBtn.onclick = function() {
+                const chartLoading = document.getElementById('chartLoading');
+                if (chartLoading) {
+                    chartLoading.classList.remove('hidden');
+                    chartLoading.classList.add('flex');
                 }
-                html += '</ul>';
-                document.getElementById('predictionResult').innerHTML = html;
+                const chartType = document.getElementById('chartType').value;
+                const xAxis = document.getElementById('xAxis').value;
+                const xAxis2 = document.getElementById('xAxis2').value;
+                const yAxis = document.getElementById('yAxis').value;
 
-                // Draw prediction chart
-                const ctx = document.getElementById('predictionChart').getContext('2d');
-                if (predictionChartInstance) {
-                    predictionChartInstance.destroy();
-                }
-                predictionChartInstance = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: data.future_months,
-                        datasets: [{
-                            label: 'Predicted Sales',
-                            data: data.predictions,
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            fill: true,
-                            tension: 0.3
-                        }]
+                fetch('/ml/custom-chart', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
                     },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { display: true }
-                        },
-                        scales: {
-                            y: { beginAtZero: true }
-                        }
+                    body: JSON.stringify({ chartType, xAxis, xAxis2, yAxis })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (chartLoading) {
+                        chartLoading.classList.add('hidden');
+                        chartLoading.classList.remove('flex');
                     }
-                });
-            } else if (data && data.error) {
-                document.getElementById('predictionResult').innerHTML = `<span class='text-red-600'>${data.error}</span>`;
-                if (predictionChartInstance) {
-                    predictionChartInstance.destroy();
-                }
-            } else {
-                document.getElementById('predictionResult').innerHTML = '<span class="text-red-600">No prediction data returned.</span>';
-                if (predictionChartInstance) {
-                    predictionChartInstance.destroy();
-                }
-            }
-        })
-        .catch(err => {
-            document.getElementById('predictionLoading').classList.add('hidden');
-            document.getElementById('predictionResult').innerHTML = '<span class="text-red-600">Error fetching prediction.</span>';
-            if (predictionChartInstance) {
-                predictionChartInstance.destroy();
-            }
-        });
-    };
+                    if (!data.chartData || !data.chartData.type) {
+                        alert('No chart data returned from server.');
+                        return;
+                    }
+                    const chartData = data.chartData;
+                    let config;
+                    if (chartData.type === 'pie') {
+                        config = {
+                            type: 'pie',
+                            data: {
+                                labels: chartData.labels,
+                                datasets: [{
+                                    data: chartData.values,
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.5)',
+                                        'rgba(54, 162, 235, 0.5)',
+                                        'rgba(255, 206, 86, 0.5)',
+                                    ]
+                                }]
+                            },
+                            options: {
+                                animation: { animateScale: true }
+                            }
+                        };
+                    } else if (chartData.datasets) {
+                        config = {
+                            type: chartData.type,
+                            data: {
+                                labels: chartData.labels,
+                                datasets: chartData.datasets.map((ds, i) => ({
+                                    label: ds.label,
+                                    data: ds.data,
+                                    backgroundColor: `rgba(${54 + i*50}, 162, 235, 0.5)`
+                                }))
+                            },
+                            options: {
+                                animation: { duration: 1500, easing: 'easeOutBounce' }
+                            }
+                        };
+                    } else {
+                        config = {
+                            type: chartData.type,
+                            data: {
+                                labels: chartData.labels,
+                                datasets: [{
+                                    label: 'Value',
+                                    data: chartData.values,
+                                    backgroundColor: 'rgba(54, 162, 235, 0.5)'
+                                }]
+                            },
+                            options: {
+                                animation: { duration: 1500, easing: 'easeOutBounce' }
+                            }
+                        };
+                    }
 
-    document.getElementById('downloadPredictionChartBtn').onclick = function() {
-        const canvas = document.getElementById('predictionChart');
-        const link = document.createElement('a');
-        link.href = canvas.toDataURL('image/png');
-        link.download = 'prediction_chart.png';
-        link.click();
-    };
+                    // Destroy previous chart if exists
+                    if (chartInstance) {
+                        chartInstance.destroy();
+                    }
+                    if (analyticsCanvas) {
+                        const ctx = analyticsCanvas.getContext('2d');
+                        chartInstance = new Chart(ctx, config);
+                    }
+                })
+                .catch(err => {
+                    if (chartLoading) chartLoading.classList.add('hidden');
+                    alert('Error generating chart. Please try again.');
+                });
+            };
+        }
+
+        window.trainModels = function() {
+            if (confirm('This will retrain the ML models. This may take a few minutes. Continue?')) {
+                fetch('{{ route("ml.train") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Models trained successfully!');
+                        location.reload(); // Refresh to show new charts
+                    } else {
+                        alert('Error training models. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error training models. Please try again.');
+                });
+            }
+        };
+
+        const downloadChartBtn = document.getElementById('downloadChartBtn');
+        if (downloadChartBtn && analyticsCanvas) {
+            downloadChartBtn.onclick = function() {
+                const canvas = analyticsCanvas;
+                if (!canvas) return;
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'chart.png';
+                link.click();
+            };
+        }
+
+        const predictSalesForm = document.getElementById('predictSalesForm');
+        if (predictSalesForm) {
+            predictSalesForm.onsubmit = function(e) {
+                e.preventDefault();
+                const predictionLoading = document.getElementById('predictionLoading');
+                if (predictionLoading) predictionLoading.classList.remove('hidden');
+                const monthsAhead = document.getElementById('monthsAhead').value;
+                const material = document.getElementById('material').value;
+                const size = document.getElementById('size').value;
+                const compartments = document.getElementById('compartments').value;
+                const laptopCompartment = document.getElementById('laptopCompartment').value;
+                const waterproof = document.getElementById('waterproof').value;
+                const style = document.getElementById('style').value;
+                const color = document.getElementById('color').value;
+                const month = document.getElementById('month').value;
+                const gender = document.getElementById('gender').value;
+                fetch('/ml/predict-sales', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        months_ahead: monthsAhead,
+                        material,
+                        size,
+                        compartments,
+                        laptop_compartment: laptopCompartment,
+                        waterproof,
+                        style,
+                        color,
+                        month,
+                        gender
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (predictionLoading) predictionLoading.classList.add('hidden');
+                    const predictionResult = document.getElementById('predictionResult');
+                    let html = '';
+                    if (data && data.predictions && data.future_months) {
+                        html = '<ul>';
+                        for (let i = 0; i < data.predictions.length; i++) {
+                            html += `<li>Month: <b>${data.future_months[i]}</b> — Predicted Sales: <b>${data.predictions[i].toFixed(2)}</b></li>`;
+                        }
+                        html += '</ul>';
+                        predictionResult.innerHTML = html;
+                        // Draw prediction chart
+                        const predictionChart = document.getElementById('predictionChart');
+                        if (predictionChart) {
+                            const ctx = predictionChart.getContext('2d');
+                            if (predictionChartInstance) {
+                                predictionChartInstance.destroy();
+                            }
+                            predictionChartInstance = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: data.future_months,
+                                    datasets: [{
+                                        label: 'Predicted Sales',
+                                        data: data.predictions,
+                                        borderColor: 'rgba(54, 162, 235, 1)',
+                                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                        fill: true,
+                                        tension: 0.3
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: { display: true }
+                                    },
+                                    scales: {
+                                        y: { beginAtZero: true }
+                                    }
+                                }
+                            });
+                        }
+                    } else if (data && data.error) {
+                        html = `<span class='text-red-600'>${data.error}</span>`;
+                        predictionResult.innerHTML = html;
+                        if (predictionChartInstance) predictionChartInstance.destroy();
+                    } else {
+                        html = '<span class="text-red-600">No prediction data returned.</span>';
+                        predictionResult.innerHTML = html;
+                        if (predictionChartInstance) predictionChartInstance.destroy();
+                    }
+                })
+                .catch(err => {
+                    if (predictionLoading) predictionLoading.classList.add('hidden');
+                    const predictionResult = document.getElementById('predictionResult');
+                    if (predictionResult) predictionResult.innerHTML = '<span class="text-red-600">Error fetching prediction.</span>';
+                    if (predictionChartInstance) predictionChartInstance.destroy();
+                });
+            };
+        }
+
+        const downloadPredictionChartBtn = document.getElementById('downloadPredictionChartBtn');
+        if (downloadPredictionChartBtn) {
+            downloadPredictionChartBtn.onclick = function() {
+                const predictionChart = document.getElementById('predictionChart');
+                if (!predictionChart) return;
+                const link = document.createElement('a');
+                link.href = predictionChart.toDataURL('image/png');
+                link.download = 'prediction_chart.png';
+                link.click();
+            };
+        }
+    });
 </script>
 @endpush
