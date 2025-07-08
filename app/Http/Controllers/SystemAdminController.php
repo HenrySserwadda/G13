@@ -89,12 +89,28 @@ class SystemadminController extends Controller
     public function dashboard()
     {
         $userCount = \App\Models\User::count();
+        $activeUserCount = \App\Models\User::where('status', 'approved')->count();
         $productCount = \App\Models\Product::count();
         $orderCount = \App\Models\Order::count();
         $rawMaterialCount = \App\Models\RawMaterial::count();
 
+        // Add low stock products (quantity <= 10)
+        $lowStockProducts = \App\Models\Product::where('quantity', '<=', 10)->get();
+
+        // Add completed orders
+        $completedOrders = \App\Models\Order::where('status', 'completed')->get();
+
+        // Add total revenue (sum of 'total' for completed orders)
+        $totalRevenue = \App\Models\Order::where('status', 'completed')->sum('total');
+
+        // Add critical raw materials (quantity <= 10)
+        $criticalMaterials = \App\Models\RawMaterial::where('quantity', '<=', 10)->get();
+
+        // Add recent orders (last 5)
+        $recentOrders = \App\Models\Order::orderBy('created_at', 'desc')->take(5)->get();
+
         // Recent activities: last 5 users, orders, and products (merged and sorted by created_at desc)
-        $recentUsers = \App\Models\User::orderBy('created_at', 'desc')->take(5)->get();
+        $recentUsers = \App\Models\User::orderBy('created_at', 'desc')->paginate(5);
         $recentOrders = \App\Models\Order::orderBy('created_at', 'desc')->take(5)->get();
         $recentProducts = \App\Models\Product::orderBy('created_at', 'desc')->take(5)->get();
 
@@ -131,7 +147,52 @@ class SystemadminController extends Controller
         exec($cmd, $output, $return_var);
         $chartData = json_decode(implode('', $output), true);
 
-        return view('dashboard.systemadmin', compact('userCount', 'productCount', 'orderCount', 'rawMaterialCount', 'recentActivities', 'recentUsers', 'chartData'));
+        return view('dashboard.systemadmin', compact('userCount', 'activeUserCount', 'productCount', 'orderCount', 'rawMaterialCount', 'recentActivities', 'recentUsers', 'chartData', 'lowStockProducts', 'completedOrders', 'totalRevenue', 'criticalMaterials', 'recentOrders'));
     }
 
+    public function activityLog()
+    {
+        // For demonstration, use the same activity structure as dashboard, but paginated
+        $userActivities = collect();
+        $recentUsers = \App\Models\User::orderBy('created_at', 'desc')->paginate(10);
+        foreach ($recentUsers as $user) {
+            $userActivities->push((object)[
+                'description' => 'New user registered: ' . $user->name,
+                'icon' => 'user-plus',
+                'created_at' => $user->created_at,
+                'causer' => $user,
+            ]);
+        }
+        $recentOrders = \App\Models\Order::orderBy('created_at', 'desc')->paginate(10);
+        foreach ($recentOrders as $order) {
+            $userActivities->push((object)[
+                'description' => 'New order placed: #' . $order->id,
+                'icon' => 'shopping-cart',
+                'created_at' => $order->created_at,
+                'causer' => null,
+            ]);
+        }
+        $recentProducts = \App\Models\Product::orderBy('created_at', 'desc')->paginate(10);
+        foreach ($recentProducts as $product) {
+            $userActivities->push((object)[
+                'description' => 'New product added: ' . $product->name,
+                'icon' => 'box-open',
+                'created_at' => $product->created_at,
+                'causer' => null,
+            ]);
+        }
+        $allActivities = $userActivities->sortByDesc('created_at')->values();
+        // Paginate manually since we merged collections
+        $perPage = 15;
+        $currentPage = request()->input('page', 1);
+        $pagedActivities = $allActivities->slice(($currentPage - 1) * $perPage, $perPage)->all();
+        $activities = new \Illuminate\Pagination\LengthAwarePaginator(
+            $pagedActivities,
+            $allActivities->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+        return view('dashboard.activity-log', compact('activities'));
+    }
 }

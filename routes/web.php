@@ -40,9 +40,7 @@ Route::get('/insertpdf',function(){
     return view('insertpdf');
  });
  //new routes i am adding for the different dashboards based on user type
-Route::get('/dashboard/staff',function(){
-    return view('dashboard.staff');
- })->middleware(['auth', 'verified'])->name('dashboard.staff');
+Route::get('/dashboard/staff', [\App\Http\Controllers\StaffController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard.staff');
 
 Route::get('/dashboard/customer',function(){
     return view('dashboard/customer');
@@ -168,6 +166,9 @@ Route::middleware(['auth', 'verified'])->get('/supplier/{supplier}/raw-materials
 });
 
 Route::post('/ml/custom-chart', [App\Http\Controllers\MLController::class, 'customChart'])->middleware(['auth', 'verified']);
+
+// System admin activity log
+Route::get('/dashboard/systemadmin/activity-log', [\App\Http\Controllers\SystemadminController::class, 'activityLog'])->name('dashboard.systemadmin.activity-log');
 
 
 
