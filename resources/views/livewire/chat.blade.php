@@ -75,9 +75,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="messages" id="messages">
+                    <div class="messages" id="messages" style="position:relative;">
                         @foreach($messages as $message)
-                        <div class="message {{ $message['sender_id'] == auth()->id() ? 'sent' : 'received' }}">
+                        <div class="message {{ $message['sender_id'] == auth()->id() ? 'sent' : 'received' }}" @if($loop->last) id="lastMessage" @endif>
                             @if($message['sender_id'] != auth()->id())
                             <div class="message-avatar">
                                 <img src="{{ isset($message['sender']['avatar']) && $message['sender']['avatar'] ? asset('storage/' . $message['sender']['avatar']) : generateAvatar($message['sender']['name'] ?? 'User', 28) }}" alt="User Avatar" class="avatar-img">
@@ -113,6 +113,10 @@
                         </div>
                         @endforeach
                     </div>
+                    <!-- Go to Latest button as sibling to .messages -->
+                    <button type="button" class="go-to-latest-btn active" id="goToLatestBtn" title="Go to latest message" onclick="scrollToLatestMessage()">
+                        &#8595;
+                    </button>
                     <div class="message-input">
                         <form wire:submit="submit" enctype="multipart/form-data">
                             <div class="input-actions">
@@ -181,6 +185,7 @@
         background: #181c23;
         border-radius: 18px;
         overflow: hidden;
+        position: relative;
     }
     .chat-container {
         display: flex;
@@ -204,6 +209,7 @@
         flex-direction: column;
         background: #181c23;
         position: relative;
+        min-height: 400px;
     }
     .chat-header {
         padding: 10px 15px;
@@ -505,24 +511,88 @@
         color: #b0b3b8;
         font-size: 14px;
     }
+    .go-to-latest-btn {
+        position: absolute;
+        right: 32px;
+        bottom: 80px;
+        z-index: 1000;
+        background: transparent !important;
+        color: #ff9800 !important;
+        border: none !important;
+        border-radius: 0 !important;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: none !important;
+        cursor: pointer;
+        font-size: 28px;
+        opacity: 1 !important;
+        outline: none;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        transition: color 0.2s;
+    }
+    .go-to-latest-btn.active {
+        color: #2563eb !important;
+    }
+    .go-to-latest-btn:hover {
+        color: #e65100 !important;
+    }
 </style>
 @endpush
 
 @push('scripts')
 <script>
+    console.log('[GoToLatestBtn] Script loaded');
+    function scrollToLatestMessage() {
+        console.log('[GoToLatestBtn] scrollToLatestMessage called');
+        const messages = document.getElementById('messages');
+        if (messages) {
+            messages.scrollTop = messages.scrollHeight;
+        }
+    }
+    function checkGoToLatestBtn() {
+        console.log('[GoToLatestBtn] checkGoToLatestBtn called');
+        const messages = document.getElementById('messages');
+        const goToLatestBtn = document.getElementById('goToLatestBtn');
+        console.log('[GoToLatestBtn] Elements:', {messages, goToLatestBtn});
+        if (!messages || !goToLatestBtn) return;
+        // For debugging, always show the button
+        goToLatestBtn.classList.add('active');
+        // Original logic:
+        // const shouldShow = messages.scrollHeight > messages.clientHeight;
+        // if (shouldShow) {
+        //     goToLatestBtn.classList.add('active');
+        // } else {
+        //     goToLatestBtn.classList.remove('active');
+        // }
+    }
+    function attachGoToLatestBtnLogic() {
+        console.log('[GoToLatestBtn] attachGoToLatestBtnLogic called');
+        const messages = document.getElementById('messages');
+        const goToLatestBtn = document.getElementById('goToLatestBtn');
+        if (messages && goToLatestBtn) {
+            messages.removeEventListener('scroll', checkGoToLatestBtn);
+            messages.addEventListener('scroll', checkGoToLatestBtn);
+            goToLatestBtn.onclick = scrollToLatestMessage;
+            checkGoToLatestBtn();
+        }
+    }
     document.addEventListener('livewire:load', function () {
+        console.log('[GoToLatestBtn] livewire:load event');
+        attachGoToLatestBtnLogic();
         Livewire.hook('message.processed', (message, component) => {
-            const messages = document.getElementById('messages');
-            if (messages) {
-                messages.scrollTo({ top: messages.scrollHeight, behavior: 'smooth' });
-            }
+            console.log('[GoToLatestBtn] Livewire message.processed');
+            scrollToLatestMessage();
+            setTimeout(attachGoToLatestBtnLogic, 100);
         });
         Livewire.on('chat-selected', () => {
+            console.log('[GoToLatestBtn] Livewire chat-selected');
             setTimeout(() => {
-                const messages = document.getElementById('messages');
-                if (messages) {
-                    messages.scrollTo({ top: messages.scrollHeight, behavior: 'smooth' });
-                }
+                scrollToLatestMessage();
+                attachGoToLatestBtnLogic();
             }, 100);
         });
     });
