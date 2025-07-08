@@ -122,7 +122,16 @@ class SystemadminController extends Controller
         }
         $recentActivities = $activities->sortByDesc('created_at')->take(5);
 
-        return view('dashboard.systemadmin', compact('userCount', 'productCount', 'orderCount', 'rawMaterialCount', 'recentActivities', 'recentUsers'));
+        // Add dynamic chart data
+        $python = config('ml.python_path', 'python');
+        $script = config('ml.scripts_path', base_path('ml-scripts')) . '/custom_chart.py';
+        $output = [];
+        $return_var = 0;
+        $cmd = "$python $script --chart_type bar --x_axis Month --y_axis Sales --json";
+        exec($cmd, $output, $return_var);
+        $chartData = json_decode(implode('', $output), true);
+
+        return view('dashboard.systemadmin', compact('userCount', 'productCount', 'orderCount', 'rawMaterialCount', 'recentActivities', 'recentUsers', 'chartData'));
     }
 
 }

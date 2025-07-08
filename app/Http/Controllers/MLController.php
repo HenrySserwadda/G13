@@ -38,8 +38,24 @@ class MLController extends Controller
                 'gender_sales' => 'https://via.placeholder.com/400x300?text=Gender+Sales+Chart',
             ];
         }
+
+        // Add dynamic chart data
+        $python = config('ml.python_path', 'python');
+        $customScript = config('ml.scripts_path', base_path('ml-scripts')) . '/custom_chart.py';
+        $output = [];
+        $return_var = 0;
+        $cmd = "$python $customScript --chart_type bar --x_axis Month --y_axis Sales --json";
+        exec($cmd, $output, $return_var);
+        $chartData = json_decode(implode('', $output), true);
+        if (!$chartData || !isset($chartData['type'])) {
+            $chartData = [
+                'type' => 'bar',
+                'labels' => [],
+                'values' => []
+            ];
+        }
         
-        return view('ml.dashboard', compact('images'));
+        return view('ml.dashboard', compact('images', 'chartData'));
     }
     
     public function getRecommendations($productId)
@@ -77,20 +93,55 @@ class MLController extends Controller
         $xAxis2 = $request->input('xAxis2');
         $yAxis = $request->input('yAxis');
 
-        $script = config('ml.scripts_path') . '/custom_chart.py';
-        $python = config('ml.python_path');
-        $outputImage = public_path('images/custom_chart.png');
+        $script = config('ml.scripts_path', base_path('ml-scripts')) . '/custom_chart.py';
+        $python = config('ml.python_path', 'python');
+        $output = [];
+        $return_var = 0;
 
-        \Log::info('customChart python_path: ' . $python);
-        $cmd = "$python $script --chart_type \"$chartType\" --x_axis \"$xAxis\" --y_axis \"$yAxis\" --output \"$outputImage\"";
+        $cmd = "$python $script --chart_type \"$chartType\" --x_axis \"$xAxis\" --y_axis \"$yAxis\" --json";
         if (!empty($xAxis2)) {
             $cmd .= " --x_axis2 \"$xAxis2\"";
         }
-        \Log::info('customChart full command: ' . $cmd);
-        $output = shell_exec($cmd . ' 2>&1');
-        \Log::info('Custom chart output: ' . $output);
+        exec($cmd, $output, $return_var);
+        \Log::info('Custom chart raw output:', $output);
+        // Only decode the JSON line from the output
+        $jsonLine = null;
+        foreach ($output as $line) {
+            if (strpos(trim($line), '{') === 0) {
+                $jsonLine = $line;
+                break;
+            }
+        }
+        $chartData = $jsonLine ? json_decode($jsonLine, true) : null;
 
-        $imageUrl = asset('images/custom_chart.png');
-        return response()->json(['image' => $imageUrl]);
+        // If error, pass it through
+        if (!$chartData || isset($chartData['error'])) {
+            return response()->json(['chartData' => null, 'error' => $chartData['error'] ?? 'No chart data returned from Python script.']);
+        }
+
+        return response()->json(['chartData' => $chartData]);
+    }
+
+    public function dashboard()
+    {
+        $python = config('ml.python_path', 'python');
+        $script = config('ml.scripts_path', base_path('ml-scripts')) . '/custom_chart.py';
+        $output = [];
+        $return_var = 0;
+
+        // Example: bar chart, x_axis=Month, y_axis=Sales (customize as needed)
+        $cmd = "$python $script --chart_type bar --x_axis Month --y_axis Sales --json";
+        exec($cmd, $output, $return_var);
+
+        $chartData = json_decode(implode('', $output), true);
+        if (!$chartData || !isset($chartData['type'])) {
+            $chartData = [
+                'type' => 'bar',
+                'labels' => [],
+                'values' => []
+            ];
+        }
+
+        return view('ml.dashboard', compact('chartData'));
     }
 }

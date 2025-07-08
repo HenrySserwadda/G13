@@ -154,6 +154,7 @@ Route::prefix('ml')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/sales-analytics', [MLController::class, 'salesAnalytics'])->name('ml.sales-analytics');
     Route::get('/recommendations/{product}', [MLController::class, 'getRecommendations'])->name('ml.recommendations');
     Route::post('/train', [MLController::class, 'trainModels'])->name('ml.train');
+    Route::get('/dashboard', [MLController::class, 'dashboard'])->name('ml.dashboard');
 });
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('raw-material-orders', RawMaterialOrderController::class);
