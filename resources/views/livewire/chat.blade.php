@@ -1,5 +1,6 @@
 <div>
     @php
+        use Illuminate\Support\Str;
         function generateAvatar($name, $size = 40) {
             $colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A8', '#33FFF5'];
             $initials = '';
@@ -83,7 +84,21 @@
                             </div>
                             @endif
                             <div class="message-content">
-                                <p>{{ $message['message'] }}</p>
+                                @if(!empty($message['file_path']))
+                                    @if(Str::startsWith($message['file_type'] ?? '', 'image/'))
+                                        <a href="{{ asset('storage/' . $message['file_path']) }}" target="_blank">
+                                            <img src="{{ asset('storage/' . $message['file_path']) }}" alt="Image" style="max-width: 200px; max-height: 200px; border-radius: 8px; margin-bottom: 4px;">
+                                        </a>
+                                    @else
+                                        <a href="{{ asset('storage/' . $message['file_path']) }}" download>
+                                            <span class="file-icon" style="margin-right: 6px;">📎</span>
+                                            {{ $message['original_file_name'] ?? basename($message['file_path']) }}
+                                        </a>
+                                    @endif
+                                @endif
+                                @if(!empty($message['message']))
+                                    <p>{{ $message['message'] }}</p>
+                                @endif
                                 <span class="message-time">
                                     {{ \Carbon\Carbon::parse($message['created_at'])->format('h:i A') }}
                                     @if($message['sender_id'] == auth()->id())
@@ -99,30 +114,41 @@
                         @endforeach
                     </div>
                     <div class="message-input">
-                        <form wire:submit="submit">
+                        <form wire:submit="submit" enctype="multipart/form-data">
                             <div class="input-actions">
                                 <button type="button" class="emoji-btn">
                                     <svg viewBox="0 0 24 24" width="24" height="24">
                                         <path fill="currentColor" d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8zm0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2zm0 13a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zm-3.5-3a1.5 1.5 0 0 1 1.5 1.5 1.5 1.5 0 0 1-1.5 1.5A1.5 1.5 0 0 1 7 12.5 1.5 1.5 0 0 1 8.5 11zm7 0a1.5 1.5 0 0 1 1.5 1.5 1.5 1.5 0 0 1-1.5 1.5 1.5 1.5 0 0 1-1.5-1.5 1.5 1.5 0 0 1 1.5-1.5z"></path>
                                     </svg>
                                 </button>
-                                <button type="button" class="attachment-btn">
+                                <label class="attachment-btn" style="cursor:pointer;">
                                     <svg viewBox="0 0 24 24" width="24" height="24">
                                         <path fill="currentColor" d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5a2.5 2.5 0 0 0 5 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"></path>
                                     </svg>
-                                </button>
+                                    <input type="file" wire:model="newFile" style="display:none;">
+                                </label>
                             </div>
+                            @if($newFile)
+                                <div class="file-preview" style="margin-top: 8px; display: flex; align-items: center; gap: 10px;">
+                                    @if(substr($newFile->getMimeType(), 0, 6) === 'image/')
+                                        <img src="{{ $newFile->temporaryUrl() }}" alt="Preview" style="max-width: 100px; max-height: 100px; border-radius: 6px; border: 1px solid #ccc;">
+                                    @endif
+                                    <span>{{ $newFile->getClientOriginalName() }}</span>
+                                    <button type="button" wire:click="$set('newFile', null)" style="background: none; border: none; color: #e3342f; font-size: 18px; cursor: pointer;">&times;</button>
+                                </div>
+                            @endif
                             <input type="text" 
                                    wire:model="newMessage" 
                                    placeholder="Type a message...." 
                                    class="message-field"
-                                   required>
+                                   >
                             <button type="submit" class="send-btn">
                                 <svg viewBox="0 0 24 24" width="24" height="24">
                                     <path fill="currentColor" d="M1.101 21.757L23.8 12.028 1.101 2.3l.011 7.912 13.623 1.816-13.623 1.817-.011 7.912z"></path>
                                 </svg>
                             </button>
                         </form>
+                        @error('newFile') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 @else
                     <!-- Empty state when no chat is selected -->
