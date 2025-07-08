@@ -21,6 +21,7 @@ use App\Http\Controllers\WholesalerRetailerInventoryController;
 use App\Http\Controllers\MLController;
 use App\Http\Controllers\RawMaterialOrderController;
 use App\Models\Wholesaler;
+use App\Http\Controllers\SupplierController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -47,18 +48,13 @@ Route::get('/dashboard/customer',function(){
     return view('dashboard/customer');
  })->middleware(['auth', 'verified'])->name('dashboard.customer');
 
-Route::get('/dashboard/supplier',function(){
-    return view('dashboard.supplier');
- })->middleware(['auth', 'verified'])->name('dashboard.supplier');
+Route::get('/dashboard/supplier', [\App\Http\Controllers\SupplierController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard.supplier');
 
 Route::get('/dashboard/wholesaler',function(){
     return view('dashboard.wholesaler');
  })->middleware(['auth', 'verified'])->name('dashboard.wholesaler');
 
-Route::get('/dashboard/systemadmin',function(){
-   // $users=User::all()->latest();//this reruns a view for the system admin to see the users by the latest one that has been added but i am going to work on it so that it does eager loading
-    return view('dashboard.systemadmin');
- })->middleware(['auth', 'verified'])->name('dashboard.systemadmin');
+Route::get('/dashboard/systemadmin', [SystemadminController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard.systemadmin');
  Route::resource('inventories', InventoryController::class)->middleware('auth');
 
 
