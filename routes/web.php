@@ -146,6 +146,9 @@ Route::middleware(['auth','verified'])->group(function(){
 });
 
 
+//to filter users basing on category
+Route::get('/filter',[SystemAdminController::class,'filter'])->name('filter');
+
 
 
 
