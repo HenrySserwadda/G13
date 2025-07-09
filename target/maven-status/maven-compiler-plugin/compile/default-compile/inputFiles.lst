@@ -1,9 +1,8 @@
-E:\Java Projects\vendor-java-server\vendor-application-server\src\main\java\com\example\vendorapp\controller\VendorApplicationController.java
-E:\Java Projects\vendor-java-server\vendor-application-server\src\main\java\com\example\vendorapp\model\ApplicationStatus.java
-E:\Java Projects\vendor-java-server\vendor-application-server\src\main\java\com\example\vendorapp\model\VendorApplication.java
-E:\Java Projects\vendor-java-server\vendor-application-server\src\main\java\com\example\vendorapp\repository\VendorApplicationRepository.java
-E:\Java Projects\vendor-java-server\vendor-application-server\src\main\java\com\example\vendorapp\service\EmailService.java
-E:\Java Projects\vendor-java-server\vendor-application-server\src\main\java\com\example\vendorapp\service\PdfProcessingService.java
-E:\Java Projects\vendor-java-server\vendor-application-server\src\main\java\com\example\vendorapp\service\SchedulingService.java
-E:\Java Projects\vendor-java-server\vendor-application-server\src\main\java\com\example\vendorapp\validation\VendorValidationService.java
-E:\Java Projects\vendor-java-server\vendor-application-server\src\main\java\com\example\vendorapp\VendorAppApplication.java
+C:\xampp\htdocs\durabag-app\G13\src\main\java\com\vendor\validator\Controller\VendorController.java
+C:\xampp\htdocs\durabag-app\G13\src\main\java\com\vendor\validator\Model\ValidationResult.java
+C:\xampp\htdocs\durabag-app\G13\src\main\java\com\vendor\validator\Model\Vendor.java
+C:\xampp\htdocs\durabag-app\G13\src\main\java\com\vendor\validator\Service\EmailService.java
+C:\xampp\htdocs\durabag-app\G13\src\main\java\com\vendor\validator\Service\VendorService.java
+C:\xampp\htdocs\durabag-app\G13\src\main\java\com\vendor\validator\Service\VisitSchedulerService.java
+C:\xampp\htdocs\durabag-app\G13\src\main\java\com\vendor\validator\Util\VendorParser.java
+C:\xampp\htdocs\durabag-app\G13\src\main\java\com\vendor\validator\VendorValidatorApplication.java

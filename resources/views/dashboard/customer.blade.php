@@ -3,6 +3,7 @@
 @section('page-title', 'Customer Dashboard')
 @section('page-description', 'Overview of your customer dashboard')
 
+
 @section('content')    
 {{-- this is me trying to inform the customer of what happened when they login to the system for the very first time. they should see a message telling them to check their email for login details --}}
     @if (session('first_time'))
@@ -11,5 +12,6 @@
         </div>
     @endif
     <p>This is the customer dashboard</p>
+
 
 @endsection

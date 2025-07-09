@@ -20,13 +20,12 @@ return new class extends Migration
             $table->decimal('unit_price', 10, 2)->nullable();
 
             // Foreign key to suppliers table
-            $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onDelete('set null');
+            //$table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onDelete('set null');
 
             // Foreign key to users table (who added the material)
-            $table->string('user_id'); 
-            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
-
-            $table->timestamps();
+            $table->unsignedBigInteger('user_id'); 
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');     
+        $table->timestamps();
         });
     }
 
