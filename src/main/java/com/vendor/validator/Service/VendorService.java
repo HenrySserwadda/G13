@@ -23,13 +23,13 @@ public class VendorService {
         if ((double) v.debt / v.capital > 0.3)
             reasons.add("Debt is high and exceeds 30%");
 
-        if (v.industrystandards)
-            reasons.add("Vendor doesn't meet indusrial standards");
+        if (!v.industrystandards)
+            reasons.add("Vendor doesn't meet industrial standards");
 
         if (!v.license)
             reasons.add("Vendor lacks valid license");
 
-        if (!v.taxCertificate)
+        if (v.taxCertificate)
             reasons.add("Missing tax Certification documents");
 
         boolean valid = reasons.isEmpty();
