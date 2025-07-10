@@ -52,7 +52,7 @@
             <!-- Right side - Chat area -->
             <div class="chat-area">
                 @if($selectedUserId && isset($selectedUser) && $selectedUser)
-                    <!-- Your existing chat UI when a user is selected -->
+                    <!-- chat UI when a user is selected -->
                     <div class="chat-header">
                         <div class="chat-user">
                             <div class="user-avatar">
@@ -182,7 +182,7 @@
     .chat-wrapper {
         min-height: 400px;
         width: 100%;
-        background: #181c23;
+        background:rgb(44, 62, 93);
         border-radius: 18px;
         overflow: hidden;
         position: relative;
