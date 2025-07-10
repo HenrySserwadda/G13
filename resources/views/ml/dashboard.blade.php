@@ -122,6 +122,8 @@
                     <option value="Blue">Blue</option>
                     <option value="Black">Black</option>
                     <option value="Red">Red</option>
+                    <option value="Pink">Pink</option>
+                    <option value="Gray">Gray</option>
                 </select>
                 <label for="month" class="mr-2">Month:</label>
                 <select id="month" name="month" class="border rounded px-2 py-1">
