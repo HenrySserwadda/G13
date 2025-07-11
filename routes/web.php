@@ -169,6 +169,11 @@ Route::middleware(['auth', 'verified'])->get('/supplier/{supplier}/raw-materials
 
 Route::post('/ml/custom-chart', [App\Http\Controllers\MLController::class, 'customChart'])->middleware(['auth', 'verified']);
 
+
+//to filter users basing on category
+Route::get('/filter',[SystemAdminController::class,'filter'])->name('filter');
+
+
 // System admin activity log
 Route::get('/dashboard/systemadmin/activity-log', [\App\Http\Controllers\SystemadminController::class, 'activityLog'])->name('dashboard.systemadmin.activity-log');
 
