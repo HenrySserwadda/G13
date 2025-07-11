@@ -102,7 +102,7 @@
                 <ul class="space-y-2 font-medium">
                     <!-- Dashboard -->
                     <li>
-                        <a href="#" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                        <a href="{{ route('redirect') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
                             <i class="fas fa-tachometer-alt w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                             <span class="ms-3">Dashboard</span>
                         </a>
@@ -213,7 +213,7 @@
                                     <a href="{{ route('reports.sales') }}" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Sales</a>
                                 </li>
                                 <li>
-                                    <a href="#" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Inventory</a>
+                                    <a href="{{ route('reports.inventory') }}" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Inventory</a>
                                 </li>
                                 <li>
                                     <a href="{{ route('reports.products') }}" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Products</a>

@@ -13,6 +13,8 @@ use App\Models\Supplier;
 use App\Models\Retailer;
 use App\Models\Wholesaler;
 use App\Models\Systemadmin;
+use App\Notifications\UserRejectedWithNotification;
+use App\Notifications\NewStaffMember;
 class SystemadminController extends Controller
 {
     /**
@@ -20,10 +22,15 @@ class SystemadminController extends Controller
      */
     public function makeSystemAdministrator()
     {
-        $users = User::where('status','approved')
-            ->where('category','!=','systemadmin')
+        $users = User::where('category','!=','systemadmin')
             ->get();
         return view('dashboard.systemadmin.make-system-administrator', compact('users'));
+    }
+    public function makeStaffMember()
+    {
+        $users = User::where('category','!=','staff')
+            ->get();
+        return view('dashboard.systemadmin.make-staff', compact('users'));
     }
     /**
      * Remove the specified user from the system.
@@ -44,13 +51,22 @@ class SystemadminController extends Controller
         $users = User::where('status','approved')->get();
         return view('dashboard.systemadmin.all-users', compact('users'));
     }
-    public function pendingUsers()
+    public function pendingRetailers()
     {
-        $users = User::where('status', 'pending')->get();
-        return view('dashboard.systemadmin.pending-users', compact('users'));
+        $users = User::where('status', 'application received')
+            ->where('pending_category','retailer')
+            ->get();
+        return view('dashboard.systemadmin.pending-retailers', compact('users'));
+    }
+    public function pendingSuppliers()
+    {
+        $users = User::where('status', 'application received')
+            ->where('pending_category','supplier')
+            ->get();
+        return view('dashboard.systemadmin.pending-suppliers', compact('users'));
     }
 
-//to filter users based on categoryphp artisan se
+//to filter users based on category
     public function filter(Request $request)
     {
         $category = $request->input('categories', 'all');   
@@ -62,7 +78,59 @@ class SystemadminController extends Controller
         return view('dashboard.systemadmin.all-users', compact('users'));
     }
 
-    public function approve($id)
+    public function approveRetailers($id)
+    {
+        $user = User::findOrFail($id);
+        $user->status = 'application approved';
+        $user->category='retailer';
+        $user->pending_category=null;
+        $user->user_id=User::generateUserId($user->category);
+        $user->notify(new UserApprovedWithNotification($user));
+        $user->save();
+        Retailer::create([
+                'user_id'=>$user->user_id
+            ]);
+        return redirect()->route('dashboard.systemadmin.pending-retailers')
+            ->with('success', 'User approved successfully.');
+    }
+
+    public function rejectRetailers($id)
+    {
+        $user = User::findOrFail($id);
+        $user->status = 'application rejected';
+        $user->pending_category=null;
+        $user->save();
+        $user->notify(new UserRejectedWithNotification($user));
+        return redirect()->route('dashboard.systemadmin.pending-suppliers')
+            ->with('error', 'Supplier application rejected.');
+    }
+    public function approveSuppliers($id)
+    {
+        $user = User::findOrFail($id);
+        $user->status = 'application approved';
+        $user->category='supplier';
+        $user->pending_category=null;
+        $user->user_id=User::generateUserId($user->category);
+        $user->notify(new UserApprovedWithNotification($user));
+        $user->save();
+        Supplier::create([
+                'user_id'=>$user->user_id
+            ]);
+        return redirect()->route('dashboard.systemadmin.pending-suppliers')
+            ->with('success', 'User approved successfully.');
+    }
+
+    public function rejectSuppliers($id)
+    {
+        $user = User::findOrFail($id);
+        $user->status = 'application rejected';
+        $user->pending_category=null;
+        $user->save();
+        $user->notify(new UserRejectedWithNotification($user));
+        return redirect()->route('dashboard.systemadmin.pending-suppliers')
+            ->with('error', 'Supplier application rejected.');
+    }
+    /* public function approve($id)
     {
         $user = User::findOrFail($id);
         $user->status = 'approved';
@@ -92,34 +160,32 @@ class SystemadminController extends Controller
         }
         return redirect()->route('dashboard.systemadmin.pending-users')
             ->with('success', 'User approved successfully.');
-    }
+    } */
 
-    public function reject($id)
-    {
-        $user = User::findOrFail($id);
-        $user->status = 'rejected';
-        $user->save();
-        return redirect()->route('dashboard.systemadmin.pending-users')
-            ->with('success', 'User rejected successfully.');
-    }
     public function makeSystemAdmin($id){
         $user=User::findOrFail($id);
-        if($user->status==='approved'){
-            $user->category='systemadmin';
-            $user->user_id=Systemadmin::generateSystemAdminId($id);
-            $user->is_admin=true;
-            $user->notify(new NewSystemAdmin($user));
-            $user->save();
-            Systemadmin::create([
-                'user_id'=>$user->user_id
-            ]);
-            return redirect()->route('dashboard.systemadmin.make-system-administrator')
-                ->with('success', 'User made system administrator successfully.');
-        } else{
-            return redirect()->route('dashboard.systemadmin.make-system-administrator')
-                ->with('success','User not eligible');
-        }
-    
+        $user->category='systemadmin';
+        $user->user_id=Systemadmin::generateSystemAdminId($id);
+        $user->is_admin=true;
+        $user->notify(new NewSystemAdmin($user));
+        $user->save();
+        Systemadmin::create([
+            'user_id'=>$user->user_id
+        ]);
+        return redirect()->route('dashboard.systemadmin.make-system-administrator')
+            ->with('success', 'User made system administrator successfully.');    
+    }
+    public function makeStaff($id){
+        $user=User::findOrFail($id);
+        $user->category='staff';
+        $user->user_id=User::generateUserId($id);
+        $user->notify(new NewStaffMember($user));
+        $user->save();
+        Staff::create([
+            'user_id'=>$user->user_id
+        ]);
+        return redirect()->route('dashboard.systemadmin.make-staff')
+            ->with('success', 'User made staff successfully.');    
     }
 
 }

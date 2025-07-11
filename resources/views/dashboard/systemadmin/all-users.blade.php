@@ -1,49 +1,8 @@
 {{-- filepath: resources/views/dashboard/systemadmin/all-users.blade.php --}}
 @extends('components.dashboard')
 @section('title', 'All Users - DURABAG')
-
-
 @section('content')
-    <div class="flex border-b border-gray-200 dark:border-gray-700 mb-6">
-        <!-- all users -->
-        <a href="{{ route('dashboard.systemadmin.all-users') }}"
-           class="py-2 px-4 text-sm font-medium text-center transition-colors duration-200
-                  @if(Request::routeIs('dashboard.systemadmin.all-users'))
-                      text-blue-600 border-b-2 border-blue-600 dark:text-blue-500 dark:border-blue-500
-                  @else
-                      text-gray-500 hover:text-gray-700 hover:border-gray-300
-                      dark:text-gray-700 dark:hover:text-gray-200 dark:hover:border-gray-500
-                  @endif
-                  whitespace-nowrap cursor-pointer">
-            All users
-        </a>
-
-        <!-- pending -->
-        <a href="{{ route('dashboard.systemadmin.pending-users') }}"
-           class="py-2 px-4 text-sm font-medium text-center transition-colors duration-200
-                  @if(Request::routeIs('dashboard.systemadmin.pending-users'))
-                      text-blue-600 border-b-2 border-blue-600 dark:text-blue-500 dark:border-blue-500
-                  @else
-                      text-gray-500 hover:text-gray-700 hover:border-gray-300
-                      dark:text-gray-700 dark:hover:text-gray-200 dark:hover:border-gray-500
-                  @endif
-                  whitespace-nowrap cursor-pointer">
-            Pending users
-        </a>
-
-        <!-- to make-system-admin -->
-        <a href="{{ route('dashboard.systemadmin.make-system-administrator') }}"
-           class="py-2 px-4 text-sm font-medium text-center transition-colors duration-200
-                  @if(Request::routeIs('dashboard.systemadmin.make-system-administrator'))
-                      text-blue-600 border-b-2 border-blue-600 dark:text-blue-500 dark:border-blue-500
-                  @else
-                      text-gray-500 hover:text-gray-700 hover:border-gray-300
-                      dark:text-gray-700 dark:hover:text-gray-200 dark:hover:border-gray-500
-                  @endif
-                  whitespace-nowrap cursor-pointer">
-            Make System Admin
-        </a>
-    </div>
+    <x-usermgt />
     {{--<div class="filter">
         <form action="{{ route('filter') }}" method="GET">
             <select name="categories" id="filter">
