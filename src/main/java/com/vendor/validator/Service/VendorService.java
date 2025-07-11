@@ -26,11 +26,19 @@ public class VendorService {
         if (!v.industrystandards)
             reasons.add("Vendor doesn't meet industrial standards");
 
-        if (!v.license)
-            reasons.add("Vendor lacks valid license");
+        // Validate Business Registration Number (previously license)
+        if (v.businessRegistrationNumber == null || v.businessRegistrationNumber.isEmpty()) {
+            reasons.add("Missing Business Registration Number");
+        } else if (!v.businessRegistrationNumber.matches("BRN: \\d{9}")) { // Example format: BRN: 123456789
+            reasons.add("Invalid Business Registration Number format (should be 'BRN: 123456789')");
+        }
 
-        if (v.taxCertificate)
-            reasons.add("Missing tax Certification documents");
+        // Validate TIN (previously taxCertificate)
+        if (v.TIN == null || v.TIN.isEmpty()) {
+            reasons.add("Missing Tax Identification Number (TIN)");
+        } else if (!v.TIN.matches("\\d{10}")) { // Must be exactly 10 digits
+            reasons.add("Invalid TIN format (should be 10 digits)");
+        }
 
         boolean valid = reasons.isEmpty();
 

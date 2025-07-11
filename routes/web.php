@@ -22,6 +22,7 @@ use App\Http\Controllers\MLController;
 use App\Http\Controllers\RawMaterialOrderController;
 use App\Models\Wholesaler;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\VendorController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -179,14 +180,7 @@ Route::get('/dashboard/systemadmin/activity-log', [\App\Http\Controllers\Systema
 
 //Java Server Routes
 
-Route::post('/submit-vendor-pdf', function (Request $request) {
-    $response = Http::attach(
-        'file', file_get_contents($request->file('wholesalerpdf')->getRealPath()),
-        $request->file('wholesalerpdf')->getClientOriginalName()
-    )->post('http://localhost:8080/validate-file');
-
-    return $response->json(); // Return Java backend response
-});
+Route::post('/submit-vendor-pdf', [\App\Http\Controllers\VendorController::class, 'validateFile'])->name('vendor.validate');
 
 Route::get('/activate-java-server', function () {
     // Trigger an actual Java endpoint here if needed
