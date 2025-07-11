@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.stereotype.Controller;
 import org.springframework.mail.javamail.JavaMailSender;
+import java.time.format.DateTimeFormatter;
+
 
 import java.io.File;
 import java.time.LocalDate;
@@ -52,8 +54,12 @@ public class VendorController {
                 result.put("valid", validation.isValid());
                 result.put("reasons", validation.getReasons());
                 if (validation.isValid()) {
-                    result.put("visitDate", visitSchedulerService.generateVisitDate(v));
-                }
+    LocalDate visitDate = visitSchedulerService.generateVisitDate(v);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    String formattedDate = visitDate.format(formatter);
+    result.put("visitDate", formattedDate);
+}
+
                 response.add(result);
             }
 
