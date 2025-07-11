@@ -28,8 +28,8 @@ public class VendorParser {
                 Integer.parseInt(fields.get("debt").trim().replace(",", "")),
                 Integer.parseInt(fields.get("experience").trim().replace(",", "")),
                 Boolean.parseBoolean(fields.get("industrystandards")),
-                Boolean.parseBoolean(fields.get("license")),
-                Boolean.parseBoolean(fields.get("taxCertificate"))
+                fields.get("businessregistrationnumber"), // Changed from license (boolean)
+                fields.get("tin") // Changed from taxCertificate (boolean)
         );
 
         List<Vendor> vendors = new ArrayList<>();
@@ -47,10 +47,10 @@ public class VendorParser {
             }
 
             for (PDField field : form.getFields()) {
-            String key = field.getFullyQualifiedName().toLowerCase(); // make key lowercase
-            String value = field.getValueAsString();
-            fieldValues.put(key, value);
-        }
+                String key = field.getFullyQualifiedName().toLowerCase(); // make key lowercase
+                String value = field.getValueAsString();
+                fieldValues.put(key, value);
+            }
         }
 
         return fieldValues;

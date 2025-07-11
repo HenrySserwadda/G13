@@ -9,26 +9,30 @@ import com.vendor.validator.Util.VendorParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Controller;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import java.io.File;
 import java.time.LocalDate;
 import java.util.*;
 
-@RestController
-@Service
+@Controller
 public class VendorController {
 
     @Autowired private VendorService vendorService;
     @Autowired private VisitSchedulerService visitSchedulerService;
+    @Autowired private EmailService emailService;
 
-    @Autowired private EmailService emailService; // Add this
+    @GetMapping("/form")
+    public String showForm() {
+        return "form";
+    }
 
     @PostMapping(value = "/validate-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<Map<String, Object>>> validateVendors(@RequestParam("file") MultipartFile file) {
+    public String validateVendors(@RequestParam("file") MultipartFile file, Model model) {
         try {
             File temp = File.createTempFile("vendors-", ".pdf");
             file.transferTo(temp);
@@ -53,10 +57,13 @@ public class VendorController {
                 response.add(result);
             }
 
-            return ResponseEntity.ok(response);
+            model.addAttribute("results", response);
+            return "validation-result";
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Collections.singletonList(Map.of("error", e.getMessage())));
+            model.addAttribute("error", e.getMessage());
+            return "validation-result";
         }
     }
 }
+
+

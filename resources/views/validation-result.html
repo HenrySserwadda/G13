@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Validation Results</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .valid { color: #059669; font-weight: bold; }
+        .invalid { color: #dc2626; font-weight: bold; }
+        .popup {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            text-align: center;
+            font-weight: bold;
+        }
+        .popup.blue {
+            background-color: #f1fbfc;
+            color: #00796b;
+            border: 2px solid #00acc1;
+        }
+        .popup.red {
+            background-color: #fef6f7;
+            color: #d32f2f;
+            border: 2px solid #e57373;
+        }
+        .popup .tick-mark {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+    </style>
+
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-md py-6 mb-8">
+        <div class="max-w-6xl mx-auto px-4 flex items-center justify-center">
+            <img src="https://placehold.co/50x50/3b82f6/ffffff?text=DB" alt="DURABAG Logo" class="w-10 h-10 rounded-full mr-3">
+            <h1 class="text-3xl font-extrabold text-blue-800 tracking-wide">DURABAG</h1>
+        </div>
+    </header>
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">Vendor Validation Results</h1>
+
+            <!-- Error Display -->
+            <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                <strong class="font-bold">Error:</strong>
+                <span th:text="${error}" class="block sm:inline"></span>
+            </div>
+
+            <!-- Welcome Message -->
+            <div th:if="${results}" class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                <p class="text-blue-800 mb-2">Welcome, valued vendor! We appreciate your interest in partnering with us.</p>
+                <p class="text-blue-700">We encourage honesty and transparency throughout this process, as it forms the foundation for a successful and lasting business relationship. We look forward to the possibility of doing great business together!</p>
+            </div>
+
+            <!-- Results Table -->
+            <div th:if="${results}" class="bg-white shadow-md rounded-lg overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reasons</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visit Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr th:each="result : ${results}" class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${result.get('vendor')}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span th:if="${result.get('valid')}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    ✅ Valid
+                                </span>
+                                <span th:unless="${result.get('valid')}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    ❌ Invalid
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900">
+                                <ul th:if="${result.get('reasons')}" class="list-disc list-inside text-red-600">
+                                    <li th:each="reason : ${result.get('reasons')}" th:text="${reason}"></li>
+                                </ul>
+                                <span th:unless="${result.get('reasons')}" class="text-gray-500">No issues found</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${result.get('visitDate')} ?: '-'"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Status Message -->
+            <div th:if="${results}" class="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <p class="text-gray-700">Your Status Will be Updated based on validation criteria and a successful Visit to the facility</p>
+            </div>
+
+            <!-- Success/Error Popup -->
+            <div th:if="${results}" id="validationPopup" class="popup" th:classappend="${#lists.contains(results.?[get('valid')], false)} ? 'red' : 'blue'">
+                <div class="mt-3 text-center">
+                    <div th:if="${#lists.contains(results.?[get('valid')], false)}">
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Validation Results</h3>
+                        <p class="text-sm text-gray-500">Some vendors did not pass validation.<br>Thank you for your submission.</p>
+                    </div>
+                    <div th:unless="${#lists.contains(results.?[get('valid')], false)}">
+                        <span class="tick-mark">✅</span>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Success!</h3>
+                        <p class="text-sm text-gray-500">All vendors have been successfully validated.<br>Wait for confirmation email.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div class="mt-8">
+                <a href="http://localhost:8000/insertpdf" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                    ← Back to form
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', function() {
+            const popup = document.getElementById('validationPopup');
+            if (popup) {
+                popup.style.display = 'block';
+                
+                // Hide popup after 5 seconds
+                setTimeout(() => {
+                    popup.style.display = 'none';
+                }, 5000);
+            }
+        });
+        /*]]>*/
+    </script>
+</body>
+</html> 

@@ -11,13 +11,13 @@ public class Vendor {
     public int debt;
     public int experience;
     public boolean industrystandards;
-    public boolean license;
-    public boolean taxCertificate;
+    public String businessRegistrationNumber;  // Changed from boolean license
+    public String TIN;  // Changed from boolean taxCertificate
 
     public Vendor() {}
 
     public Vendor(String name, String CEO, String email, int phone, int capital, int revenue, int debt, int experience,
-                  boolean industrystandards, boolean license, boolean taxCertificate) {
+                  boolean industrystandards, String businessRegistrationNumber, String TIN) {
         this.name = name;
         this.CEO = CEO;
         this.email = email;
@@ -27,14 +27,14 @@ public class Vendor {
         this.debt = debt;
         this.experience = experience;
         this.industrystandards = industrystandards;
-        this.license = license;
-        this.taxCertificate = taxCertificate;
+        this.businessRegistrationNumber = businessRegistrationNumber;
+        this.TIN = TIN;
     }
 
     @Override
     public String toString() {
         return String.format(
-            "Company Name: %s\nCEO: %s\nEmail: %s\nContact: %d\nCapital: %d\nRevenue: %d\nDebt: %d\nExperience: %d\nIndustry Standards: %b\nLicense: %b\nTaxCertificate: %b\n",
-            name, CEO, email, phone, capital, revenue, debt, experience, industrystandards, license, taxCertificate);
+            "Company Name: %s\nCEO: %s\nEmail: %s\nContact: %d\nCapital: %d\nRevenue: %d\nDebt: %d\nExperience: %d\nIndustry Standards: %b\nBusiness Registration Number: %s\nTIN: %s\n",
+            name, CEO, email, phone, capital, revenue, debt, experience, industrystandards, businessRegistrationNumber, TIN);
     }
 }
