@@ -185,4 +185,42 @@ class MLController extends Controller
         $data = $jsonLine ? json_decode($jsonLine, true) : null;
         return response()->json($data);
     }
+
+    /**
+     * Serve product data for ML recommendations, filtered by user preferences.
+     * GET /api/products-for-ml?gender=male&styles=Puffer,Classic&colors=Black,Blue
+     */
+    public function productsForML(Request $request)
+    {
+        $python = config('ml.python_path', 'python');
+        $script = config('ml.scripts_path', base_path('ml-scripts')) . '/recommendations.py';
+        $gender = $request->query('gender');
+        $styles = $request->query('styles'); // comma-separated
+        $colors = $request->query('colors'); // comma-separated
+
+        $args = '';
+        if ($gender) {
+            $args .= ' --gender "' . escapeshellarg($gender) . '"';
+        }
+        if ($styles) {
+            $args .= ' --styles "' . escapeshellarg($styles) . '"';
+        }
+        if ($colors) {
+            $args .= ' --colors "' . escapeshellarg($colors) . '"';
+        }
+        // Call the Python script with --get_products and filters
+        $cmd = "$python $script --get_products$args";
+        $output = [];
+        $return_var = 0;
+        exec($cmd, $output, $return_var);
+        $jsonLine = null;
+        foreach ($output as $line) {
+            if (strpos(trim($line), '[') === 0 || strpos(trim($line), '{') === 0) {
+                $jsonLine = $line;
+                break;
+            }
+        }
+        $products = $jsonLine ? json_decode($jsonLine, true) : [];
+        return response()->json(['products' => $products]);
+    }
 }

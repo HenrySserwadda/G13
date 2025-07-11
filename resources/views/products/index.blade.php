@@ -37,12 +37,34 @@
 @endpush
 
 @section('content')
-    <div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-8">
+    <script>
+        window.LaravelUserCategory = @json(Auth::user()->category ?? null);
+        window.LaravelCsrfToken = '{{ csrf_token() }}';
+        window.LaravelCartAddRoute = '{{ route('cart.add', ['product' => 'PRODUCT_ID']) }}';
+    </script>
+    <div class="mb-8">
+        <div class="flex space-x-2">
+            <button id="tab-products" class="tab-btn bg-blue-600 text-white px-4 py-2 rounded-t focus:outline-none">All Products</button>
+            @auth
+                @if(Auth::user()->category === 'wholesaler' || Auth::user()->category === 'retailer')
+                    <button id="tab-recommendations" class="tab-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-t focus:outline-none">Recommended for You</button>
+                @endif
+            @endauth
+        </div>
+    </div>
+
+    <div id="products-section">
+        <!-- Tag Bar for All Products -->
+        <div class="mb-2 text-gray-700 font-semibold text-sm">What could you be interested in?</div>
+        <div id="all-products-tag-bar-loader" class="hidden flex justify-center items-center py-2">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-opacity-50"></div>
+        </div>
+        <div id="all-products-tag-bar" class="flex overflow-x-auto space-x-2 py-2 mb-6"></div>
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-extrabold text-gray-800 mb-4 flex items-center">
                 <i class="fas fa-shopping-bag mr-3"></i> Our Bag Collection
             </h1>
-
             @auth
                 @if(Auth::user()->category === 'systemadmin')
                     <a href="{{ route('products.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg inline-flex items-center shadow-lg transition-all duration-300 hover:shadow-xl">
@@ -116,7 +138,6 @@
                                     </form>
                                 @endif
 
-
                             @else
                                 <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center transition-colors duration-300 flex-1">
                                     <i class="fas fa-sign-in-alt mr-2"></i> Login
@@ -149,4 +170,121 @@
             </div>
         @endif
     </div>
+
+    @auth
+        @if(Auth::user()->category === 'wholesaler' || Auth::user()->category === 'retailer')
+            <div id="recommendations-section" class="hidden">
+                @include('ml.recommendations')
+            </div>
+        @endif
+    @endauth
+</div>
+
+{{-- Tab Switcher JS --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabProducts = document.getElementById('tab-products');
+    const tabRecs = document.getElementById('tab-recommendations');
+    const productsSection = document.getElementById('products-section');
+    const recsSection = document.getElementById('recommendations-section');
+
+    if (tabProducts) {
+        tabProducts.addEventListener('click', function() {
+            tabProducts.classList.add('bg-blue-600', 'text-white');
+            tabProducts.classList.remove('bg-gray-200', 'text-gray-800');
+            if (tabRecs) {
+                tabRecs.classList.remove('bg-blue-600', 'text-white');
+                tabRecs.classList.add('bg-gray-200', 'text-gray-800');
+            }
+            productsSection.classList.remove('hidden');
+            if (recsSection) recsSection.classList.add('hidden');
+        });
+    }
+    if (tabRecs) {
+        tabRecs.addEventListener('click', function() {
+            tabRecs.classList.add('bg-blue-600', 'text-white');
+            tabRecs.classList.remove('bg-gray-200', 'text-gray-800');
+            tabProducts.classList.remove('bg-blue-600', 'text-white');
+            tabProducts.classList.add('bg-gray-200', 'text-gray-800');
+            productsSection.classList.add('hidden');
+            if (recsSection) recsSection.classList.remove('hidden');
+        });
+    }
+});
+
+// Tag bar for All Products section
+let allProductsTags = { colors: [], styles: [] };
+let allProductsTagBar = document.getElementById('all-products-tag-bar');
+
+// Fetch tag data from recommendations API (reuse the same endpoint)
+async function fetchAllProductsTags() {
+    // Show loader
+    document.getElementById('all-products-tag-bar-loader').classList.remove('hidden');
+    allProductsTagBar.classList.add('opacity-50', 'pointer-events-none');
+
+    const res = await fetch('/api/products-for-ml');
+    const data = await res.json();
+    const products = data.products || [];
+    const colors = [...new Set(products.map(p => p.color).filter(Boolean))];
+    const styles = [...new Set(products.map(p => p.style).filter(Boolean))];
+    allProductsTags = { colors, styles };
+    renderAllProductsTagBar(colors, styles, products);
+
+    // Hide loader
+    document.getElementById('all-products-tag-bar-loader').classList.add('hidden');
+    allProductsTagBar.classList.remove('opacity-50', 'pointer-events-none');
+}
+
+function renderAllProductsTagBar(colors, styles, products) {
+    allProductsTagBar.innerHTML = '';
+    // Color tags
+    colors.forEach(color => {
+        const product = products.find(p => p.color === color);
+        const img = product ? product.image : '';
+        const tag = document.createElement('div');
+        tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-green-200 hover:bg-green-300';
+        tag.onclick = () => handleAllProductsTagClick('color', color);
+        tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${color}"><span>${color}</span>`;
+        allProductsTagBar.appendChild(tag);
+    });
+    // Style tags
+    styles.forEach(style => {
+        const product = products.find(p => p.style === style);
+        const img = product ? product.image : '';
+        const tag = document.createElement('div');
+        tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-blue-200 hover:bg-blue-300';
+        tag.onclick = () => handleAllProductsTagClick('style', style);
+        tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${style}"><span>${style}</span>`;
+        allProductsTagBar.appendChild(tag);
+    });
+}
+
+function handleAllProductsTagClick(type, value) {
+    // Switch to recommendations tab
+    const tabRecs = document.getElementById('tab-recommendations');
+    if (tabRecs) tabRecs.click();
+    // Wait for recommendations section to be visible, then set the filter
+    setTimeout(() => {
+        // Set the filter in the recommendations section
+        if (window.selectedTags) {
+            if (type === 'color') {
+                window.selectedTags.color = value;
+            } else if (type === 'style') {
+                window.selectedTags.style = value;
+            }
+        }
+        // Trigger recommendations update
+        if (typeof window.fetchRecommendations === 'function') {
+            window.fetchRecommendations();
+        }
+        // Optionally, highlight the selected tag in the recommendations tag bar
+    }, 100);
+}
+
+document.addEventListener('DOMContentLoaded', fetchAllProductsTags);
+</script>
+<style>
+.tab-btn { transition: background 0.2s, color 0.2s; }
+.tab-btn.bg-blue-600 { border-bottom: 2px solid #2563eb; }
+</style>
 @endsection

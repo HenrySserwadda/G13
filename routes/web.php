@@ -193,5 +193,8 @@ Route::get('/activate-java-server', function () {
     return ['message' => 'Validation result will be emailed shortly.'];
 });
 
+// ML product data API for recommendations
+Route::get('/api/products-for-ml', [App\Http\Controllers\MLController::class, 'productsForML']);
+
 
 

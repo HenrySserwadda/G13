@@ -236,6 +236,7 @@
                         @endif
 
                         <!-- Analytics -->
+                        
                         @if(in_array(Auth::user()->category, ['systemadmin', 'staff']))
                         <li>
                             <button type="button" class="flex items-center w-full p-2 text-base text-white transition duration-75 rounded-lg group hover:bg-primary-hover" aria-controls="analytics-dropdown" data-collapse-toggle="analytics-dropdown">
@@ -247,15 +248,18 @@
                                 <li>
                                     <a href="{{ route('ml.sales-analytics') }}" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Sales Analytics</a>
                                 </li>
+                                {{--
                                 <li>
                                     <a href="{{ route('ml.recommendations', 1) }}" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Product Recommendations</a>
                                 </li>
+                                --}}
                                 <li>
                                     <a href="#" onclick="trainModels()" class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group hover:bg-primary-hover">Model Training</a>
                                 </li>
                             </ul>
                         </li>
                         @endif
+                        
 
                         <!-- Users (Admin Only) -->
                         @if(Auth::user()->category === 'systemadmin')
