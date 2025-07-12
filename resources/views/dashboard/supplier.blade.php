@@ -4,6 +4,40 @@
 @section('page-description', 'Overview of your supplier dashboard')
 
 @section('content')
+    @php $supplierName = Auth::user()->name ?? 'Supplier'; @endphp
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Welcome, {{ $supplierName }}!</h1>
+        <p class="text-gray-600">Here you can manage your raw materials and inventory.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow p-6 flex items-center">
+            <div class="bg-purple-100 p-3 rounded-full mr-4">
+                <i class="fas fa-cubes text-purple-600 text-2xl"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-bold">{{ $rawMaterialCount }}</div>
+                <div class="text-gray-500 text-sm">Raw Materials</div>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6 flex items-center">
+            <div class="bg-yellow-100 p-3 rounded-full mr-4">
+                <i class="fas fa-warehouse text-yellow-600 text-2xl"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-bold">{{ $inventoryCount }}</div>
+                <div class="text-gray-500 text-sm">Inventory</div>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6 flex items-center">
+            <div class="bg-green-100 p-3 rounded-full mr-4">
+                <i class="fas fa-clipboard-list text-green-600 text-2xl"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-bold">{{ $orderCount }}</div>
+                <div class="text-gray-500 text-sm">Orders</div>
+            </div>
+        </div>
+    </div>
     <x-slot name="rawmaterials">
         <li>
             <a href="{{ route('raw_materials.index') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">

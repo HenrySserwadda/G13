@@ -12,7 +12,7 @@ class ChatMessage extends Model  // Class name should be PascalCase
      *
      * @var string
      */
-    protected $table = 'chatmessages';  // Explicit table name since it's not standard
+    protected $table = 'chat_messages';  // Corrected table name to match migration
     
     /**
      * The attributes that are mass assignable.
@@ -22,7 +22,10 @@ class ChatMessage extends Model  // Class name should be PascalCase
     protected $fillable = [
         'sender_id',
         'receiver_id',
-        'message'
+        'message',
+        'file_path',
+        'file_type',
+        'original_file_name',
     ];
 
     /**

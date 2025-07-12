@@ -3,64 +3,216 @@
 @section('page-title', 'System Admin Dashboard')
 @section('page-description', 'Overview of your system admin dashboard')
 
-@section('content')
-    <x-slot name="rawmaterials">
-        <li>
-            <a href="{{ route('raw_materials.index') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                <svg class="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
-                    <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z"/>
-                </svg>
-                <span class="flex-1 ms-3 whitespace-nowrap">Raw materials</span>
-            </a>
-        </li>
-    </x-slot>
-    <x-slot name="inventory">
-        <li>
-            <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-database-fill" viewBox="0 0 16 16">
-                    <path d="M3.904 1.777C4.978 1.289 6.427 1 8 1s3.022.289 4.096.777C13.125 2.245 14 2.993 14 4s-.875 1.755-1.904 2.223C11.022 6.711 9.573 7 8 7s-3.022-.289-4.096-.777C2.875 5.755 2 5.007 2 4s.875-1.755 1.904-2.223"/>
-                    <path d="M2 6.161V7c0 1.007.875 1.755 1.904 2.223C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777C13.125 8.755 14 8.007 14 7v-.839c-.457.432-1.004.751-1.49.972C11.278 7.693 9.682 8 8 8s-3.278-.307-4.51-.867c-.486-.22-1.033-.54-1.49-.972"/>
-                    <path d="M2 9.161V10c0 1.007.875 1.755 1.904 2.223C4.978 12.711 6.427 13 8 13s3.022-.289 4.096-.777C13.125 11.755 14 11.007 14 10v-.839c-.457.432-1.004.751-1.49.972-1.232.56-2.828.867-4.51.867s-3.278-.307-4.51-.867c-.486-.22-1.033-.54-1.49-.972"/>
-                    <path d="M2 12.161V13c0 1.007.875 1.755 1.904 2.223C4.978 15.711 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13v-.839c-.457.432-1.004.751-1.49.972-1.232.56-2.828.867-4.51.867s-3.278-.307-4.51-.867c-.486-.22-1.033-.54-1.49-.972"/>
-                </svg>
-                <span class="flex-1 ms-3 whitespace-nowrap">Inventory</span>
-            </a>
-        </li>
-    </x-slot>
-    <x-slot name="reports">
-    <li>
-        <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-data" viewBox="0 0 16 16">
-                <path d="M4 11a1 1 0 1 1 2 0v1a1 1 0 1 1-2 0zm6-4a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0zM7 9a1 1 0 0 1 2 0v3a1 1 0 1 1-2 0z"/>
-                <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
-                <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
-            </svg>
-            <span class="flex-1 ms-3 whitespace-nowrap">Reports</span>
-        </a>
-    </li>
-    </x-slot>
-    <x-slot name="analytics">
-    <li>
-        <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-up-arrow" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/>
-            </svg>
-            <span class="flex-1 ms-3 whitespace-nowrap">Analytics</span>
-        </a>
-    </li>
-    </x-slot>
-    <x-slot name="users">
-    <li>
-        <a href="{{ route('dashboard.systemadmin.all-users') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
-                <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
-            </svg>
-            <span class="flex-1 ms-3 whitespace-nowrap">Users</span>
+@push('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+@endpush
 
-        </a>
-    </li>
-    </x-slot>
-    <x-slot name="content">
+@section('content')
+    @php 
+        $adminName = Auth::user()->name ?? 'Admin';
+        $currentDate = now()->format('l, F j, Y');
+    @endphp
+
+    <!-- Welcome Header -->
+    <div class="mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-1">Welcome back, {{ $adminName }}!</h1>
+                <p class="text-gray-600">{{ $currentDate }}</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Key Metrics</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <!-- Users Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
+                <div class="flex items-center">
+                    <div class="bg-blue-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Users</p>
+                        <h3 class="text-2xl font-bold mt-1">{{ $userCount }}</h3>
+                        <p class="text-sm text-gray-500 mt-1">{{ $activeUserCount }} active</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
+                <div class="flex items-center">
+                    <div class="bg-green-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-box-open text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Active Products</p>
+                        <h3 class="text-2xl font-bold mt-1">{{ $productCount }}</h3>
+                       
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
+                <div class="flex items-center">
+                    <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-shopping-cart text-purple-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Orders</p>
+                        <h3 class="text-2xl font-bold mt-1">{{ $orderCount }}</h3>
+                        <p class="text-sm text-gray-500 mt-1">{{ $completedOrders->count() }} completed</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales Revenue Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
+                <div class="flex items-center">
+                    <div class="bg-yellow-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-money-bill-wave text-yellow-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Revenue</p>
+                        <h3 class="text-2xl font-bold mt-1">UGX {{ number_format($totalRevenue, 0) }}</h3>
+                        <p class="text-sm text-gray-500 mt-1">Last 30 days</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Raw Materials Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
+                <div class="flex items-center">
+                    <div class="bg-red-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-cubes text-red-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Raw Materials</p>
+                        <h3 class="text-2xl font-bold mt-1">{{ $rawMaterialCount }}</h3>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="{{ route('dashboard.systemadmin.all-users') }}" class="bg-white hover:bg-gray-50 border border-gray-200 rounded-lg p-4 text-center transition transform hover:-translate-y-1">
+                <div class="bg-blue-100 p-3 rounded-full inline-block mb-2">
+                    <i class="fas fa-user-plus text-blue-600"></i>
+                </div>
+                <h3 class="font-medium">Manage Users</h3>
+            </a>
+            <a href="{{ route('products.index') }}" class="bg-white hover:bg-gray-50 border border-gray-200 rounded-lg p-4 text-center transition transform hover:-translate-y-1">
+                <div class="bg-green-100 p-3 rounded-full inline-block mb-2">
+                    <i class="fas fa-boxes text-green-600"></i>
+                </div>
+                <h3 class="font-medium">Products</h3>
+            </a>
+            <a href="{{ route('orders.manage.index') }}" class="bg-white hover:bg-gray-50 border border-gray-200 rounded-lg p-4 text-center transition transform hover:-translate-y-1">
+                <div class="bg-purple-100 p-3 rounded-full inline-block mb-2">
+                    <i class="fas fa-receipt text-purple-600"></i>
+                </div>
+                <h3 class="font-medium">Orders</h3>
+            </a>
+            <a href="{{ route('reports.sales') }}" class="bg-white hover:bg-gray-50 border border-gray-200 rounded-lg p-4 text-center transition transform hover:-translate-y-1">
+                <div class="bg-yellow-100 p-3 rounded-full inline-block mb-2">
+                    <i class="fas fa-chart-line text-yellow-600"></i>
+                </div>
+                <h3 class="font-medium">Sales Reports</h3>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity & Recent Orders -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">Recent Activity</h2>
+                <a href="{{ route('dashboard.systemadmin.activity-log') }}" class="text-blue-600 text-sm hover:text-blue-800">View All</a>
+            </div>
+            <div class="space-y-4">
+                @if($recentActivities->count() > 0)
+                    @foreach($recentActivities as $activity)
+                    <div class="flex items-start">
+                        <div class="bg-gray-100 p-2 rounded-full mr-3">
+                            <i class="fas fa-{{ $activity->icon }} text-gray-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium">{{ $activity->description }}</p>
+                            <p class="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                                <span>{{ $activity->created_at->diffForHumans() }}</span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs font-semibold">
+                                    <i class="fas fa-user-circle mr-1"></i>
+                                    {{ $activity->causer->name ?? '' }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    @endforeach
+                @else
+                    <div class="text-center py-4">
+                        <i class="fas fa-info-circle text-gray-400 text-2xl mb-2"></i>
+                        <p class="text-gray-500">No recent activity to display</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">Recent Orders</h2>
+                <a href="{{ route('orders.manage.index') }}" class="text-blue-600 text-sm hover:text-blue-800">View All</a>
+            </div>
+            <div class="space-y-4">
+                @if($recentOrders->count() > 0)
+                    @foreach($recentOrders as $order)
+                    <div class="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg">
+                        <div>
+                            <p class="font-medium">Order #{{ $order->order_number }}</p>
+                            <p class="text-sm text-gray-500">{{ $order->created_at->diffForHumans() }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-medium">Worth: UGX {{ number_format($order->total, 0) }}</p>
+                            <span class="px-2 py-1 text-xs rounded-full 
+                                @if($order->status == 'completed') bg-green-100 text-green-800
+                                @elseif($order->status == 'pending') bg-yellow-100 text-yellow-800
+                                @else bg-gray-100 text-gray-800 @endif">
+                                {{ ucfirst($order->status) }}
+                            </span>
+                        </div>
+                    </div>
+                    @endforeach
+                @else
+                    <div class="text-center py-4">
+                        <i class="fas fa-info-circle text-gray-400 text-2xl mb-2"></i>
+                        <p class="text-gray-500">No recent orders to display</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Users Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-gray-800">User Management</h2>
+            <a href="{{ route('dashboard.systemadmin.all-users') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                <i class="fas fa-users mr-1"></i> View All Users
+            </a>
+        </div>
+      
+      
+        </div>
         
-    </x-slot>
+    </div>
 @endsection

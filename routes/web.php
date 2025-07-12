@@ -1,5 +1,3 @@
-
- 
 <?php
 
 use App\Http\Controllers\ReportController;
@@ -20,7 +18,10 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderManagementController;
 use App\Http\Controllers\WholesalerRetailerInventoryController;
+use App\Http\Controllers\MLController;
+use App\Http\Controllers\RawMaterialOrderController;
 use App\Models\Wholesaler;
+use App\Http\Controllers\SupplierController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -39,26 +40,19 @@ Route::get('/insertpdf',function(){
     return view('insertpdf');
  });
  //new routes i am adding for the different dashboards based on user type
-Route::get('/dashboard/staff',function(){
-    return view('dashboard.staff');
- })->middleware(['auth', 'verified'])->name('dashboard.staff');
+Route::get('/dashboard/staff', [\App\Http\Controllers\StaffController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard.staff');
 
 Route::get('/dashboard/customer',function(){
     return view('dashboard/customer');
  })->middleware(['auth', 'verified'])->name('dashboard.customer');
 
-Route::get('/dashboard/supplier',function(){
-    return view('dashboard.supplier');
- })->middleware(['auth', 'verified'])->name('dashboard.supplier');
+Route::get('/dashboard/supplier', [\App\Http\Controllers\SupplierController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard.supplier');
 
 Route::get('/dashboard/wholesaler',function(){
     return view('dashboard.wholesaler');
  })->middleware(['auth', 'verified'])->name('dashboard.wholesaler');
 
-Route::get('/dashboard/systemadmin',function(){
-   // $users=User::all()->latest();//this reruns a view for the system admin to see the users by the latest one that has been added but i am going to work on it so that it does eager loading
-    return view('dashboard.systemadmin');
- })->middleware(['auth', 'verified'])->name('dashboard.systemadmin');
+Route::get('/dashboard/systemadmin', [SystemadminController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard.systemadmin');
  Route::resource('inventories', InventoryController::class)->middleware('auth');
 
 
@@ -76,7 +70,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
-    Route::get('/chat', Chat::class)->name('chat');
+    Route::get('/chat', function () {
+        return view('chat-page');
+    })->middleware(['auth', 'verified'])->name('chat');
 });
 
 require __DIR__.'/auth.php';
@@ -117,6 +113,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::resource('products', ProductController::class)->middleware('auth');
+Route::post('/products/{product}/update-quantity', [ProductController::class, 'updateQuantity'])->name('products.update-quantity');
+Route::post('/products/{product}/initiate-remake', [ProductController::class, 'initiateRemake'])->name('products.initiate-remake');
+Route::post('/products/{product}/update-remake-status', [ProductController::class, 'updateRemakeStatus'])->name('products.update-remake-status');
 Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
 Route::post('/cart/update/{productId}', [CartController::class, 'update'])->name('cart.update');
@@ -161,6 +160,30 @@ Route::middleware(['auth','verified'])->group(function(){
     Route::resource('wholesaler-retailer-inventory',WholesalerRetailerInventoryController::class);
 });
 
+//routes the machine learning scripts
+Route::prefix('ml')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/test', function() {
+        return 'ML route is working!';
+    })->name('ml.test');
+    Route::get('/sales-analytics', [MLController::class, 'salesAnalytics'])->name('ml.sales-analytics');
+    Route::get('/recommendations/{product}', [MLController::class, 'getRecommendations'])->name('ml.recommendations');
+    Route::post('/train', [MLController::class, 'trainModels'])->name('ml.train');
+    Route::get('/dashboard', [MLController::class, 'dashboard'])->name('ml.dashboard');
+    Route::post('/predict-sales', [MLController::class, 'predictSales'])->name('ml.predict-sales');
+});
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('raw-material-orders', RawMaterialOrderController::class);
+});
+
+// AJAX
+Route::middleware(['auth', 'verified'])->get('/supplier/{supplier}/raw-materials', function($supplierId) {
+    $materials = \App\Models\RawMaterial::where('user_id', $supplierId)
+        ->get(['id', 'name', 'quantity', 'unit_price', 'user_id']);
+    return response()->json($materials);
+});
+
+Route::post('/ml/custom-chart', [App\Http\Controllers\MLController::class, 'customChart'])->middleware(['auth', 'verified']);
+
 
 //to filter users basing on category
 Route::get('/filter',[SystemAdminController::class,'filter'])->name('filter');
@@ -172,6 +195,26 @@ Route::post('application',[UserController::class,'application'])->name('applicat
 Route::get('/insertpdf',function(){
     return view('insertpdf');
 })->name('insertpdf');
+
+// System admin activity log
+Route::get('/dashboard/systemadmin/activity-log', [\App\Http\Controllers\SystemadminController::class, 'activityLog'])->name('dashboard.systemadmin.activity-log');
+
+
+//Java Server Routes
+
+Route::post('/submit-vendor-pdf', function (Request $request) {
+    $response = Http::attach(
+        'file', file_get_contents($request->file('wholesalerpdf')->getRealPath()),
+        $request->file('wholesalerpdf')->getClientOriginalName()
+    )->post('http://localhost:8080/validate-file');
+
+    return $response->json(); // Return Java backend response
+});
+
+Route::get('/activate-java-server', function () {
+    // Trigger an actual Java endpoint here if needed
+    return ['message' => 'Validation result will be emailed shortly.'];
+});
 
 
 

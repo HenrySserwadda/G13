@@ -7,9 +7,12 @@ use App\Models\ChatMessage;
 use Illuminate\Support\Facades\Auth;
 use App\Events\MessageSent;
 use Livewire\Attributes\Url;
+use Livewire\WithFileUploads;
 
 class Chat extends Component
 {
+    use WithFileUploads;
+
     public static string $layout = 'layouts.app';
     public $users;
     public $newMessage = '';
@@ -18,9 +21,11 @@ class Chat extends Component
     public $loginID;
     #[Url]
     public $selectedUserId = null;
+    public $newFile;
 
     protected $rules = [
-        'newMessage' => 'required|string|max:1000'
+        'newMessage' => 'nullable|string|max:1000',
+        'newFile' => 'nullable|file|max:10240', // 10MB max
     ];
 
     protected $validationMessages = [
@@ -50,6 +55,13 @@ class Chat extends Component
 
     public function selectUser($userId)
     {
+        // Authorization check: ensure the selected user exists and is not the current user
+        $selectedUser = User::find($userId);
+        if (!$selectedUser || $selectedUser->id === Auth::id()) {
+            $this->addError('selectedUserId', 'Invalid user selected.');
+            return;
+        }
+        
         $this->selectedUserId = $userId;
         $this->loadMessages();
         $this->dispatch('chat-selected');
@@ -58,7 +70,14 @@ class Chat extends Component
     public function loadMessages()
     {
         if (!$this->selectedUserId) return;
+        
+        // Authorization check: ensure the selected user exists and is not the current user
         $selectedUser = User::find($this->selectedUserId);
+        if (!$selectedUser || $selectedUser->id === Auth::id()) {
+            $this->addError('selectedUserId', 'Invalid user selected.');
+            return;
+        }
+        
         $this->messages = ChatMessage::with(['sender', 'receiver'])
             ->where(function($query) use ($selectedUser) {
                 $query->where('sender_id', Auth::id())
@@ -77,23 +96,39 @@ class Chat extends Component
     {
         $validated = $this->validate($this->rules, $this->validationMessages);
         $selectedUser = $this->selectedUserId ? User::find($this->selectedUserId) : null;
-        if (!$selectedUser) {
-            $this->addError('newMessage', 'No user selected.');
+
+        // Authorization check: ensure the selected user exists and is not the current user
+        if (!$selectedUser || $selectedUser->id === Auth::id()) {
+            $this->addError('newMessage', 'Invalid recipient selected.');
             return;
         }
+        if (empty($validated['newMessage']) && !$this->newFile) {
+            $this->addError('newMessage', 'Message or file is required.');
+            return;
+        }
+
+        $filePath = null;
+        $fileType = null;
+        $originalFileName = null;
+        if ($this->newFile) {
+            $filePath = $this->newFile->store('chat_uploads', 'public');
+            $fileType = $this->newFile->getMimeType();
+            $originalFileName = $this->newFile->getClientOriginalName();
+        }
+
         try {
             $message = ChatMessage::create([
                 'sender_id' => Auth::id(),
                 'receiver_id' => $selectedUser->id,
-                'message' => $validated['newMessage']
+                'message' => $validated['newMessage'] ?? '',
+                'file_path' => $filePath,
+                'file_type' => $fileType,
+                'original_file_name' => $originalFileName,
             ])->load('sender', 'receiver');
-
             $this->messages[] = $message->toArray();
-            $this->reset('newMessage');
+            $this->reset(['newMessage', 'newFile']);
             $this->dispatch('message-sent');
-            
             broadcast(new MessageSent(Auth::user(), $message));
-            
         } catch (\Exception $e) {
             $this->addError('newMessage', 'Failed to send message: '.$e->getMessage());
         }
@@ -108,11 +143,18 @@ class Chat extends Component
 
     public function newChatMessageNotification($message)
     {
+        // Authorization check: ensure the message is intended for the current user
+        if ($message['receiver_id'] != Auth::id()) {
+            return; // Ignore messages not intended for this user
+        }
+        
         $selectedUser = $this->selectedUserId ? User::find($this->selectedUserId) : null;
         if ($selectedUser && $message['sender_id'] == $selectedUser->id) {
             $messageObj = ChatMessage::find($message['id']);
-            $this->messages[] = $messageObj ? $messageObj->toArray() : null;
-            $this->dispatch('message-received');
+            if ($messageObj) {
+                $this->messages[] = $messageObj->toArray();
+                $this->dispatch('message-received');
+            }
         }
     }
 
@@ -124,10 +166,18 @@ class Chat extends Component
 
     public function render()
     {
-        $selectedUser = $this->selectedUserId ? User::find($this->selectedUserId) : null;
+        $selectedUser = null;
+        if ($this->selectedUserId) {
+            $selectedUser = User::find($this->selectedUserId);
+            // Authorization check: ensure the selected user exists and is not the current user
+            if (!$selectedUser || $selectedUser->id === Auth::id()) {
+                $selectedUser = null;
+                $this->selectedUserId = null;
+            }
+        }
+        
         return view('livewire.chat', [
             'selectedUser' => $selectedUser,
-            
         ]);
     }
 }

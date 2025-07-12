@@ -30,7 +30,8 @@
 
             <!-- Single slot for content -->
             <main>
-                {{ $slot }}
+                @yield('content')
+                
             </main>
         </div>
 

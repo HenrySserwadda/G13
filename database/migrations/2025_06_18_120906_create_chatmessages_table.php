@@ -24,6 +24,9 @@ return new class extends Migration
                   ->onUpdate('cascade');
                   
             $table->text('message');
+            $table->string('file_path')->nullable();
+            $table->string('file_type')->nullable();
+            $table->string('original_file_name')->nullable();
             $table->timestamps();
             
             // Add indexes for better query performance

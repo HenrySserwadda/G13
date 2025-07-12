@@ -3,6 +3,7 @@
 @section('page-title', 'Customer Dashboard')
 @section('page-description', 'Overview of your customer dashboard')
 
+
 @section('content')    
 <div class="filter mb-3 flex justify-end">
     <form action="{{ route('application') }}" method="POST" class="flex items-center gap-4 bg-white dark:bg-gray-300 p-4 rounded-lg shadow-sm w-full max-w-xs">
