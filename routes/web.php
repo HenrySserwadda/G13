@@ -171,6 +171,10 @@ Route::prefix('ml')->middleware(['auth', 'verified'])->group(function () {
     Route::post('/train', [MLController::class, 'trainModels'])->name('ml.train');
     Route::get('/dashboard', [MLController::class, 'dashboard'])->name('ml.dashboard');
     Route::post('/predict-sales', [MLController::class, 'predictSales'])->name('ml.predict-sales');
+    
+    // New personalized ML routes
+    Route::get('/personalized-recommendations', [MLController::class, 'getPersonalizedRecommendations'])->name('ml.personalized-recommendations');
+    Route::get('/user-profile', [MLController::class, 'getUserProfile'])->name('ml.user-profile');
 });
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('raw-material-orders', RawMaterialOrderController::class);
@@ -218,6 +222,29 @@ Route::get('/test-ml', function() {
     $service = app('App\Services\MLProductService');
     $products = $service->getMLProducts('female');
     return response()->json(['count' => count($products), 'products' => $products]);
+});
+
+// Test route for enhanced ML system
+Route::get('/test-enhanced-ml', function() {
+    try {
+        $userMLService = app('App\Services\UserMLService');
+        $user = \App\Models\User::first();
+        if ($user) {
+            $preferences = $userMLService->analyzeUserPreferences($user);
+            $personalized = $userMLService->getPersonalizedRecommendations($user, 3);
+            return response()->json([
+                'success' => true,
+                'user_id' => $user->id,
+                'preferences' => $preferences,
+                'personalized_count' => count($personalized),
+                'personalized_sample' => array_slice($personalized, 0, 2)
+            ]);
+        } else {
+            return response()->json(['success' => false, 'error' => 'No users found']);
+        }
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'error' => $e->getMessage()]);
+    }
 });
 
 
