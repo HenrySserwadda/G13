@@ -24,7 +24,7 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $categories = ['Customer', 'Wholesaler', 'Retailer', 'Staff','Supplier'];
+        $categories = ['customer', 'wholesaler', 'retailer', 'staff','supplier'];
         $selectedCategory = $this->faker->randomElement($categories);
         return [
             'name' => fake()->name(),
@@ -36,6 +36,9 @@ class UserFactory extends Factory
                 return User::generateUserId($attributes['category']);
             },
             'remember_token' => Str::random(10),
+            'gender'=>fake()->randomElement(['male','female','null']),
+            'status'=>'no application'
+
         ];
     }
 

@@ -16,8 +16,13 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('user_id')->nullable()->unique();
+            $table->enum('category',['staff','supplier','wholesaler','retailer','customer','systemadmin'])->default('customer');
+             $table->string('gender');
+            $table->string('password');           
+            $table->boolean('is_admin')->default(false);
+            $table->enum('status',['no application','application received','application approved','application rejected'])->default('no application');            
+            $table->enum('pending_category',['supplier','wholesaler','retailer'])->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
             $table->rememberToken();
             $table->timestamps();
         });

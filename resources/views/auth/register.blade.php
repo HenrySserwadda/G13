@@ -15,20 +15,18 @@
             <x-text-input id="email" class="block mt-1 w-full px-3 py-2 text-m" type="email" name="email" :value="old('email')" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
-        
-        <!-- Category -->
+
+        <!-- Gender -->
         <div class="mt-4">
-            <x-input-label class="mb-2" for="category" :value="__('Category')" />
-            <label class="py-2 px-3 dark:text-gray-100 mb-1"><input type="radio" name="category" value="staff"{{ old('category')=='staff'?'checked':'' }}>Staff</label><br>
-            <label class="py-2 px-3 dark:text-gray-100 mb-1"><input type="radio" name="category" value="wholesaler" {{ old('category')=='wholesaler'?'checked':'' }}>Wholesaler</label><br>
-            <label class="py-2 px-3 dark:text-gray-100 mb-1"><input type="radio" name="category" value="supplier" {{ old('category')=='supplier'?'checked':'' }}>Supplier</label><br>
-            <label class="py-2 px-3 dark:text-gray-100 mb-1"><input type="radio" name="category" value="retailer" {{ old('category')=='retailer'?'checked':'' }}>Retailer</label><br>
-            <label class="py-2 px-3 dark:text-gray-100 mb-1"><input type="radio" name="category" value="customer" {{ old('category')=='customer'?'checked':'' }}>Customer</label>
-            <br><x-input-error :messages="$errors->get('category')" class="mt-2" />
+            <x-input-label class="mb-2" for="gender" :value="__('Gender')" />
+            <label class="py-2 px-3 dark:text-gray-100 mb-1"><input type="radio" name="gender" value="male"{{ old('gender')=='male'?'checked':'' }}>Male</label>
+            <label class="py-2 px-3 dark:text-gray-100 mb-1"><input type="radio" name="gender" value="female" {{ old('gender')=='female'?'checked':'' }}>Female</label>
+            <label class="py-2 px-3 dark:text-gray-100 mb-1"><input type="radio" name="gender" value="null" {{ old('gender')=='null'?'checked':'' }}>Prefer not to say</label>
+            <x-input-error :messages="$errors->get('gender')" class="mt-2" />
         </div>
 
         <!-- Date of birth -->
-        <div id="date_of_birth" class="mt-4 hidden">
+        <div id="date_of_birth" class="mt-4">
             <x-input-label for="date_of_birth" :value="__('Date of birth')" />
             <x-text-input id="dob" class="block mt-1 w-full px-3 py-2 text-m" type="date" name="date_of_birth" :value="old('date_of_birth')" required />
             <x-input-error :messages="$errors->get('date_of_birth')" class="mt-2" />
@@ -66,30 +64,5 @@
                 {{ __('Register') }}
             </x-primary-button>
         </div>
-    </form>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const radioButtons=document.querySelectorAll('input[name="category"]');
-        const dobDiv=document.getElementById('date_of_birth');
-        const inputDate =document.getElementById('dob');
-
-        function showDobDiv(){
-            const selected = document.querySelector('input[name="category"]:checked')?.value;
-            if(selected ==='customer'){
-                dobDiv.classList.remove('hidden');
-                inputDate.required=true;
-            }else{
-                dobDiv.classList.add('hidden');
-                inputDate.required=false;
-                inputDate.value='';
-            }
-
-        }
-        showDobDiv();
-        radioButtons.forEach(radio => {
-            radio.addEventListener('change', showDobDiv);
-        });
-
-    });
-</script>    
+    </form>  
 </x-guest-layout>

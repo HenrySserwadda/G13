@@ -37,8 +37,31 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
 {
-    \Log::debug('Registration attempt', $request->all());
-    try{
+    $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+        'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        'date_of_birth' => ['date','before:today'],
+        'gender'=>['required']
+    ]);
+
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'category' => 'customer',
+        'gender'=>$request->gender,
+        'date_of_birth'=>$request->date_of_birth,
+        'user_id'=>null
+    ]);
+
+    Auth::login($user);
+    event(new Registered($user));
+    
+    return redirect($user->redirectToDashboard());
+}
+   /*  public function store(Request $request): RedirectResponse
+{
     $request->validate([
         'name' => ['required', 'string', 'max:255'],
         'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
@@ -53,10 +76,7 @@ class RegisteredUserController extends Controller
     ],
         'category'=>['required','in:supplier,retailer,customer,wholesaler,staff']
     ]);
-    }catch (ValidationException $e) {
-    \Log::error('Validation failed', $e->errors());
-    throw $e; // Re-throw to see errors on form
-}
+    
     $requiresApproval = in_array($request->category, ['supplier', 'retailer', 'wholesaler', 'staff']);
 
     $user = User::create([
@@ -99,5 +119,5 @@ class RegisteredUserController extends Controller
     event(new Registered($user));
     
     return redirect($user->redirectToDashboard());
-}
+} */
 }

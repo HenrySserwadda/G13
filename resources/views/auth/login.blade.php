@@ -4,7 +4,7 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
     
-    @if (session('message'))
+    {{--@if (session('message'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4" role="alert">
             <strong>Success:</strong> {{ session('message') }}
         </div>
@@ -14,7 +14,7 @@
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
             <strong>Error:</strong> {{ session('error') }}
         </div>
-    @endif
+    @endif--}}
 
 
     <form method="POST" action="{{ route('login') }}">
@@ -26,12 +26,6 @@
             <x-text-input id="email" class="block mt-3 w-full px-3 py-2 text-m" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-4" />
         </div >
-        <!-- User id -->
-        <div class="mt-3">
-            <x-input-label for="user_id" :value="__('User Identification Number')" />
-            <x-text-input id="user_id" class="block mt-2 w-full px-3 py-2 text-m" type="text" name="user_id" :value="old('user_id')" required/>
-            <x-input-error :messages="$errors->get('user_id')" class="mt-4" />
-        </div>
 
         <!-- Password -->
         <div class="mt-3">

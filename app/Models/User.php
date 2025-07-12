@@ -25,7 +25,8 @@ class User extends Authenticatable
         'avatar',
         'category',
         'user_id',
-        'status'
+        'status',
+        'gender'
     // Use 'user_id' as the user identification string, but do not use it for Eloquent relationships
     ];
 

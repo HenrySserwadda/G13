@@ -62,5 +62,30 @@ class ReportController extends Controller
             ->get();
         return response()->json($noOfOrders);
     }
+
+    public function showOnHand(){
+        return view('reports.inventory');
+    }
+    
+    /* public function onHand(){
+        $onHand=DB::table('inventories')
+            ->join('raw_materials','inventories.raw_material_id','=','raw_materials.id')
+            ->select('raw_materials.name as name','inventories.on_hand as quantity')
+            ->get();
+        return response()->json($onHand);
+    } */
+    public function onHand(){
+        $onHand=DB::table('raw_materials')            
+            ->select('name','quantity')
+            ->get();
+        return response()->json($onHand);
+    }
+    
+    public function availableProducts(){
+        $availablePdts=DB::table('products')            
+            ->select('name','quantity')
+            ->get();
+        return response()->json($availablePdts);
+    }
 }
 
