@@ -122,7 +122,7 @@ function renderTagBar(colors, styles, products) {
         const tag = document.createElement('div');
         tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-green-200 hover:bg-green-300';
         tag.onclick = () => { selectedTags.color = color; fetchRecommendations(); highlightSelectedTags(); };
-        tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${color}"><span>${color}</span>`;
+        tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${color}" onerror="this.style.display='none'"><span>${color}</span>`;
         tag.dataset.type = 'color';
         tag.dataset.value = color;
         tagBar.appendChild(tag);
@@ -134,7 +134,7 @@ function renderTagBar(colors, styles, products) {
         const tag = document.createElement('div');
         tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-blue-200 hover:bg-blue-300';
         tag.onclick = () => { selectedTags.style = style; fetchRecommendations(); highlightSelectedTags(); };
-        tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${style}"><span>${style}</span>`;
+        tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${style}" onerror="this.style.display='none'"><span>${style}</span>`;
         tag.dataset.type = 'style';
         tag.dataset.value = style;
         tagBar.appendChild(tag);
@@ -180,7 +180,8 @@ function renderRecommendations(products) {
         let card = `<div class=\"product-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl\">`;
         card += `<div class=\"product-image-container\">`;
         if (hasImage) {
-            card += `<img src=\"/${product.image}\" alt=\"${product.name}\" class=\"product-image\" loading=\"lazy\">`;
+            card += `<img src=\"/${product.image}\" alt=\"${product.name}\" class=\"product-image\" loading=\"lazy\" onerror=\"this.style.display='none'; this.nextElementSibling.style.display='flex';\">`;
+            card += `<div class=\"no-image-placeholder\" style=\"display: none;\"><i class=\"fas fa-camera text-5xl text-gray-400\"></i></div>`;
         } else {
             card += `<div class=\"no-image-placeholder\"><i class=\"fas fa-camera text-5xl text-gray-400\"></i></div>`;
         }
@@ -193,13 +194,11 @@ function renderRecommendations(products) {
         card += `<p class=\"text-gray-600 mb-4 line-clamp-2\">${product.description}</p>`;
         card += `<div class=\"flex space-x-3\">`;
         card += `<a href=\"/products?name=${encodeURIComponent(product.name)}\" class=\"bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center transition-colors duration-300 flex-1 justify-center\"><i class=\"fas fa-eye mr-2\"></i> View</a>`;
-        // Add to Cart button (real form, only for wholesaler/retailer)
-        if (window.LaravelUserCategory === 'wholesaler' || window.LaravelUserCategory === 'retailer') {
-            card += `<form action=\"${window.LaravelCartAddRoute.replace('PRODUCT_ID', product.id)}\" method=\"POST\" class=\"flex-1\">`;
-            card += `<input type=\"hidden\" name=\"_token\" value=\"${window.LaravelCsrfToken}\">`;
-            card += `<button type=\"submit\" class=\"bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center transition-colors duration-300\"><i class=\"fas fa-cart-plus mr-2\"></i> Add to Cart</button>`;
-            card += `</form>`;
-        }
+        // Add to Cart button (now available for all users since ML products are in database)
+        card += `<form action=\"${window.LaravelCartAddRoute.replace('PRODUCT_ID', product.id)}\" method=\"POST\" class=\"flex-1\">`;
+        card += `<input type=\"hidden\" name=\"_token\" value=\"${window.LaravelCsrfToken}\">`;
+        card += `<button type=\"submit\" class=\"bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center transition-colors duration-300\"><i class=\"fas fa-cart-plus mr-2\"></i> Add to Cart</button>`;
+        card += `</form>`;
         card += `</div>`;
         card += `</div>`;
         card += `</div>`;

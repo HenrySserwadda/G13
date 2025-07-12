@@ -38,7 +38,17 @@
                 <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl">
                     <div class="product-image-container">
                         @if($product->image)
-                            <img src="{{ asset('storage/'.$product->image) }}" alt="{{ $product->name }}" class="product-image" loading="lazy">
+                            @if($product->is_ml_generated)
+                                <img src="/{{ $product->image }}" alt="{{ $product->name }}" class="product-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="no-image-placeholder" style="display: none;">
+                                    <i class="fas fa-camera text-5xl text-gray-400"></i>
+                                </div>
+                            @else
+                                <img src="{{ asset('storage/'.$product->image) }}" alt="{{ $product->name }}" class="product-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="no-image-placeholder" style="display: none;">
+                                    <i class="fas fa-camera text-5xl text-gray-400"></i>
+                                </div>
+                            @endif
                         @else
                             <div class="no-image-placeholder">
                                 <i class="fas fa-camera text-5xl text-gray-400"></i>
@@ -135,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const tag = document.createElement('div');
             tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-green-200 hover:bg-green-300';
             tag.onclick = () => handleAllProductsTagClick('color', color);
-            tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${color}"><span>${color}</span>`;
+            tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${color}" onerror="this.style.display='none'"><span>${color}</span>`;
             allProductsTagBar.appendChild(tag);
         });
         styles.forEach(style => {
@@ -144,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const tag = document.createElement('div');
             tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-blue-200 hover:bg-blue-300';
             tag.onclick = () => handleAllProductsTagClick('style', style);
-            tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${style}"><span>${style}</span>`;
+            tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${style}" onerror="this.style.display='none'"><span>${style}</span>`;
             allProductsTagBar.appendChild(tag);
         });
     }

@@ -4,9 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Services\MLProductService;
 
 class CartController extends Controller
 {
+    protected $mlProductService;
+
+    public function __construct(MLProductService $mlProductService)
+    {
+        $this->mlProductService = $mlProductService;
+    }
+
     // Add product to cart
     public function add(Request $request, Product $product)
     {
@@ -22,8 +30,15 @@ class CartController extends Controller
             'name' => $product->name,
             'price' => $product->price,
             'quantity' => $newQty,
+            'is_ml_generated' => $product->is_ml_generated,
         ];
         session(['cart' => $cart]);
+        
+        // If it's an ML product, increment its popularity score
+        if ($product->isMLGenerated()) {
+            $this->mlProductService->incrementPopularity($product->id);
+        }
+        
         return back()->with('success', 'Product added to cart!');
     }
 

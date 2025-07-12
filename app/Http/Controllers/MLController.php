@@ -4,9 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Services\MLProductService;
 
 class MLController extends Controller
 {
+    protected $mlProductService;
+
+    public function __construct(MLProductService $mlProductService)
+    {
+        $this->mlProductService = $mlProductService;
+    }
+
     public function salesAnalytics()
     {
         try {
@@ -208,11 +216,13 @@ class MLController extends Controller
         if ($colors) {
             $args .= ' --colors "' . escapeshellarg($colors) . '"';
         }
+        
         // Call the Python script with --get_products and filters
         $cmd = "$python $script --get_products$args";
         $output = [];
         $return_var = 0;
         exec($cmd, $output, $return_var);
+        
         $jsonLine = null;
         foreach ($output as $line) {
             if (strpos(trim($line), '[') === 0 || strpos(trim($line), '{') === 0) {
@@ -220,7 +230,33 @@ class MLController extends Controller
                 break;
             }
         }
-        $products = $jsonLine ? json_decode($jsonLine, true) : [];
+        
+        $mlProducts = $jsonLine ? json_decode($jsonLine, true) : [];
+        
+        // If we got ML products, create/update them in the database
+        if (!empty($mlProducts)) {
+            $databaseProducts = $this->mlProductService->createOrUpdateMLProducts($mlProducts);
+            
+            // Convert database products to the format expected by the frontend
+            $products = array_map(function($product) {
+                return [
+                    'id' => $product['id'],
+                    'name' => $product['name'],
+                    'description' => $product['description'],
+                    'price' => $product['price'],
+                    'quantity' => $product['quantity'],
+                    'image' => $product['image'],
+                    'style' => $product['ml_style'],
+                    'color' => $product['ml_color'],
+                    'gender' => $product['ml_gender'],
+                    'is_ml_generated' => true,
+                ];
+            }, $databaseProducts);
+        } else {
+            // Fallback: try to get existing ML products from database
+            $products = $this->mlProductService->getMLProducts($gender, $styles, $colors);
+        }
+        
         return response()->json(['products' => $products]);
     }
 }

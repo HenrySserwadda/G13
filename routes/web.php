@@ -213,5 +213,12 @@ Route::get('/activate-java-server', function () {
 // ML product data API for recommendations
 Route::get('/api/products-for-ml', [App\Http\Controllers\MLController::class, 'productsForML']);
 
+// Test route for ML implementation
+Route::get('/test-ml', function() {
+    $service = app('App\Services\MLProductService');
+    $products = $service->getMLProducts('female');
+    return response()->json(['count' => count($products), 'products' => $products]);
+});
+
 
 
