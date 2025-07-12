@@ -56,11 +56,15 @@
 
     <div id="products-section">
         <!-- Tag Bar for All Products -->
+          @auth
+          @if(Auth::user()->category === 'wholesaler' || Auth::user()->category === 'retailer')
         <div class="mb-2 text-gray-700 font-semibold text-sm">What could you be interested in?</div>
         <div id="all-products-tag-bar-loader" class="hidden flex justify-center items-center py-2">
             <div class="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-opacity-50"></div>
         </div>
         <div id="all-products-tag-bar" class="flex overflow-x-auto space-x-2 py-2 mb-6"></div>
+         @endif
+            @endauth
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-extrabold text-gray-800 mb-4 flex items-center">
                 <i class="fas fa-shopping-bag mr-3"></i> Our Bag Collection

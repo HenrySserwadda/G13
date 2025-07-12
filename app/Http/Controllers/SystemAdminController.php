@@ -183,7 +183,10 @@ class SystemadminController extends Controller
         exec($cmd, $output, $return_var);
         $chartData = json_decode(implode('', $output), true);
 
-        return view('dashboard.systemadmin', compact('userCount', 'activeUserCount', 'productCount', 'orderCount', 'rawMaterialCount', 'recentActivities', 'recentUsers', 'chartData', 'lowStockProducts', 'completedOrders', 'totalRevenue', 'criticalMaterials', 'recentOrders'));
+        // Fetch products for the dashboard
+        $products = \App\Models\Product::latest()->paginate(12);
+        
+        return view('dashboard.systemadmin', compact('userCount', 'activeUserCount', 'productCount', 'orderCount', 'rawMaterialCount', 'recentActivities', 'recentUsers', 'chartData', 'lowStockProducts', 'completedOrders', 'totalRevenue', 'criticalMaterials', 'recentOrders', 'products'));
     }
 
     public function activityLog()
