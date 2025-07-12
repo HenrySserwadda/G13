@@ -1,5 +1,5 @@
 @extends('components.dashboard')
-@section('title', 'Make System Administrator - DURABAG')
+@section('title', 'Make Staff - DURABAG')
 @section('content')
     <!-- Page Content -->
     <x-usermgt />
@@ -8,7 +8,7 @@
             <th class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">Name</th>
             <th class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">Category</th>
             <th class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">Email</th>
-            <th class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">Make system admin</th>
+            <th class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">Make staff member</th>
         </tr>
         @foreach($users as $user)         
             <tr>
@@ -16,8 +16,8 @@
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->category }}</td>
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->email }}</td>
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">
-                    <form method="POST" action="{{ route('dashboard.systemadmin.make-systemadmin',$user->id) }}">
-                        <x-primary-button>Make system admin</x-primary-button>
+                    <form method="POST" action="{{ route('dashboard.systemadmin.make-staff',$user->id) }}">
+                        <x-primary-button>Make staff member</x-primary-button>
                         @csrf
                     </form>
                 </td>

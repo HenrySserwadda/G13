@@ -1,16 +1,14 @@
 @extends('components.dashboard')
 
-@section('page-title', 'Customer Dashboard')
-@section('page-description', 'Overview of your customer dashboard')
+@section('page-title', 'Wholesaler Dashboard')
+@section('page-description', 'Overview of your wholesaler dashboard')
 
-
-@section('content')    
-<div class="filter mb-3 flex justify-end">
+@section('content')
+    <div class="filter mb-3 flex justify-end">
     <form action="{{ route('application') }}" method="POST" class="flex items-center gap-4 bg-white dark:bg-gray-300 p-4 rounded-lg shadow-sm w-full max-w-xs">
         @csrf
         <div class="relative flex-grow">
             <select name="categories" id="application" class="block w-full px-4 py-2 pr-8 leading-tight bg-white dark:bg-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none text-gray-800">
-                <option value="retailer" {{ (session('selected_category') == 'retailer' || request('categories') == 'retailer') ? 'selected' : '' }}>Retailer</option>
                 <option value="supplier" {{ (session('selected_category') == 'supplier' || request('categories') == 'supplier') ? 'selected' : '' }}>Supplier</option>
                 <option value="wholesaler" {{ (session('selected_category') == 'wholesaler' || request('categories') == 'wholesaler') ? 'selected' : '' }}>Wholesaler</option>
             </select>
