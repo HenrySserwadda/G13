@@ -7,6 +7,7 @@ use App\Models\Rawmaterial;
 use App\Models\Inventory;
 use App\Models\RawMaterialOrder;
 use Illuminate\Support\Carbon;
+use App\Models\Product;
 
 class StaffController extends Controller
 {
@@ -45,13 +46,16 @@ class StaffController extends Controller
                 'created_at' => $order->updated_at,
             ];
         });
+        // Fetch products for staff dashboard
+        $products = Product::latest()->paginate(12);
         return view('dashboard.staff', compact(
             'pendingMaterialOrders',
             'lowStockItems',
             'recentDeliveries',
             'tasksDue',
             'tasks',
-            'recentActivities'
+            'recentActivities',
+            'products' // Pass products to the view
         ));
     }
 } 
