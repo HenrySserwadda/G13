@@ -56,6 +56,7 @@ class RawMaterialController extends Controller
             'quantity' => 'required|integer|min:1',
             'unit_price' => 'required|numeric|min:0',
             'type' => 'required|string|max:100',
+            'unit' => 'required|string|max:50',
         ]);
 
         RawMaterial::create([
@@ -63,6 +64,7 @@ class RawMaterialController extends Controller
             'quantity' => $request->quantity,
             'unit_price' => $request->unit_price,
             'type' => $request->type,
+            'unit' => $request->unit,
             'user_id' => Auth::id(),
         ]);
 
@@ -99,9 +101,10 @@ class RawMaterialController extends Controller
             'quantity' => 'required|integer|min:1',
             'unit_price' => 'required|numeric|min:0',
             'type' => 'required|string|max:100',
+            'unit' => 'required|string|max:50',
         ]);
 
-        $rawMaterial->update($request->only(['name', 'quantity', 'unit_price', 'type']));
+        $rawMaterial->update($request->only(['name', 'quantity', 'unit_price', 'type', 'unit']));
 
         return redirect()->route('raw_materials.index')->with('success', 'Raw material updated successfully.');
     }

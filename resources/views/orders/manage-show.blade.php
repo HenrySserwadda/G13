@@ -17,13 +17,16 @@
             <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
                 <h3 class="text-lg font-semibold text-gray-800 mb-3">Customer Information</h3>
                 <div class="space-y-2">
+                    @php
+                        $user = \App\Models\User::where('id', $order->user_id)->orWhere('user_id', $order->user_id)->first();
+                    @endphp
                     <div>
                         <span class="text-sm font-medium text-gray-600">Name:</span>
-                        <p class="text-gray-800">{{ $order->user->name ?? 'N/A' }}</p>
+                        <p class="text-gray-800">{{ $user->name ?? 'N/A' }}</p>
                     </div>
                     <div>
                         <span class="text-sm font-medium text-gray-600">Account Type:</span>
-                        <p class="text-gray-800">{{ $order->user->category ?? 'N/A' }}</p>
+                        <p class="text-gray-800">{{ $user->category ?? 'N/A' }}</p>
                     </div>
                     <div>
                         <span class="text-sm font-medium text-gray-600">Location:</span>

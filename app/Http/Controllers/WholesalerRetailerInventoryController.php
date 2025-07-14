@@ -100,6 +100,13 @@ class WholesalerRetailerInventoryController extends Controller
      */
     public function incrementInventory($userId, $productId, $quantity = 1)
     {
+        // Convert string user_id to numeric id if needed
+        if (!is_numeric($userId)) {
+            $user = \App\Models\User::where('user_id', $userId)->first();
+            if ($user) {
+                $userId = $user->id;
+            }
+        }
         $inventory = WholesalerRetailerInventory::where('user_id', $userId)
             ->where('product_id', $productId)
             ->first();

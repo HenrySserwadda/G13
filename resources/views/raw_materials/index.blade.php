@@ -31,7 +31,7 @@
     <div class="overflow-x-auto">
         @auth
             @if(Auth::user()->category === 'systemadmin' || Auth::user()->category === 'staff')
-             <h2 class="text-2xl font-bold mb-4">Raw Materials</h2>
+             
     <a href="{{ route('raw-material-orders.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded mb-4 inline-block">Place Raw Material Order</a>
             @endif
         @endauth
@@ -57,9 +57,11 @@
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Unit Price
                     </th>
+                    @if(Auth::user()->category === 'systemadmin' || Auth::user()->category === 'staff')
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Owner
                     </th>
+                    @endif
                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                     </th>
@@ -91,10 +93,12 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         UGX {{ number_format($material->unit_price) }}
                     </td>
+                    @if(Auth::user()->category === 'systemadmin' || Auth::user()->category === 'staff')
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-900">{{ $material->user->name ?? 'Unknown' }}</div>
                         <div class="text-xs text-gray-500">{{ ucfirst($material->user->category ?? '') }}</div>
                     </td>
+                    @endif
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex justify-end space-x-3">
                             @if(Auth::user()->category === 'staff' || Auth::user()->category === 'systemadmin')
