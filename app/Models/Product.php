@@ -24,12 +24,21 @@ class Product extends Model
         'stock_status',
         'remake_quantity',
         'remake_status',
+        'is_ml_generated',
+        'ml_style',
+        'ml_color',
+        'ml_gender',
+        'ml_expires_at',
+        'ml_popularity_score',
         // Add any other fields that you want to be mass assignable
     ];
 
     protected $casts = [
         'quantity' => 'integer',
         'remake_quantity' => 'integer',
+        'is_ml_generated' => 'boolean',
+        'ml_popularity_score' => 'integer',
+        'ml_expires_at' => 'datetime',
     ];
 
     public function orders(){
@@ -92,5 +101,49 @@ class Product extends Model
     public function isRemakeInProgress()
     {
         return in_array($this->remake_status, ['pending', 'in_progress']);
+    }
+
+    // Check if product is ML-generated
+    public function isMLGenerated()
+    {
+        return $this->is_ml_generated;
+    }
+
+    // Check if ML product has expired
+    public function isMLExpired()
+    {
+        return $this->is_ml_generated && $this->ml_expires_at && $this->ml_expires_at->isPast();
+    }
+
+    // Increment popularity score for ML products
+    public function incrementPopularity()
+    {
+        if ($this->is_ml_generated) {
+            $this->increment('ml_popularity_score');
+        }
+    }
+
+    // Scope to get only ML-generated products
+    public function scopeMLGenerated($query)
+    {
+        return $query->where('is_ml_generated', true);
+    }
+
+    // Scope to get only non-expired ML products
+    public function scopeActiveML($query)
+    {
+        return $query->where('is_ml_generated', true)
+                    ->where(function($q) {
+                        $q->whereNull('ml_expires_at')
+                          ->orWhere('ml_expires_at', '>', now());
+                    });
+    }
+
+    // Clean up expired ML products
+    public static function cleanupExpiredML()
+    {
+        return static::where('is_ml_generated', true)
+                    ->where('ml_expires_at', '<', now())
+                    ->delete();
     }
 }

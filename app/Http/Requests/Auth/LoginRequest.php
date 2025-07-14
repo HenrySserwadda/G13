@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class LoginRequest extends FormRequest
 {
@@ -30,7 +31,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => ['required', 'string', 'email'],
-            'user_id'=>['required', 'string'],
+            'user_id'=>['string','nullable'],
             'password' => ['required', 'string'],
         ];
     }
@@ -41,36 +42,34 @@ class LoginRequest extends FormRequest
      * @throws \Illuminate\Validation\ValidationException
      */
     public function authenticate(): void
-{
-    $this->ensureIsNotRateLimited();
-    $user=User::where('email', $this->email)->first();
+    {
+        $this->ensureIsNotRateLimited();
 
-    if (!$user) {
-        RateLimiter::hit($this->throttleKey());
-        throw ValidationException::withMessages(['email'=>__('The details you provided are incorrect')]);
-    }
-        
-    if(!\Hash::check($this->password, $user->password )){
-        RateLimiter::hit($this->throttleKey());
-        throw ValidationException::withMessages(['password'=>__('The password you provided is incorrect')]);
+        $user = User::where('email', $this->email)->first();
+        if (!$user) {
+            RateLimiter::hit($this->throttleKey());
+            throw ValidationException::withMessages(['email' => __('The details you provided were incorrect')]); // Use a generic message
         }
 
-    if($this->user_id !== $user->user_id){
-        RateLimiter::hit($this->throttleKey());
-        throw ValidationException::withMessages(['user_id'=>__('User identification number incorrect')]);
-    }
+        if (!Hash::check($this->password, $user->password)) {
+            RateLimiter::hit($this->throttleKey());
+            throw ValidationException::withMessages(['password' => __('Password is incorrect')]); 
+        }
         
-    if ($user->status !== 'approved') {
-        RateLimiter::hit($this->throttleKey());
+        RateLimiter::clear($this->throttleKey());
+
+        Session::put('temp_user_id', $user->id);
+        Session::put('remember_me', $this->boolean('remember')); 
+
+        if ($user->category === 'customer') {
+            Auth::login($user, $this->boolean('remember'));
+            return;
+        }
         throw ValidationException::withMessages([
-                'email' => __('Your account has not yet been approved'),
+            'redirect' => route('user_id'), 
         ]);
     }
 
-    Auth::login($user, $this->boolean('remember'));
-
-    RateLimiter::clear($this->throttleKey());
-}
 
     /**
      * Ensure the login request is not rate limited.

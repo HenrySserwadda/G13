@@ -56,11 +56,15 @@
 
     <div id="products-section">
         <!-- Tag Bar for All Products -->
+          @auth
+          @if(Auth::user()->category === 'wholesaler' || Auth::user()->category === 'retailer')
         <div class="mb-2 text-gray-700 font-semibold text-sm">What could you be interested in?</div>
         <div id="all-products-tag-bar-loader" class="hidden flex justify-center items-center py-2">
             <div class="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-opacity-50"></div>
         </div>
         <div id="all-products-tag-bar" class="flex overflow-x-auto space-x-2 py-2 mb-6"></div>
+         @endif
+            @endauth
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-extrabold text-gray-800 mb-4 flex items-center">
                 <i class="fas fa-shopping-bag mr-3"></i> Our Bag Collection
@@ -88,12 +92,27 @@
                 <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl">
                     <div class="product-image-container">
                         @if($product->image)
-                            <img src="{{ asset('storage/'.$product->image) }}" 
-                                 alt="{{ $product->name }}" 
-                                 class="product-image"
-                                 loading="lazy" <!-- Lazy loading for better performance -->
-                                 srcset="{{ asset('storage/'.$product->image) }} 1x, 
-                                         {{ asset('storage/'.$product->image) }} 2x"> <!-- For high DPI displays -->
+                            @if($product->is_ml_generated)
+                                <img src="/{{ $product->image }}" 
+                                     alt="{{ $product->name }}" 
+                                     class="product-image"
+                                     loading="lazy"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="no-image-placeholder" style="display: none;">
+                                    <i class="fas fa-camera text-5xl text-gray-400"></i>
+                                </div>
+                            @else
+                                <img src="{{ asset('storage/'.$product->image) }}" 
+                                     alt="{{ $product->name }}" 
+                                     class="product-image"
+                                     loading="lazy"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                     srcset="{{ asset('storage/'.$product->image) }} 1x, 
+                                             {{ asset('storage/'.$product->image) }} 2x">
+                                <div class="no-image-placeholder" style="display: none;">
+                                    <i class="fas fa-camera text-5xl text-gray-400"></i>
+                                </div>
+                            @endif
                         @else
                             <div class="no-image-placeholder">
                                 <i class="fas fa-camera text-5xl text-gray-400"></i>

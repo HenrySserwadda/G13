@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            //$table->User('user_id');//i want to write this as a foreign key for the user
-            $table->string('user_id');
-            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
+            $table->string('name');
             $table->date('date_of_birth');
             $table->timestamps();
         });

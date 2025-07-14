@@ -21,9 +21,23 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden max-w-xl mx-auto border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-xl">
             <!-- Product Image -->
             @if($product->image)
-                <img src="{{ asset('storage/' . $product->image) }}" 
-                     alt="{{ $product->name }}" 
-                     class="w-full h-80 object-cover">
+                @if($product->is_ml_generated)
+                    <img src="/{{ $product->image }}" 
+                         alt="{{ $product->name }}" 
+                         class="w-full h-80 object-cover"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="w-full h-80 bg-gray-200 dark:bg-gray-700 flex items-center justify-center" style="display: none;">
+                        <i class="fas fa-image text-5xl text-gray-400 dark:text-gray-500"></i>
+                    </div>
+                @else
+                    <img src="{{ asset('storage/' . $product->image) }}" 
+                         alt="{{ $product->name }}" 
+                         class="w-full h-80 object-cover"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="w-full h-80 bg-gray-200 dark:bg-gray-700 flex items-center justify-center" style="display: none;">
+                        <i class="fas fa-image text-5xl text-gray-400 dark:text-gray-500"></i>
+                    </div>
+                @endif
             @else
                 <div class="w-full h-80 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                     <i class="fas fa-image text-5xl text-gray-400 dark:text-gray-500"></i>

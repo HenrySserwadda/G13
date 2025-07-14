@@ -189,11 +189,11 @@
         </div>
     </div>
     <!-- Action Buttons -->
-    <div class="mt-8 flex flex-wrap gap-4">
+    <!--<div class="mt-8 flex flex-wrap gap-4">
         <a href="{{ route('ml.recommendations', 1) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-150">
             <i class="fas fa-lightbulb mr-2"></i>
             View Product Recommendations
-        </a>
+        </a>-->
         <button onclick="trainModels()" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-150">
             <i class="fas fa-cog mr-2"></i>
             Retrain Models

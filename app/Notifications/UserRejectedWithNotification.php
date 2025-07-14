@@ -7,14 +7,16 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\User;
-class UserApprovedWithNotification extends Notification
+
+class UserRejectedWithNotification extends Notification
 {
     use Queueable;
     public $user;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct($user)
+    public function __construct(User $user)
     {
         $this->user=$user;
     }
@@ -35,12 +37,9 @@ class UserApprovedWithNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Application Accepted')
-            ->greeting('Hello, '.$this->user->name)
-            ->line('Your application to become a Durabag retailer been accepted. Please find your user identification number below.')
-            ->line('User Identification number: '.$this->user->user_id)
-            ->action('Proceed to login', url('/login'))
-            ;
+            ->subject('Registration Request Rejected')
+            ->line('Hello, '.$this->user->name)
+            ->line('This email is to inform you that your registration request has been rejected');
     }
 
     /**

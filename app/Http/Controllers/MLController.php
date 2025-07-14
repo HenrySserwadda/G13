@@ -4,9 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Services\MLProductService;
+use App\Services\UserMLService;
+use Illuminate\Support\Facades\Auth;
 
 class MLController extends Controller
 {
+    protected $mlProductService;
+    protected $userMLService;
+
+    public function __construct(MLProductService $mlProductService, UserMLService $userMLService)
+    {
+        $this->mlProductService = $mlProductService;
+        $this->userMLService = $userMLService;
+    }
+
     public function salesAnalytics()
     {
         try {
@@ -67,6 +79,123 @@ class MLController extends Controller
         $recommendations = json_decode($output, true);
         
         return view('ml.recommendations', compact('recommendations'));
+    }
+
+    /**
+     * Get personalized recommendations for the authenticated user
+     */
+    public function getPersonalizedRecommendations(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
+        try {
+            // Get user preferences
+            $preferences = $this->userMLService->analyzeUserPreferences($user);
+            
+            // Call Python script with user preferences
+            $python = config('ml.python_path', 'python');
+            $script = config('ml.scripts_path', base_path('ml-scripts')) . '/recommendations.py';
+            
+            $args = '';
+            if ($preferences['gender'] && $preferences['gender'] !== 'null') {
+                $args .= ' --gender "' . escapeshellarg($preferences['gender']) . '"';
+            }
+            if (!empty($preferences['preferred_styles'])) {
+                $args .= ' --styles "' . escapeshellarg(implode(',', $preferences['preferred_styles'])) . '"';
+            }
+            if (!empty($preferences['preferred_colors'])) {
+                $args .= ' --colors "' . escapeshellarg(implode(',', $preferences['preferred_colors'])) . '"';
+            }
+            if (!empty($preferences['preferred_materials'])) {
+                $args .= ' --materials "' . escapeshellarg(implode(',', $preferences['preferred_materials'])) . '"';
+            }
+            if ($preferences['price_range']['avg'] > 0) {
+                $priceRange = json_encode($preferences['price_range']);
+                $args .= ' --price_range "' . escapeshellarg($priceRange) . '"';
+            }
+            
+            $limit = $request->input('limit', 10);
+            $args .= ' --limit ' . $limit;
+            
+            // Call the Python script with --get_personalized and user preferences
+            $cmd = "$python $script --get_personalized$args";
+            $output = [];
+            $return_var = 0;
+            exec($cmd, $output, $return_var);
+            
+            $jsonLine = null;
+            foreach ($output as $line) {
+                if (strpos(trim($line), '[') === 0 || strpos(trim($line), '{') === 0) {
+                    $jsonLine = $line;
+                    break;
+                }
+            }
+            
+            $mlProducts = $jsonLine ? json_decode($jsonLine, true) : [];
+            
+            // If we got ML products, create/update them in the database
+            if (!empty($mlProducts)) {
+                $databaseProducts = $this->mlProductService->createOrUpdateMLProducts($mlProducts);
+                
+                // Convert database products to the format expected by the frontend
+                $products = array_map(function($product) {
+                    return [
+                        'id' => $product['id'],
+                        'name' => $product['name'],
+                        'description' => $product['description'],
+                        'price' => $product['price'],
+                        'quantity' => $product['quantity'],
+                        'image' => $product['image'],
+                        'style' => $product['ml_style'],
+                        'color' => $product['ml_color'],
+                        'gender' => $product['ml_gender'],
+                        'is_ml_generated' => true,
+                        'is_personalized' => true
+                    ];
+                }, $databaseProducts);
+            } else {
+                // Fallback: try to get personalized products from database
+                $products = $this->userMLService->getPersonalizedRecommendations($user, $limit);
+            }
+            
+            return response()->json([
+                'products' => $products,
+                'user_preferences' => $preferences,
+                'is_personalized' => true
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error("Error getting personalized recommendations: " . $e->getMessage());
+            return response()->json(['error' => 'Failed to get personalized recommendations'], 500);
+        }
+    }
+
+    /**
+     * Get user's purchase history and preferences summary
+     */
+    public function getUserProfile(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
+        try {
+            $preferences = $this->userMLService->analyzeUserPreferences($user);
+            $purchaseSummary = $this->userMLService->getUserPurchaseSummary($user);
+            
+            return response()->json([
+                'preferences' => $preferences,
+                'purchase_summary' => $purchaseSummary
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error("Error getting user profile: " . $e->getMessage());
+            return response()->json(['error' => 'Failed to get user profile'], 500);
+        }
     }
     
     public function trainModels()
@@ -208,11 +337,13 @@ class MLController extends Controller
         if ($colors) {
             $args .= ' --colors "' . escapeshellarg($colors) . '"';
         }
+        
         // Call the Python script with --get_products and filters
         $cmd = "$python $script --get_products$args";
         $output = [];
         $return_var = 0;
         exec($cmd, $output, $return_var);
+        
         $jsonLine = null;
         foreach ($output as $line) {
             if (strpos(trim($line), '[') === 0 || strpos(trim($line), '{') === 0) {
@@ -220,7 +351,33 @@ class MLController extends Controller
                 break;
             }
         }
-        $products = $jsonLine ? json_decode($jsonLine, true) : [];
+        
+        $mlProducts = $jsonLine ? json_decode($jsonLine, true) : [];
+        
+        // If we got ML products, create/update them in the database
+        if (!empty($mlProducts)) {
+            $databaseProducts = $this->mlProductService->createOrUpdateMLProducts($mlProducts);
+            
+            // Convert database products to the format expected by the frontend
+            $products = array_map(function($product) {
+                return [
+                    'id' => $product['id'],
+                    'name' => $product['name'],
+                    'description' => $product['description'],
+                    'price' => $product['price'],
+                    'quantity' => $product['quantity'],
+                    'image' => $product['image'],
+                    'style' => $product['ml_style'],
+                    'color' => $product['ml_color'],
+                    'gender' => $product['ml_gender'],
+                    'is_ml_generated' => true,
+                ];
+            }, $databaseProducts);
+        } else {
+            // Fallback: try to get existing ML products from database
+            $products = $this->mlProductService->getMLProducts($gender, $styles, $colors);
+        }
+        
         return response()->json(['products' => $products]);
     }
 }

@@ -7,14 +7,15 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\User;
-class UserApprovedWithNotification extends Notification
+
+class NewStaffMember extends Notification
 {
     use Queueable;
     public $user;
     /**
      * Create a new notification instance.
      */
-    public function __construct($user)
+    public function __construct(User $user)
     {
         $this->user=$user;
     }
@@ -35,12 +36,12 @@ class UserApprovedWithNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Application Accepted')
-            ->greeting('Hello, '.$this->user->name)
-            ->line('Your application to become a Durabag retailer been accepted. Please find your user identification number below.')
-            ->line('User Identification number: '.$this->user->user_id)
+            ->subject('New Staff Member')
+            ->line('Hello, '.$this->user->name)
+            ->line('This email serves to inform you that you are now a staff member and can access all staff privileges on the Durabag system')
+            ->line('User identification number: '.$this->user->user_id)
             ->action('Proceed to login', url('/login'))
-            ;
+            ->line('Thank you for using our application!');
     }
 
     /**
