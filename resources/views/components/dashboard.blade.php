@@ -131,7 +131,7 @@
                                 <i class="fas fa-shopping-cart w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                                 <span class="flex-1 ms-3 whitespace-nowrap">Orders</span>
                                 @php
-                                    $userOrderCount = \App\Models\Order::where('user_id', Auth::id())->count();
+                                    $userOrderCount = \App\Models\Order::where('user_id', Auth::user()->user_id)->count();
                                 @endphp
                                 <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-200 rounded-full">{{ $userOrderCount }}</span>
                             </a>
