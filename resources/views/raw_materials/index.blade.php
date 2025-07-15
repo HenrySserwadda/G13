@@ -62,6 +62,11 @@
                         Owner
                     </th>
                     @endif
+                    @if(Auth::user()->category === 'supplier')
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                    </th>
+                    @endif
                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                     </th>
@@ -97,6 +102,23 @@
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-900">{{ $material->user->name ?? 'Unknown' }}</div>
                         <div class="text-xs text-gray-500">{{ ucfirst($material->user->category ?? '') }}</div>
+                    </td>
+                    @endif
+                    @if(Auth::user()->category === 'supplier')
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        @php
+                            if ($material->quantity == 0) {
+                                $status = 'Out of Stock';
+                                $badge = 'bg-red-100 text-red-800';
+                            } elseif ($material->quantity < 100) {
+                                $status = 'Low Stock';
+                                $badge = 'bg-yellow-100 text-yellow-800';
+                            } else {
+                                $status = 'In Stock';
+                                $badge = 'bg-green-100 text-green-800';
+                            }
+                        @endphp
+                        <span class="px-2 py-1 rounded text-xs font-semibold {{ $badge }}">{{ $status }}</span>
                     </td>
                     @endif
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

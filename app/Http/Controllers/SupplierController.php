@@ -13,7 +13,7 @@ class SupplierController extends Controller
         $supplierId = Auth::id();
         $rawMaterialCount = \App\Models\RawMaterial::where('user_id', $supplierId)->count();
         $orderCount = \App\Models\RawMaterialOrder::where('supplier_user_id', $supplierId)->count();
-        $inventoryCount = \App\Models\Inventory::where('user_id', $supplierId)->count();
+        $inventoryCount = \App\Models\RawMaterial::where('user_id', $supplierId)->where('quantity', '<', 100)->count();
 
         // Add dynamic chart data
         $python = config('ml.python_path', 'python');

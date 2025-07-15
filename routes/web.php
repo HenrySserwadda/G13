@@ -49,9 +49,7 @@ Route::get('/dashboard/customer',function(){
 
 Route::get('/dashboard/supplier', [\App\Http\Controllers\SupplierController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard.supplier');
 
-Route::get('/dashboard/wholesaler',function(){
-    return view('dashboard.wholesaler');
- })->middleware(['auth', 'verified'])->name('dashboard.wholesaler');
+Route::get('/dashboard/wholesaler', [\App\Http\Controllers\WholesalerDashboardController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard.wholesaler');
 
 Route::get('/dashboard/systemadmin', [SystemadminController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard.systemadmin');
  Route::resource('inventories', InventoryController::class)->middleware('auth');
@@ -245,6 +243,16 @@ Route::get('/test-enhanced-ml', function() {
     } catch (\Exception $e) {
         return response()->json(['success' => false, 'error' => $e->getMessage()]);
     }
+});
+
+
+Route::get('/api/sales-by-month', function() {
+    $sales = \App\Models\Order::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, SUM(total) as total')
+        ->where('status', 'completed')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->pluck('total', 'month');
+    return response()->json($sales);
 });
 
 
