@@ -107,7 +107,7 @@
                     <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-gray-500 mb-1">Total Spend</p>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Total Spent</p>
                                 <h3 class="text-2xl font-bold text-gray-800">UGX {{ number_format($totalSpent) }}</h3>
                             </div>
                             <div class="text-green-500">
