@@ -71,14 +71,13 @@ class Chat extends Component
     {
         if (!$this->selectedUserId) return;
         
-        // Authorization check: ensure the selected user exists and is not the current user
         $selectedUser = User::find($this->selectedUserId);
         if (!$selectedUser || $selectedUser->id === Auth::id()) {
             $this->addError('selectedUserId', 'Invalid user selected.');
             return;
         }
         
-        $this->messages = ChatMessage::with(['sender', 'receiver'])
+        $messages = ChatMessage::with(['sender', 'receiver'])
             ->where(function($query) use ($selectedUser) {
                 $query->where('sender_id', Auth::id())
                     ->where('receiver_id', $selectedUser->id);
@@ -88,8 +87,14 @@ class Chat extends Component
                     ->where('receiver_id', Auth::id());
             })
             ->orderBy('created_at', 'asc')
-            ->get()
-            ->toArray();
+            ->get();
+
+        // Normalize created_at to string
+        $this->messages = $messages->map(function($msg) {
+            $arr = $msg->toArray();
+            $arr['created_at'] = $msg->created_at ? $msg->created_at->toDateTimeString() : null;
+            return $arr;
+        })->toArray();
     }
 
     public function submit()
@@ -150,11 +155,8 @@ class Chat extends Component
         
         $selectedUser = $this->selectedUserId ? User::find($this->selectedUserId) : null;
         if ($selectedUser && $message['sender_id'] == $selectedUser->id) {
-            $messageObj = ChatMessage::find($message['id']);
-            if ($messageObj) {
-                $this->messages[] = $messageObj->toArray();
-                $this->dispatch('message-received');
-            }
+            $this->messages[] = $message;
+            $this->dispatch('message-received');
         }
     }
 

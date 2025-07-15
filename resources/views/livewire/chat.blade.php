@@ -77,10 +77,21 @@
                     </div>
                     <div class="messages" id="messages" style="position:relative;">
                         @foreach($messages as $message)
+                        @php
+                            $sender = isset($message['sender'][0]) ? $message['sender'][0] : $message['sender'];
+                        @endphp
                         <div class="message {{ $message['sender_id'] == auth()->id() ? 'sent' : 'received' }}" @if($loop->last) id="lastMessage" @endif>
                             @if($message['sender_id'] != auth()->id())
                             <div class="message-avatar">
-                                <img src="{{ isset($message['sender']['avatar']) && $message['sender']['avatar'] ? asset('storage/' . $message['sender']['avatar']) : generateAvatar($message['sender']['name'] ?? 'User', 28) }}" alt="User Avatar" class="avatar-img">
+                                @php
+                                    $avatar = $sender['avatar'] ?? null;
+                                    if ($avatar && !Str::startsWith($avatar, ['/storage/', 'http', 'data:image'])) {
+                                        $avatar = '/storage/' . $avatar;
+                                    }
+                                @endphp
+                                <img 
+                                  src="{{ $avatar ?? generateAvatar($sender['name'] ?? 'User', 28) }}" 
+                                  alt="User Avatar" class="avatar-img">
                             </div>
                             @endif
                             <div class="message-content">
