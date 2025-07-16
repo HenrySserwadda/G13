@@ -85,14 +85,31 @@ require __DIR__.'/auth.php';
 // Systemadmin dashboard user management routes
 Route::middleware(['auth', 'verified'])->prefix('dashboard/systemadmin')->name('dashboard.systemadmin.')->group(function () {
     Route::get('/all-users', [SystemadminController::class, 'allUsers'])->name('all-users');
-    Route::get('/pending-users', [SystemadminController::class, 'pendingUsers'])->name('pending-users');
+
+    Route::get('/pending-retailers', [SystemadminController::class, 'pendingRetailers'])->name('pending-retailers');
+
+    Route::get('/pending-suppliers', [SystemadminController::class, 'pendingSuppliers'])->name('pending-suppliers');
+
     Route::get('/make-system-administrator', [SystemadminController::class, 'makeSystemAdministrator'])->name('make-system-administrator');
+
+    Route::get('/make-staff-member', [SystemadminController::class, 'makeStaffMember'])->name('make-staff-member');
+
     Route::post('/make-systemadmin/{id}', [SystemadminController::class, 'makeSystemAdmin'])->name('make-systemadmin');
-    Route::post('/approve/{id}', [SystemadminController::class, 'approve'])->name('approve');
-    Route::post('/reject/{id}', [SystemadminController::class, 'reject'])->name('reject');
+
+    Route::post('/make-staff/{id}', [SystemadminController::class, 'makeStaff'])->name('make-staff');
+
+    Route::post('/approve/{id}', [SystemadminController::class, 'approveSuppliers'])->name('approve');
+    Route::post('/approve/{id}', [SystemadminController::class, 'approveRatilers'])->name('approve');
+
+    Route::post('/reject-retailers/{id}', [SystemadminController::class, 'rejectRetailers'])->name('rejectRetailers');
+    Route::post('/reject-suppliers/{id}', [SystemadminController::class, 'rejectSuppliers'])->name('rejectSuppliers');
 });
 
- 
+Route::post('/application',[UserController::class,'application'])->name('application');
+Route::get('insertpdf',function(){
+    return view('insertpdf');
+})->name('insertpdf');
+Route::get('filter',[SystemadminController::class,'filter'])->name('filter');
 
 
 Route::middleware(['auth'])->group(function () {
@@ -129,7 +146,8 @@ Route::delete('/dashboard/systemadmin/delete/{id}', [SystemadminController::clas
 Route::get('/reports/products_report',[ReportController::class,'showPdtsByPrice'])->name('reports.products');
 Route::get('/reports/pdtsByPrice',[ReportController::class,'productsByPrice'])->name('reports.pdtsByPrice');
 
-Route::get('/reports/inventory',[ReportController::class,''])->name('reports.inventory');
+Route::get('/reports/inventory',[ReportController::class,'showOnHand'])->name('reports.inventory');
+Route::get('/reports/onHand',[ReportController::class,'onHand'])->name('reports.onHand');
 
 Route::get('/noOfOrders',[ReportController::class,'noOfOrders'])->name('noOfOrders');
 
@@ -174,7 +192,7 @@ Route::middleware(['auth', 'verified'])->get('/supplier/{supplier}/raw-materials
 Route::post('/ml/custom-chart', [App\Http\Controllers\MLController::class, 'customChart'])->middleware(['auth', 'verified']);
 
 // System admin activity log
-Route::get('/dashboard/systemadmin/activity-log', [\App\Http\Controllers\SystemadminController::class, 'activityLog'])->name('dashboard.systemadmin.activity-log');
+Route::get('/dashboard/systemadmin/activity-log', [SystemadminController::class, 'activityLog'])->name('dashboard.systemadmin.activity-log');
 
 
 //Java Server Routes
