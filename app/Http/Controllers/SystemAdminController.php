@@ -251,8 +251,14 @@ class SystemadminController extends Controller
 
         // Fetch products for the dashboard
         $products = \App\Models\Product::latest()->paginate(12);
+
+        // User registration trend data for chart
+        $userRegData = \App\Models\User::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month');
         
-        return view('dashboard.systemadmin', compact('userCount', 'activeUserCount', 'productCount', 'orderCount', 'rawMaterialCount', 'recentActivities', 'recentUsers', 'chartData', 'lowStockProducts', 'completedOrders', 'totalRevenue', 'criticalMaterials', 'recentOrders', 'products'));
+        return view('dashboard.systemadmin', compact('userCount', 'activeUserCount', 'productCount', 'orderCount', 'rawMaterialCount', 'recentActivities', 'recentUsers', 'chartData', 'lowStockProducts', 'completedOrders', 'totalRevenue', 'criticalMaterials', 'recentOrders', 'products', 'userRegData'));
     }
 
     public function activityLog()

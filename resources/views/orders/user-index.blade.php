@@ -23,6 +23,10 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($orders as $order)
+                    @php
+                        $user = \App\Models\User::where('id', $order->user_id)->orWhere('user_id', $order->user_id)->first();
+                    @endphp
+                    @if($user && $user->id === Auth::id())
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $order->id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -45,6 +49,7 @@
                             </a>
                         </td>
                     </tr>
+                    @endif
                     @endforeach
                 </tbody>
             </table>

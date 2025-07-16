@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\OrderItem;
+use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
 {
@@ -39,7 +40,7 @@ class CheckoutController extends Controller
 
         // Create order
         $order = Order::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::user()->user_id, 
             'location' => $request->location,
             'mobile' => $request->mobile,
             'total' => array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart)),

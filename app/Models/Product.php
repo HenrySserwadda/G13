@@ -30,6 +30,9 @@ class Product extends Model
         'ml_gender',
         'ml_expires_at',
         'ml_popularity_score',
+        'style', // newly added
+        'color', // newly added
+        'gender', // newly added
         // Add any other fields that you want to be mass assignable
     ];
 

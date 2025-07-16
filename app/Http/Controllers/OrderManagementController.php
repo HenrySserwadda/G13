@@ -7,12 +7,9 @@ use Illuminate\Http\Request;
 class OrderManagementController extends Controller
 {
     public function index(){
-        $orders= Order::with('user')
-        ->whereHas('user', function($query) {
-            $query->whereIn('category', ['wholesaler', 'retailer']);
-        })
-        ->latest()
-        ->paginate(15);
+        $orders = Order::with('user')
+            ->latest()
+            ->paginate(15);
         return view('orders.manage-index', compact('orders'));
     }
     public function show($id){
@@ -32,7 +29,7 @@ class OrderManagementController extends Controller
         }
         $order->status = $request->status;
         $order->save();
-        return redirect()-> back()->with('success', 'Order status updated!');
+        return redirect()->route('orders.manage.show', $order->id)->with('success', 'Order status updated!');
         
     }
 }

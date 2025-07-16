@@ -25,11 +25,14 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($orders as $order)
+                    @php
+                        $user = \App\Models\User::where('id', $order->user_id)->orWhere('user_id', $order->user_id)->first();
+                    @endphp
                     <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $order->id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $order->user_id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $order->user->name ?? 'N/A' }}
-                            <span class="text-xs text-gray-400 block">{{ $order->user->category ?? '' }}</span>
+                            {{ $user->name ?? 'N/A' }}
+                            <span class="text-xs text-gray-400 block">{{ $user->category ?? '' }}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 

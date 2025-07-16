@@ -7,13 +7,17 @@ use App\Models\Rawmaterial;
 use App\Models\Inventory;
 use App\Models\RawMaterialOrder;
 use Illuminate\Support\Carbon;
+use App\Models\Product;
 
 class StaffController extends Controller
 {
     public function dashboard()
     {
-        // Pending Material Orders
-        $pendingMaterialOrders = RawMaterialOrder::where('status', 'pending')->count();
+        // Pending Product Orders (from wholesalers and retailers only)
+        $pendingOrders = \App\Models\Order::where('status', 'pending')
+            ->whereHas('user', function($query) {
+                $query->whereIn('category', ['wholesaler', 'retailer']);
+            })->count();
         // Low Stock Items
         $lowStockItems = Inventory::where('on_hand', '<=', 10)->count();
         // Recent Deliveries (last 7 days)
@@ -21,7 +25,7 @@ class StaffController extends Controller
             ->where('updated_at', '>=', now()->subDays(7))
             ->count();
         // Tasks Due (example: pending orders + low stock)
-        $tasksDue = $pendingMaterialOrders + $lowStockItems;
+        $tasksDue = $pendingOrders + $lowStockItems;
         // Example tasks (replace with real tasks if you have a Task model)
         $tasks = collect([
             (object)[
@@ -45,13 +49,16 @@ class StaffController extends Controller
                 'created_at' => $order->updated_at,
             ];
         });
+        // Fetch products for staff dashboard
+        $products = Product::latest()->paginate(12);
         return view('dashboard.staff', compact(
-            'pendingMaterialOrders',
+            'pendingOrders',
             'lowStockItems',
             'recentDeliveries',
             'tasksDue',
             'tasks',
-            'recentActivities'
+            'recentActivities',
+            'products' // Pass products to the view
         ));
     }
 } 

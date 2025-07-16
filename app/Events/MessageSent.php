@@ -56,11 +56,22 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastWith()
     {
+        $avatar = $this->user->avatar ? '/storage/' . $this->user->avatar : $this->user->generateDefaultAvatar();
+        \Log::info('Broadcasting avatar', ['avatar' => $avatar, 'user_id' => $this->user->id]);
         return [
             'id' => $this->message->id,
             'sender_id' => $this->message->sender_id,
             'receiver_id' => $this->message->receiver_id,
             'message' => $this->message->message,
+            'file_path' => $this->message->file_path,
+            'file_type' => $this->message->file_type,
+            'original_file_name' => $this->message->original_file_name,
+            'created_at' => $this->message->created_at ? $this->message->created_at->toDateTimeString() : null,
+            'sender' => [
+                'id' => $this->user->id,
+                'name' => $this->user->name,
+                'avatar' => $avatar,
+            ],
         ];
     }
 }

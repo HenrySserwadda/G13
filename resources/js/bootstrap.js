@@ -1,3 +1,6 @@
+import Pusher from 'pusher-js';
+window.Pusher = Pusher;
+
 import Echo from 'laravel-echo';
 
 // Initialize Echo globally for Livewire and all frontend code

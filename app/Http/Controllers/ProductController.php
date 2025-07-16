@@ -51,9 +51,21 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|max:2048',
             'quantity' => 'nullable|integer|min:0',
+            'style' => 'nullable|string|max:255',
+            'color' => 'nullable|string|max:255',
+            'gender' => 'nullable|in:male,female,unisex',
         ]);
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
+        }
+        if (isset($validated['style'])) {
+            $validated['style'] = ucfirst(strtolower($validated['style']));
+        }
+        if (isset($validated['color'])) {
+            $validated['color'] = ucfirst(strtolower($validated['color']));
+        }
+        if (isset($validated['gender'])) {
+            $validated['gender'] = ucfirst(strtolower($validated['gender']));
         }
         Product::create($validated);
         return redirect()->route('products.index')->with('success', 'Product added!');
@@ -80,9 +92,21 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|max:2048',
             'quantity' => 'nullable|integer|min:0',
+            'style' => 'nullable|string|max:255',
+            'color' => 'nullable|string|max:255',
+            'gender' => 'nullable|in:male,female,unisex',
         ]);
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
+        }
+        if (isset($validated['style'])) {
+            $validated['style'] = ucfirst(strtolower($validated['style']));
+        }
+        if (isset($validated['color'])) {
+            $validated['color'] = ucfirst(strtolower($validated['color']));
+        }
+        if (isset($validated['gender'])) {
+            $validated['gender'] = ucfirst(strtolower($validated['gender']));
         }
         $product->update($validated);
         return redirect()->route('products.index')->with('success', 'Product updated!');

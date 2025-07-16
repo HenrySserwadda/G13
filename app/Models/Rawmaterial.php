@@ -13,12 +13,12 @@ class Rawmaterial extends Model
     protected $table = 'raw_materials'; // Specify the table name if it differs from the default
     protected $fillable = [
         'name',
-        'description',
+        'type',
         'quantity',
         'unit_price',
         'user_id', // Assuming a foreign key relationship with User
         'supplier_id', // Assuming a foreign key relationship with Supplier
-
+        'unit', 
     ];
      public function user()
     {

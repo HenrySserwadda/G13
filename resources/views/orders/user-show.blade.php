@@ -5,9 +5,14 @@
     <div class="bg-white rounded-lg shadow-md p-6">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
             <div>
+                @php
+                    $user = \App\Models\User::where('id', $order->user_id)->orWhere('user_id', $order->user_id)->first();
+                @endphp
                 <h2 class="text-2xl font-bold text-gray-800">Order #{{ $order->id }}</h2>
                 <p class="text-sm text-gray-600 mt-1">Status: <span class="font-semibold">{{ ucfirst($order->status) }}</span></p>
                 <p class="text-sm text-gray-600 mt-1">Placed on: {{ $order->created_at->format('Y-m-d H:i') }}</p>
+                <p class="text-sm text-gray-600 mt-1">Customer: <span class="font-semibold">{{ $user->name ?? 'N/A' }}</span></p>
+                <p class="text-sm text-gray-600 mt-1">Account Type: <span class="font-semibold">{{ $user->category ?? 'N/A' }}</span></p>
             </div>
         </div>
 
