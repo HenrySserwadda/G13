@@ -29,7 +29,12 @@ class UserMLService
 
             // Get user's order history
             $orders = Order::with(['items.product'])
-                ->where('user_id', $user->id)
+                ->where(function($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                    if (isset($user->user_id)) {
+                        $query->orWhere('user_id', $user->user_id);
+                    }
+                })
                 ->orderBy('created_at', 'desc')
                 ->get();
 
@@ -210,7 +215,12 @@ class UserMLService
     public function getUserPurchaseSummary(User $user): array
     {
         $orders = Order::with(['items.product'])
-            ->where('user_id', $user->id)
+            ->where(function($query) use ($user) {
+                $query->where('user_id', $user->id);
+                if (isset($user->user_id)) {
+                    $query->orWhere('user_id', $user->user_id);
+                }
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 
