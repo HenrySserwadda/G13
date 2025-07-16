@@ -2,37 +2,22 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\SupplyCenter;
 
 class SupplyCenterSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-     SupplyCenter::create([
-        'name' => 'Main Distribution Center',
-        'location' => 'Kampala',
-        'capacity' => 1000
-    ]);
-    
-    SupplyCenter::create([
-        'name' => 'Northern Hub',
-        'location' => 'Gulu',
-        'capacity' => 300
-    ]);
-    SupplyCenter::create([
-        'name' => 'Premium Center',
-        'location' => 'Entebbe',
-        'capacity' => 600
-    ]);
-    
-    SupplyCenter::create([
-        'name' => 'Horizon Distribution Center',
-        'location' => 'Mbale',
-        'capacity' => 400
-    ])
+        $centers = [
+            ['name' => 'Durabag Manufacturers Main Branch', 'location' => 'Kampala'],
+            ['name' => 'Durabag Arua', 'location' => 'Arua'],
+            ['name' => 'Durabag Mbale', 'location' => 'Mbale'],
+            ['name' => 'Durabag Mbarara', 'location' => 'Mbarara'],
+        ];
+
+        foreach ($centers as $center) {
+            SupplyCenter::create($center);
+        }
     }
 }

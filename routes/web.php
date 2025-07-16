@@ -6,6 +6,8 @@ use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
+use App\Http\Controllers\WorkforceController;
+use App\Http\Controllers\WorkerController;
 use App\Http\Controllers\Systemadmin;
 use App\Http\Controllers\SystemadminController;
 use App\Http\Controllers\ChatController;
@@ -22,7 +24,7 @@ use App\Http\Controllers\MLController;
 use App\Http\Controllers\RawMaterialOrderController;
 use App\Models\Wholesaler;
 use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\VendorController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -84,26 +86,11 @@ require __DIR__.'/auth.php';
 // Systemadmin dashboard user management routes
 Route::middleware(['auth', 'verified'])->prefix('dashboard/systemadmin')->name('dashboard.systemadmin.')->group(function () {
     Route::get('/all-users', [SystemadminController::class, 'allUsers'])->name('all-users');
-
-    Route::get('/pending-retailers', [SystemadminController::class, 'pendingRetailers'])->name('pending-retailers');
-
-    Route::get('/pending-suppliers', [SystemadminController::class, 'pendingSuppliers'])->name('pending-suppliers');
-
+    Route::get('/pending-users', [SystemadminController::class, 'pendingUsers'])->name('pending-users');
     Route::get('/make-system-administrator', [SystemadminController::class, 'makeSystemAdministrator'])->name('make-system-administrator');
-
-    Route::get('/make-staff-member', [SystemadminController::class, 'makeStaffMember'])->name('make-staff-member');
-
     Route::post('/make-systemadmin/{id}', [SystemadminController::class, 'makeSystemAdmin'])->name('make-systemadmin');
-
-    Route::post('/make-staff/{id}', [SystemadminController::class, 'makeStaff'])->name('make-staff');
-
-    Route::post('/approve-retailers/{id}', [SystemadminController::class, 'approveRetailers'])->name('approveRetailers');
-
-    Route::post('/approve-suppliers/{id}', [SystemadminController::class, 'approveSuppliers'])->name('approve-suppliers');
-
-    Route::post('/reject-retailers/{id}', [SystemadminController::class, 'rejectRetailers'])->name('rejectRetailers');
-
-    Route::post('/reject-suppliers/{id}', [SystemadminController::class, 'rejectSuppliers'])->name('rejectSuppliers');
+    Route::post('/approve/{id}', [SystemadminController::class, 'approve'])->name('approve');
+    Route::post('/reject/{id}', [SystemadminController::class, 'reject'])->name('reject');
 });
 
  
@@ -142,9 +129,8 @@ Route::delete('/dashboard/systemadmin/delete/{id}', [SystemadminController::clas
 //Routes for the reports
 Route::get('/reports/products_report',[ReportController::class,'showPdtsByPrice'])->name('reports.products');
 Route::get('/reports/pdtsByPrice',[ReportController::class,'productsByPrice'])->name('reports.pdtsByPrice');
-Route::get('reports/availableProducts',[ReportController::class,'availableProducts'])->name('reports.availableProducts');
-Route::get('/reports/inventory',[ReportController::class,'showOnHand'])->name('reports.inventory');
-Route::get('reports/rawMaterialsOnHand',[ReportController::class,'onHand'])->name('reports.rawMaterialsOnHand');
+
+Route::get('/reports/inventory',[ReportController::class,''])->name('reports.inventory');
 
 Route::get('/noOfOrders',[ReportController::class,'noOfOrders'])->name('noOfOrders');
 
@@ -171,10 +157,6 @@ Route::prefix('ml')->middleware(['auth', 'verified'])->group(function () {
     Route::post('/train', [MLController::class, 'trainModels'])->name('ml.train');
     Route::get('/dashboard', [MLController::class, 'dashboard'])->name('ml.dashboard');
     Route::post('/predict-sales', [MLController::class, 'predictSales'])->name('ml.predict-sales');
-    
-    // New personalized ML routes
-    Route::get('/personalized-recommendations', [MLController::class, 'getPersonalizedRecommendations'])->name('ml.personalized-recommendations');
-    Route::get('/user-profile', [MLController::class, 'getUserProfile'])->name('ml.user-profile');
 });
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('raw-material-orders', RawMaterialOrderController::class);
@@ -189,63 +171,26 @@ Route::middleware(['auth', 'verified'])->get('/supplier/{supplier}/raw-materials
 
 Route::post('/ml/custom-chart', [App\Http\Controllers\MLController::class, 'customChart'])->middleware(['auth', 'verified']);
 
-
-//to filter users basing on category
-Route::get('/filter',[SystemAdminController::class,'filter'])->name('filter');
-
-//Route for application
-Route::post('application',[UserController::class,'application'])->name('application');
-
-//Route for inserting pdf
-Route::get('/insertpdf',function(){
-    return view('insertpdf');
-})->name('insertpdf');
-
 // System admin activity log
 Route::get('/dashboard/systemadmin/activity-log', [\App\Http\Controllers\SystemadminController::class, 'activityLog'])->name('dashboard.systemadmin.activity-log');
 
 
 //Java Server Routes
+Route::post('/validate-file', [VendorController::class, 'validateFile'])->name('validate-file');
 
-Route::post('/submit-vendor-pdf', [\App\Http\Controllers\VendorController::class, 'validateFile'])->name('vendor.validate');
-
-Route::get('/activate-java-server', function () {
-    // Trigger an actual Java endpoint here if needed
-    return ['message' => 'Validation result will be emailed shortly.'];
-});
-
-// ML product data API for recommendations
-Route::get('/api/products-for-ml', [App\Http\Controllers\MLController::class, 'productsForML']);
-
-// Test route for ML implementation
-Route::get('/test-ml', function() {
-    $service = app('App\Services\MLProductService');
-    $products = $service->getMLProducts('female');
-    return response()->json(['count' => count($products), 'products' => $products]);
-});
-
-// Test route for enhanced ML system
-Route::get('/test-enhanced-ml', function() {
-    try {
-        $userMLService = app('App\Services\UserMLService');
-        $user = \App\Models\User::first();
-        if ($user) {
-            $preferences = $userMLService->analyzeUserPreferences($user);
-            $personalized = $userMLService->getPersonalizedRecommendations($user, 3);
-            return response()->json([
-                'success' => true,
-                'user_id' => $user->id,
-                'preferences' => $preferences,
-                'personalized_count' => count($personalized),
-                'personalized_sample' => array_slice($personalized, 0, 2)
-            ]);
-        } else {
-            return response()->json(['success' => false, 'error' => 'No users found']);
-        }
-    } catch (\Exception $e) {
-        return response()->json(['success' => false, 'error' => $e->getMessage()]);
-    }
-});
+//Workforce management routes
 
 
-
+Route::get('/workforce', [WorkforceController::class, 'index'])->name('workforce.index');
+Route::post('/workforce/allocate', [WorkforceController::class, 'allocateWorkers'])->name('workforce.allocate');
+Route::get('/workforce/export/pdf', [WorkforceController::class, 'exportPdfReport'])->name('workforce.exportPdf');
+Route::get('/workforce/export/excel', [WorkforceController::class, 'exportExcelReport'])->name('workforce.exportExcel');
+Route::resource('supply-centers', SupplyCenterController::class);
+Route::resource('workers', WorkerController::class);
+Route::get('/workforce/manage', [WorkforceController::class, 'manage'])->name('workforce.manage');
+Route::get('/workforce/export', [WorkforceController::class, 'exportExcelReport'])->name('workforce.export');
+Route::post('/workforce/refresh', [WorkforceController::class, 'refresh'])->name('workforce.refresh');
+Route::resource('workers', WorkerController::class);
+Route::get('/workers', [WorkerController::class, 'index'])->name('manage');
+Route::resource('workers', WorkerController::class)->except(['index']);
+Route::get('/supply-centers', [SupplyCenterController::class, 'index'])->name('manage');

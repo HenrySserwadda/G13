@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('mobile');
             $table->decimal('total', 10, 2);
             $table->timestamps();
+             $table->string('status')->default('completed');
         });
 
     }
