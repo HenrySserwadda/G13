@@ -59,6 +59,13 @@ class SystemadminController extends Controller
             ->get();
         return view('dashboard.systemadmin.pending-retailers', compact('users'));
     }
+    public function pendingWholesalers()
+    {
+        $users = User::where('status', 'application received')
+            ->where('pending_category','wholesaler')
+            ->get();
+        return view('dashboard.systemadmin.pending-wholesalers', compact('users'));
+    }
     public function pendingSuppliers()
     {
         $users = User::where('status', 'application received')
@@ -104,6 +111,33 @@ class SystemadminController extends Controller
         $user->notify(new UserRejectedWithNotification($user));
         return redirect()->route('dashboard.systemadmin.pending-suppliers')
             ->with('success', 'Retailer application rejected.');
+    }
+
+    public function approveWholeSalers($id)
+    {
+        $user = User::findOrFail($id);
+        $user->status = 'application approved';
+        $user->category='wholesaler';
+        $user->pending_category=null;
+        $user->user_id=User::generateUserId($user->category);
+        $user->notify(new UserApprovedWithNotification($user));
+        $user->save();
+        Wholesaler::create([
+                'user_id'=>$user->user_id
+            ]);
+        return redirect()->route('dashboard.systemadmin.pending-wholesalers')
+            ->with('success', 'Wholesaler approved successfully.');
+    }
+
+    public function rejectWholeSalers($id)
+    {
+        $user = User::findOrFail($id);
+        $user->status = 'application rejected';
+        $user->pending_category=null;
+        $user->save();
+        $user->notify(new UserRejectedWithNotification($user));
+        return redirect()->route('dashboard.systemadmin.pending-wholesalers')
+            ->with('success', 'Wholesaler application rejected.');
     }
     public function approveSuppliers($id)
     {

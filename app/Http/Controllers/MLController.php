@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Services\MLProductService;
 use App\Services\UserMLService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class MLController extends Controller
 {
@@ -112,7 +113,11 @@ class MLController extends Controller
             if (!empty($preferences['preferred_materials'])) {
                 $args .= ' --materials "' . escapeshellarg(implode(',', $preferences['preferred_materials'])) . '"';
             }
-            if ($preferences['price_range']['avg'] > 0) {
+            if (
+                isset($preferences['price_range']) &&
+                isset($preferences['price_range']['avg']) &&
+                $preferences['price_range']['avg'] > 0
+            ) {
                 $priceRange = json_encode($preferences['price_range']);
                 $args .= ' --price_range "' . escapeshellarg($priceRange) . '"';
             }
@@ -173,7 +178,7 @@ class MLController extends Controller
             ]);
             
         } catch (\Exception $e) {
-            \Log::error("Error getting personalized recommendations: " . $e->getMessage());
+            Log::error("Error getting personalized recommendations: " . $e->getMessage());
             return response()->json(['error' => 'Failed to get personalized recommendations'], 500);
         }
     }
@@ -189,16 +194,31 @@ class MLController extends Controller
         }
 
         try {
-            $preferences = $this->userMLService->analyzeUserPreferences($user);
-            $purchaseSummary = $this->userMLService->getUserPurchaseSummary($user);
-            
+            $preferences = $this->userMLService->analyzeUserPreferences($user) ?? [];
+            $purchaseSummary = $this->userMLService->getUserPurchaseSummary($user) ?? [];
+
+            // Provide defaults if missing
+            $preferences = array_merge([
+                'purchase_frequency' => 0,
+                'gender' => null,
+                'preferred_styles' => [],
+                'preferred_colors' => [],
+                'preferred_materials' => [],
+                'price_range' => ['min' => 0, 'max' => 0, 'avg' => 0],
+            ], $preferences);
+
+            $purchaseSummary = array_merge([
+                'total_spent' => 0,
+                'average_order_value' => 0,
+            ], $purchaseSummary);
+
             return response()->json([
                 'preferences' => $preferences,
                 'purchase_summary' => $purchaseSummary
             ]);
             
         } catch (\Exception $e) {
-            \Log::error("Error getting user profile: " . $e->getMessage());
+            Log::error("Error getting user profile: " . $e->getMessage());
             return response()->json(['error' => 'Failed to get user profile'], 500);
         }
     }
@@ -237,7 +257,7 @@ class MLController extends Controller
             $cmd .= " --x_axis2 \"$xAxis2\"";
         }
         exec($cmd, $output, $return_var);
-        \Log::info('Custom chart raw output:', $output);
+        Log::info('Custom chart raw output:', $output);
         // Only decode the JSON line from the output
         $jsonLine = null;
         foreach ($output as $line) {
