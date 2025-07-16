@@ -155,6 +155,9 @@ Route::prefix('ml')->middleware(['auth', 'verified'])->group(function () {
     Route::post('/train', [MLController::class, 'trainModels'])->name('ml.train');
     Route::get('/dashboard', [MLController::class, 'dashboard'])->name('ml.dashboard');
     Route::post('/predict-sales', [MLController::class, 'predictSales'])->name('ml.predict-sales');
+    // Added missing personalized recommendations route
+    Route::get('/personalized-recommendations', [App\Http\Controllers\MLController::class, 'getPersonalizedRecommendations']);
+    Route::get('/user-profile', [App\Http\Controllers\MLController::class, 'getUserProfile']);
 });
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('raw-material-orders', RawMaterialOrderController::class);
@@ -206,3 +209,5 @@ Route::resource('workers', WorkerController::class);
 Route::get('/workers', [WorkerController::class, 'index'])->name('manage');
 Route::resource('workers', WorkerController::class)->except(['index']);
 Route::get('/supply-centers', [SupplyCenterController::class, 'index'])->name('manage');
+// API endpoint for ML product suggestions (for tag bar and recommendations)
+Route::get('/api/products-for-ml', [App\Http\Controllers\MLController::class, 'productsForML']);
