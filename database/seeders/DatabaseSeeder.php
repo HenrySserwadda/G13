@@ -13,22 +13,32 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-    public function run(): void
-    {
-        // User::factory(10)->create();
-
-        
+ public function run(): void
+{
+    // Ensure roles don't already exist before creating
+    if (!Role::where('name', 'systemadmin')->exists()) {
         Role::create(['name' => 'systemadmin']);
-        Role::create(['name' => 'supplier']);
-        Role::create(['name' => 'staff']);
-        Permission::create(['name' => 'manage raw materials']);
-
-
-        $this->call([
-            OrdersandProductsSeeder::class,
-            RawMaterialSeeder::class
-        ]);
     }
+
+    if (!Role::where('name', 'supplier')->exists()) {
+        Role::create(['name' => 'supplier']);
+    }
+
+    if (!Role::where('name', 'staff')->exists()) {
+        Role::create(['name' => 'staff']);
+    }
+
+    if (!Permission::where('name', 'manage raw materials')->exists()) {
+        Permission::create(['name' => 'manage raw materials']);
+    }
+
+    // Call additional seeders
+    $this->call([
+        OrdersandProductsSeeder::class,
+        RawMaterialSeeder::class,
+        SupplyCenterSeeder::class,
+    ]);
+}
 }
 // Additional users
 //User::factory()->create(['name' => 'Alice', 'email' => 'alice@example.com']);

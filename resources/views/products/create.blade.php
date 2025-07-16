@@ -86,6 +86,48 @@
                        placeholder="Enter quantity">
             </div>
 
+            <!-- Style -->
+            <div class="mb-4">
+                <label class="block mb-2 font-medium text-gray-700">
+                    <i class="fas fa-paint-brush mr-2"></i>Style
+                </label>
+                <select name="style" class="w-full px-3 py-2 border rounded shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Select Style</option>
+                    <option value="Tote" {{ old('style') == 'Tote' ? 'selected' : '' }}>Tote</option>
+                    <option value="Messenger" {{ old('style') == 'Messenger' ? 'selected' : '' }}>Messenger</option>
+                    <option value="Backpack" {{ old('style') == 'Backpack' ? 'selected' : '' }}>Backpack</option>
+                </select>
+            </div>
+
+            <!-- Color -->
+            <div class="mb-4">
+                <label class="block mb-2 font-medium text-gray-700">
+                    <i class="fas fa-palette mr-2"></i>Color
+                </label>
+                <select name="color" class="w-full px-3 py-2 border rounded shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Select Color</option>
+                    <option value="Red" {{ old('color') == 'Red' ? 'selected' : '' }}>Red</option>
+                    <option value="Pink" {{ old('color') == 'Pink' ? 'selected' : '' }}>Pink</option>
+                    <option value="Black" {{ old('color') == 'Black' ? 'selected' : '' }}>Black</option>
+                    <option value="Green" {{ old('color') == 'Green' ? 'selected' : '' }}>Green</option>
+                    <option value="Blue" {{ old('color') == 'Blue' ? 'selected' : '' }}>Blue</option>
+                    <option value="Gray" {{ old('color') == 'Gray' ? 'selected' : '' }}>Gray</option>
+                </select>
+            </div>
+
+            <!-- Gender -->
+            <div class="mb-4">
+                <label class="block mb-2 font-medium text-gray-700">
+                    <i class="fas fa-venus-mars mr-2"></i>Gender
+                </label>
+                <select name="gender" class="w-full px-3 py-2 border rounded shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Select Gender</option>
+                    <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                    <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                    <option value="unisex" {{ old('gender') == 'unisex' ? 'selected' : '' }}>Unisex</option>
+                </select>
+            </div>
+
             <!-- Product Image -->
             <div class="mb-6">
                 <label class="block mb-2 font-medium text-gray-700">

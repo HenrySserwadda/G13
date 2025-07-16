@@ -40,7 +40,7 @@ class CheckoutController extends Controller
 
         // Create order
         $order = Order::create([
-            'user_id' => Auth::id(), // Use numeric ID
+            'user_id' => Auth::user()->user_id, 
             'location' => $request->location,
             'mobile' => $request->mobile,
             'total' => array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart)),
