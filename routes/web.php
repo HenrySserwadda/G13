@@ -103,6 +103,7 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard/systemadmin')->name('
 
     Route::post('/reject-retailers/{id}', [SystemadminController::class, 'rejectRetailers'])->name('rejectRetailers');
     Route::post('/reject-suppliers/{id}', [SystemadminController::class, 'rejectSuppliers'])->name('rejectSuppliers');
+    Route::post('/approve-retailers/{id}', [SystemadminController::class, 'approveRetailers'])->name('approve-retailers');
 });
 
 Route::post('/application',[UserController::class,'application'])->name('application');

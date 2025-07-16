@@ -211,17 +211,12 @@ class UserMLService
     public function getUserPurchaseSummary(User $user): array
     {
         $orders = Order::with(['items.product'])
-<<<<<<< HEAD
-            ->where('user_id', $user->id)
-            ->orWhere('user_id', $user->user_id)
-=======
             ->where(function($query) use ($user) {
                 $query->where('user_id', $user->id);
                 if (isset($user->user_id)) {
                     $query->orWhere('user_id', $user->user_id);
                 }
             })
->>>>>>> 00a3dadf80fc1fcba9e6ff019d5d9811b63ed029
             ->orderBy('created_at', 'desc')
             ->get();
 
