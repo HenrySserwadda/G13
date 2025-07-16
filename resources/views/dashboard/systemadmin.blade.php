@@ -99,6 +99,23 @@
                     </div>
                 </div>
             </a>
+            <!-- Workers Management Tile -->
+            <a href="{{ route('workforce.index') }}" class="group relative bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-cyan-300 overflow-hidden">
+                <div class="absolute inset-0 bg-cyan-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"></div>
+                <div class="relative z-10 p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mr-4 text-cyan-600">
+                            <i class="fas fa-users-cog text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800">Workers</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Manage all workers and allocations</p>
+                    <div class="text-cyan-600 text-sm font-medium flex items-center">
+                        <span>Manage Workers</span>
+                        <i class="fas fa-chevron-right ml-2 transition-transform group-hover:translate-x-1 duration-200"></i>
+                    </div>
+                </div>
+            </a>
         </div>
         <!-- Business Overview Section -->
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 mb-12">
