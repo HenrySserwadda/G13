@@ -29,6 +29,7 @@ class SystemadminController extends Controller
     public function makeStaffMember()
     {
         $users = User::where('category','!=','staff')
+            ->where('category','!=','systemadmin')
             ->get();
         return view('dashboard.systemadmin.make-staff', compact('users'));
     }
@@ -48,7 +49,7 @@ class SystemadminController extends Controller
      */
     public function allUsers()
     {
-        $users = User::where('status','approved')->get();
+        $users = User::all();
         return view('dashboard.systemadmin.all-users', compact('users'));
     }
     public function pendingRetailers()
@@ -91,7 +92,7 @@ class SystemadminController extends Controller
                 'user_id'=>$user->user_id
             ]);
         return redirect()->route('dashboard.systemadmin.pending-retailers')
-            ->with('success', 'User approved successfully.');
+            ->with('success', 'Retailer approved successfully.');
     }
 
     public function rejectRetailers($id)
@@ -102,7 +103,7 @@ class SystemadminController extends Controller
         $user->save();
         $user->notify(new UserRejectedWithNotification($user));
         return redirect()->route('dashboard.systemadmin.pending-suppliers')
-            ->with('error', 'Supplier application rejected.');
+            ->with('success', 'Retailer application rejected.');
     }
     public function approveSuppliers($id)
     {
@@ -117,7 +118,7 @@ class SystemadminController extends Controller
                 'user_id'=>$user->user_id
             ]);
         return redirect()->route('dashboard.systemadmin.pending-suppliers')
-            ->with('success', 'User approved successfully.');
+            ->with('success', 'Supplier approved successfully.');
     }
 
     public function rejectSuppliers($id)
@@ -128,7 +129,7 @@ class SystemadminController extends Controller
         $user->save();
         $user->notify(new UserRejectedWithNotification($user));
         return redirect()->route('dashboard.systemadmin.pending-suppliers')
-            ->with('error', 'Supplier application rejected.');
+            ->with('success', 'Supplier application rejected.');
     }
     /* public function approve($id)
     {
@@ -167,7 +168,7 @@ class SystemadminController extends Controller
         $user->category='systemadmin';
         $user->user_id=Systemadmin::generateSystemAdminId($id);
         $user->is_admin=true;
-        $user->notify(new NewSystemAdmin($user));
+        //$user->notify(new NewSystemAdmin($user));
         $user->save();
         Systemadmin::create([
             'user_id'=>$user->user_id

@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
        Schema::create('sales', function (Blueprint $table) {
-    $table->id();
-$table->foreignId('supply_center_id')->constrained()->onDelete('cascade');
-$table->integer('monthly_sales');
-$table->date('sales_month');
-$table->timestamps();
+        $table->id();
+        $table->foreignId('supply_center_id')->constrained()->onDelete('cascade');
+        $table->integer('monthly_sales');
+        $table->date('sales_month');
+        $table->timestamps();
 
 });
 

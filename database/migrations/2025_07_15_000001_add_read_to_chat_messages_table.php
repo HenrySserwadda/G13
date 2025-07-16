@@ -9,16 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('chat_messages', function (Blueprint $table) {
-            $table->string('file_path')->nullable()->after('message');
-            $table->string('file_type')->nullable()->after('file_path');
-            $table->string('original_file_name')->nullable()->after('file_type');
+            $table->boolean('read')->default(false)->after('original_file_name');
         });
     }
 
     public function down(): void
     {
         Schema::table('chat_messages', function (Blueprint $table) {
-            $table->dropColumn(['file_path', 'file_type', 'original_file_name']);
+            $table->dropColumn('read');
         });
     }
 }; 

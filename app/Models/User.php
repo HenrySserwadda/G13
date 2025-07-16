@@ -148,4 +148,9 @@ public function inventories()
     public function orders(){
         return $this->hasMany(Order::class);
     }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(\App\Models\ChatMessage::class, 'sender_id');
+    }
 }
