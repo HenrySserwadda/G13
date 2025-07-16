@@ -40,6 +40,9 @@
                         <div class="contact-info">
                             <h4>{{ $user->name }}</h4>
                             <p>{{ $user->email }}</p>
+                            @if($user->unread_count > 0)
+                                <span class="badge" style="background:#2563eb;color:#fff;padding:2px 8px;border-radius:12px;font-size:12px;margin-left:8px;">{{ $user->unread_count }}</span>
+                            @endif
                         </div>
                         <div class="contact-time">
                             <span>{{ $user->last_message_time }}</span>

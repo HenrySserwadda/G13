@@ -73,7 +73,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/chat', function () {
         return view('chat-page');
-    })->middleware(['auth', 'verified'])->name('chat');
+    })->middleware(['web', 'auth', 'verified'])->name('chat');
 });
 
 require __DIR__.'/auth.php';
@@ -246,6 +246,10 @@ Route::get('/test-enhanced-ml', function() {
         return response()->json(['success' => false, 'error' => $e->getMessage()]);
     }
 });
+
+Route::get('/middleware-test', function () {
+    return 'Test page';
+})->middleware(['web']);
 
 
 

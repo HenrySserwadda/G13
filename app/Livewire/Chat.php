@@ -43,6 +43,9 @@ class Chat extends Component
     public function loadUsers()
     {
         $this->users = User::where('id', '!=', Auth::id())
+            ->withCount(['sentMessages as unread_count' => function ($query) {
+                $query->where('receiver_id', Auth::id())->where('read', false);
+            }])
             ->when($this->searchTerm, function($query) {
                 return $query->where(function($q) {
                     $q->where('name', 'like', '%'.$this->searchTerm.'%')
@@ -76,6 +79,12 @@ class Chat extends Component
             $this->addError('selectedUserId', 'Invalid user selected.');
             return;
         }
+        
+        // Mark all messages from selected user to current user as read
+        ChatMessage::where('sender_id', $selectedUser->id)
+            ->where('receiver_id', Auth::id())
+            ->where('read', false)
+            ->update(['read' => true]);
         
         $messages = ChatMessage::with(['sender', 'receiver'])
             ->where(function($query) use ($selectedUser) {
@@ -129,6 +138,7 @@ class Chat extends Component
                 'file_path' => $filePath,
                 'file_type' => $fileType,
                 'original_file_name' => $originalFileName,
+                'read' => false, // Ensure unread by default
             ])->load('sender', 'receiver');
             $this->messages[] = $message->toArray();
             $this->reset(['newMessage', 'newFile']);
@@ -155,6 +165,10 @@ class Chat extends Component
         
         $selectedUser = $this->selectedUserId ? User::find($this->selectedUserId) : null;
         if ($selectedUser && $message['sender_id'] == $selectedUser->id) {
+            // Mark this message as read
+            if (isset($message['id'])) {
+                ChatMessage::where('id', $message['id'])->update(['read' => true]);
+            }
             $this->messages[] = $message;
             $this->dispatch('message-received');
         }

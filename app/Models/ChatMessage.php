@@ -26,6 +26,7 @@ class ChatMessage extends Model  // Class name should be PascalCase
         'file_path',
         'file_type',
         'original_file_name',
+        'read', // Add this line
     ];
 
     /**
