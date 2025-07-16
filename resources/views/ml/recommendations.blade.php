@@ -123,6 +123,21 @@
         .profile-stat strong {
             color: #1f2937;
         }
+        .for-you-sticker {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            z-index: 20;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
     </style>
 @endpush
 
@@ -284,6 +299,10 @@ function renderPersonalizedRecommendations(products) {
         }
         
         card += `<div class="product-image-container">`;
+        // Add FOR YOU sticker on the image itself for personalized products
+        if (product.is_personalized) {
+            card += `<div class="for-you-sticker">FOR YOU</div>`;
+        }
         if (hasImage) {
             card += `<img src="/${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
             card += `<div class="no-image-placeholder" style="display: none;"><i class="fas fa-camera text-5xl text-gray-400"></i></div>`;

@@ -30,6 +30,7 @@ class UserMLService
             // Get user's order history
             $orders = Order::with(['items.product'])
                 ->where('user_id', $user->id)
+                ->orWhere('user_id', $user->user_id)
                 ->orderBy('created_at', 'desc')
                 ->get();
 
@@ -211,6 +212,7 @@ class UserMLService
     {
         $orders = Order::with(['items.product'])
             ->where('user_id', $user->id)
+            ->orWhere('user_id', $user->user_id)
             ->orderBy('created_at', 'desc')
             ->get();
 

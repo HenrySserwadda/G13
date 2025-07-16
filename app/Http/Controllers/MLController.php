@@ -159,6 +159,11 @@ class MLController extends Controller
             } else {
                 // Fallback: try to get personalized products from database
                 $products = $this->userMLService->getPersonalizedRecommendations($user, $limit);
+                // Ensure is_personalized is set for all fallback products
+                $products = array_map(function($product) {
+                    $product['is_personalized'] = true;
+                    return $product;
+                }, $products);
             }
             
             return response()->json([
