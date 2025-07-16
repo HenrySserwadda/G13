@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Http\Controllers\WorkforceController;
 use App\Http\Controllers\WorkerController;
+use App\Http\Controllers\SupplyCenterController;
 use App\Http\Controllers\Systemadmin;
 use App\Http\Controllers\SystemadminController;
 use App\Http\Controllers\ChatController;
@@ -211,3 +212,4 @@ Route::resource('workers', WorkerController::class)->except(['index']);
 Route::get('/supply-centers', [SupplyCenterController::class, 'index'])->name('manage');
 // API endpoint for ML product suggestions (for tag bar and recommendations)
 Route::get('/api/products-for-ml', [App\Http\Controllers\MLController::class, 'productsForML']);
+Route::get('/workforce/manage', [SupplyCenterController::class, 'index'])->name('workforce.manage');

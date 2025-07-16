@@ -328,7 +328,7 @@
 
     /* Table row hover effects in dark mode */
     .dark tr:hover {
-        background-color: rgba(55, 65, 81, 0.5) !important;
+        background-color: rgba(196, 215, 247, 0.5) !important;
     }
 </style>
 @endsection
