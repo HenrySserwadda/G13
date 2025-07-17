@@ -36,8 +36,16 @@
     </div>
 
     @if (session('success'))
-        <div class="bg-green-100 dark:bg-green-900 border-l-4 border-green-500 dark:border-green-400 text-green-700 dark:text-green-100 p-4 rounded mb-6">
+        <div id="success-message" x-data="{ show: true }" x-show="show" class="bg-green-100 dark:bg-green-900 border-l-4 border-green-500 dark:border-green-400 text-green-700 dark:text-green-100 p-4 rounded mb-6 flex items-center">
+            <svg class="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
             <p>{{ session('success') }}</p>
+            <script>
+                setTimeout(function() {
+                    document.getElementById('success-message').style.display = 'none';
+                }, 5000);
+            </script>
         </div>
     @endif
 
@@ -147,8 +155,7 @@
             </svg>
             Add New Worker
         </h3>
-        <form action="{{ route('workers.store') }}" method="POST" class="space-y-4">
-            @csrf
+        <form action="{{ route('workers.store') }}" method="POST" class="space-y-4">   @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Worker Name</label>
@@ -175,95 +182,81 @@
 
     <!-- Workers Table with Show More/Less Functionality -->
     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
-         x-data="{
-            showAll: false,
-            workers: {{ Js::from($workers) }},
-            get visibleWorkers() {
-                return this.showAll ? this.workers : this.workers.slice(0, 8);
-            },
-            toggleShowAll() {
-                this.showAll = !this.showAll;
-            }
-         }">
-        <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
-            Workers
-        </h3>
+     x-data="{
+        showAll: false,
+        workers: {{ Js::from($workers) }},
+        get visibleWorkers() {
+            return this.showAll ? this.workers : this.workers.slice(0, 8);
+        },
+        toggleShowAll() {
+            this.showAll = !this.showAll;
+        }
+     }">
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supply Center</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    <template x-for="(worker, index) in visibleWorkers" :key="index">
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700" x-data="{ editing: false }">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span x-show="!editing" class="dark:text-gray-200" x-text="worker.name"></span>
-                                <input x-show="editing" type="text" x-model="worker.name"
-                                       class="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span x-show="!editing" class="dark:text-gray-200" x-text="worker.supply_center ? worker.supply_center.name : 'Unassigned'"></span>
-                                <select x-show="editing" x-model="worker.supply_center_id"
-                                        class="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                                    <option value="">Unassigned</option>
-                                    @foreach ($centers as $center)
-                                        <option value="{{ $center->id }}">{{ $center->name }}</option>
-                                    @endforeach
-                                </select>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <div class="relative inline-block text-left" x-data="{ open: false }">
-                                    <button @click="open = !open" type="button"
-                                        class="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-3 py-1 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800">
-                                        Actions
-                                        <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg"
-                                             viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                  clip-rule="evenodd" />
-                                        </svg>
+    <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        Workers
+    </h3>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supply Center</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                @foreach ($workers as $worker)
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap align-top">
+                            <div>
+                                <div>{{ $worker->name }}</div>
+                                <div x-data="{ showTransfer: false, justTransferred: false }" class="mt-2">
+                                    <button @click="showTransfer = !showTransfer" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 mb-2">
+                                        Transfer
                                     </button>
-
-                                    <div x-show="open" @click.away="open = false"
-                                         class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 dark:ring-gray-600 focus:outline-none z-10">
-                                        <div class="py-1">
-                                            <button x-show="!editing" @click="editing = true; open = false"
-                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
-                                                Edit
+                                    <div x-show="showTransfer" class="mt-2">
+                                        <form action="{{ route('workers.allocate') }}" method="POST" class="space-y-2" @submit="justTransferred = true; setTimeout(() => { showTransfer = false; justTransferred = false; }, 2000)">
+                                            @csrf
+                                            <input type="hidden" name="worker_id" value="{{ $worker->id }}">
+                                            <select name="to_center_id" required class="border rounded px-2 py-1 w-full">
+                                                <option value="">Select Center</option>
+                                                @foreach ($centers as $center)
+                                                    <option value="{{ $center->id }}" {{ $worker->supply_center_id == $center->id ? 'selected' : '' }}>{{ $center->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <input type="text" name="reason" placeholder="Reason for transfer" required class="border rounded px-2 py-1 w-full" />
+                                            <button type="submit" class="bg-green-600 text-white px-2 py-1 rounded text-xs flex items-center justify-center gap-1 hover:bg-green-700 w-fit">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                Submit
                                             </button>
-                                            <form x-show="editing" :action="`/workers/${worker.id}`" method="POST">
-                                                @csrf @method('PUT')
-                                                <input type="hidden" name="name" :value="worker.name">
-                                                <input type="hidden" name="supply_center_id" :value="worker.supply_center_id">
-                                                <button type="submit"
-                                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
-                                                    Save
-                                                </button>
-                                            </form>
-                                            <form :action="`/workers/${worker.id}`" method="POST">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" onclick="return confirm('Are you sure you want to delete this worker?')"
-                                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600">
-                                                    Delete
-                                                </button>
-                                            </form>
+                                        </form>
+                                        <div x-show="justTransferred" class="mt-2 flex items-center text-green-600">
+                                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Transfer successful!
                                         </div>
                                     </div>
                                 </div>
-                            </td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
-        </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap align-top">{{ $worker->supplyCenter->name ?? 'Unassigned' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-top">
+                            <!-- Other actions can go here if needed -->
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 
         <!-- Show More/Less Button -->
         <div class="mt-4 text-center" x-show="workers.length > 8">

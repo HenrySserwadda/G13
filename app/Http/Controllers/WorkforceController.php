@@ -44,8 +44,9 @@ public function index()
     $transfers = \App\Models\WorkforceTransfer::with(['worker', 'fromCenter', 'toCenter'])->get();
     $stocks = \App\Models\Stock::with('supplyCenter')->get();
     $sales = \App\Models\Sale::with('supplyCenter')->get();
+    $workers = \App\Models\Worker::with('supplyCenter')->get(); // Fetch all workers with their supply center
 
-    return view('workforce.index', compact('allocations', 'chartData', 'analysis', 'transfers', 'stocks', 'sales'));
+    return view('workforce.index', compact('allocations', 'chartData', 'analysis', 'transfers', 'stocks', 'sales', 'workers'));
 }
 
   // Allocate Workers between centers
@@ -54,6 +55,7 @@ public function index()
         $request->validate([
             'worker_id' => 'required|exists:workers,id',
             'to_center_id' => 'required|exists:supply_centers,id',
+            'reason' => 'required|string|max:255', // Require reason for transfer
         ]);
 
         $worker = Worker::find($request->worker_id);
@@ -65,7 +67,7 @@ public function index()
             'from_center_id' => $fromCenter,
             'to_center_id' => $request->to_center_id,
             'transfer_date' => now(),
-            'reason' => $request->input('reason'),
+            'reason' => $request->input('reason'), // Save the reason
         ]);
 
         return redirect()->back()->with('success', 'Worker allocated successfully.');

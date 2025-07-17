@@ -232,3 +232,4 @@ Route::get('/supply-centers', [SupplyCenterController::class, 'index'])->name('m
 // API endpoint for ML product suggestions (for tag bar and recommendations)
 Route::get('/api/products-for-ml', [App\Http\Controllers\MLController::class, 'productsForML']);
 Route::get('/workforce/manage', [SupplyCenterController::class, 'index'])->name('workforce.manage');
+Route::post('/workers/allocate', [WorkforceController::class, 'allocateWorkers'])->name('workers.allocate');
