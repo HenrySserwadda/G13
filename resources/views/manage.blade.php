@@ -1,279 +1,492 @@
 @extends('components.dashboard')
 
 @section('content')
-<div class="container mx-auto p-4 space-y-8 max-w-6xl dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
-    <!-- Header Section -->
-    <div class="flex flex-col mb-6">
-        <!-- Centered Heading -->
-        <div class="text-center mb-4">
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Manage Supply Centers & Workers</h2>
-        </div>
-        
-        <!-- Description and Toggle Row -->
-        <div class="flex justify-between items-start">
-            <!-- Left-aligned Description -->
-            <p class="block text-sm font-medium text-gray-700 dark:text-gray-300 max-w-2xl mr-4">
-                Optimize your Workforce Allocation where necessary, you can add Supply Centers or delete them and add new workers, delete some or change them to different supply centers
-            </p>
-            
-            <!-- Right-aligned Toggle Button -->
-            <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-2.5">
-                <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-                </svg>
-                <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
-                </svg>
-            </button>
-        </div>
+<div class="container mx-auto p-4 space-y-6 dark:bg-gray-900 transition-colors duration-300">
+    <!-- Dark Mode Toggle -->
+    <div class="flex justify-end mb-4">
+        <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-2.5">
+            <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+            <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+        </button>
     </div>
 
-    <!-- View Button -->
-    <div class="flex justify-end">
-        <a href="{{ route('workforce.index') }}" class="flex items-center bg-white dark:bg-gray-800 text-blue-700 dark:text-blue-300 font-semibold px-6 py-3 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
-            < VIEW
+    <!-- Workforce Allocation Header -->
+    <div class="bg-gradient-to-r from-blue-500 to-indigo-500 dark:from-blue-600 dark:to-indigo-600 text-white p-6 rounded-lg shadow-lg flex flex-col md:flex-row justify-between items-center transition hover:shadow-xl">
+        <div class="mb-4 md:mb-0 text-center md:text-left">
+            <h3 class="text-2xl font-semibold">Optimize your workforce distribution across supply centers</h3>
+            <p class="text-blue-100 dark:text-blue-200 text-lg">Track stock, sales, and workers to enhance performance efficiency</p>
+        </div>
+        <a href="{{ url('/workers') }}" class="flex items-center bg-white dark:bg-gray-800 text-blue-700 dark:text-blue-300 font-semibold px-6 py-3 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
+            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            Manage
         </a>
     </div>
 
-    @if (session('success'))
-        <div id="success-message" x-data="{ show: true }" x-show="show" class="bg-green-100 dark:bg-green-900 border-l-4 border-green-500 dark:border-green-400 text-green-700 dark:text-green-100 p-4 rounded mb-6 flex items-center">
-            <svg class="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            <p>{{ session('success') }}</p>
-            <script>
-                setTimeout(function() {
-                    document.getElementById('success-message').style.display = 'none';
-                }, 5000);
-            </script>
-        </div>
-    @endif
-
-    <!-- Add Supply Center Form -->
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-        <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Add New Supply Center
-        </h3>
-        <form action="{{ route('supply-centers.store') }}" method="POST" class="space-y-4">
-            @csrf
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Center Name</label>
-                    <input type="text" name="name" placeholder="Enter center name" required 
-                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
-                    <input type="text" name="location" placeholder="Enter location" 
-                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                </div>
-            </div>
-            <button type="submit" 
-                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800">
-                Add Center
-            </button>
-        </form>
-    </div>
-
-    <!-- Supply Centers Table -->
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-        <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-            </svg>
-            Supply Centers
-        </h3>
+    <!-- Table 1: Supply Center Summary -->
+    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center">Supply Center Summary</h3>
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gradient-to-r from-purple-400 to-purple-600 dark:from-purple-500 dark:to-purple-700 text-white">
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Location</th>
-                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                        <th class="p-3 text-left">Supply Center</th>
+                        <th class="p-3 text-center">Sales</th>
+                        <th class="p-3 text-center">Stock Available</th>
+                        <th class="p-3 text-center">Workers</th>
+                        <th class="p-3 text-center">Status</th>
+                        <th class="p-3 text-center">Reason</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                     @foreach ($centers as $center)
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700" x-data="{ editing: false }">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span x-show="!editing" class="dark:text-gray-200">{{ $center->name }}</span>
-                            <input x-show="editing" type="text" name="name" value="{{ $center->name }}" 
-                                   class="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span x-show="!editing" class="dark:text-gray-200">{{ $center->location }}</span>
-                            <input x-show="editing" type="text" name="location" value="{{ $center->location }}" 
-                                   class="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="relative inline-block text-left" x-data="{ open: false }">
-                                <div>
-                                    <button @click="open = !open" type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-3 py-1 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800" id="menu-button" aria-expanded="true" aria-haspopup="true">
-                                        Actions
-                                        <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
-                                </div>
-
-                                <div x-show="open" @click.away="open = false" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 dark:ring-gray-600 focus:outline-none z-10" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                                    <div class="py-1" role="none">
-                                        <button x-show="!editing" @click="editing = true; open = false" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white" role="menuitem" tabindex="-1">
-                                            Edit
-                                        </button>
-                                        <form x-show="editing" action="{{ route('supply-centers.update', $center) }}" method="POST" class="block w-full text-left">
-                                            @csrf @method('PUT')
-                                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white" role="menuitem" tabindex="-1">
-                                                Save
-                                            </button>
-                                        </form>
-                                        <form action="{{ route('supply-centers.destroy', $center) }}" method="POST" class="block w-full text-left">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" onclick="return confirm('Are you sure you want to delete this center?')" class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-red-900 dark:hover:text-red-300" role="menuitem" tabindex="-1">
-                                                Delete
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
+                    <tr class="hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <td class="p-3 dark:text-gray-300">{{ $center->name }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ $center->sales->last()->monthly_sales ?? 0 }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ $center->stocks->sum('quantity') ?? 0 }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ $center->workers->count() ?? 0 }}</td>
+                        <td class="p-3 text-center font-bold text-gray-500 dark:text-gray-400">-</td>
+                        <td class="p-3 text-center dark:text-gray-300">-</td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
     </div>
+    <br>
 
-    <!-- Add Worker Form -->
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-        <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-            </svg>
-            Add New Worker
-        </h3>
-        <form action="{{ route('workers.store') }}" method="POST" class="space-y-4">   @csrf
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Worker Name</label>
-                    <input type="text" name="name" placeholder="Enter worker name" required 
-                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign to Center</label>
-                    <select name="supply_center_id" 
-                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                        <option value="">Unassigned</option>
-                        @foreach ($centers as $center)
-                            <option value="{{ $center->id }}">{{ $center->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <button type="submit" 
-                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800">
-                Add Worker
-            </button>
-        </form>
-    </div>
-
-    <!-- Workers Table with Show More/Less Functionality -->
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
-     x-data="{
-        showAll: false,
-        workers: {{ Js::from($workers) }},
-        get visibleWorkers() {
-            return this.showAll ? this.workers : this.workers.slice(0, 8);
-        },
-        toggleShowAll() {
-            this.showAll = !this.showAll;
-        }
-     }">
-
-    <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-        </svg>
-        Workers
-    </h3>
-
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supply Center</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                @foreach ($workers as $worker)
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                        <td class="px-6 py-4 whitespace-nowrap align-top">
-                            <div>
-                                <div>{{ $worker->name }}</div>
-                                <div x-data="{ showTransfer: false, justTransferred: false }" class="mt-2">
-                                    <button @click="showTransfer = !showTransfer" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 mb-2">
-                                        Transfer
-                                    </button>
-                                    <div x-show="showTransfer" class="mt-2">
-                                        <form action="{{ route('workers.allocate') }}" method="POST" class="space-y-2" @submit="justTransferred = true; setTimeout(() => { showTransfer = false; justTransferred = false; }, 2000)">
-                                            @csrf
-                                            <input type="hidden" name="worker_id" value="{{ $worker->id }}">
-                                            <select name="to_center_id" required class="border rounded px-2 py-1 w-full">
-                                                <option value="">Select Center</option>
-                                                @foreach ($centers as $center)
-                                                    <option value="{{ $center->id }}" {{ $worker->supply_center_id == $center->id ? 'selected' : '' }}>{{ $center->name }}</option>
-                                                @endforeach
-                                            </select>
-                                            <input type="text" name="reason" placeholder="Reason for transfer" required class="border rounded px-2 py-1 w-full" />
-                                            <button type="submit" class="bg-green-600 text-white px-2 py-1 rounded text-xs flex items-center justify-center gap-1 hover:bg-green-700 w-fit">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                Submit
-                                            </button>
-                                        </form>
-                                        <div x-show="justTransferred" class="mt-2 flex items-center text-green-600">
-                                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                            </svg>
-                                            Transfer successful!
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap align-top">{{ $worker->supplyCenter->name ?? 'Unassigned' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-top">
-                            <!-- Other actions can go here if needed -->
-                        </td>
+    <!-- Table 2: Workforce Allocation History -->
+    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center">Workforce Allocation History</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-500 dark:to-blue-700 text-white">
+                    <tr>
+                        <th class="p-3 text-left">Worker</th>
+                        <th class="p-3 text-center">From Center</th>
+                        <th class="p-3 text-center">To Center</th>
+                        <th class="p-3 text-center">Date</th>
+                        <th class="p-3 text-center">Reason</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    @foreach ($transfers as $transfer)
+                    <tr class="hover:bg-purple-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <td class="p-3 dark:text-gray-300">{{ $transfer->worker->name }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ $transfer->fromCenter->name ?? 'N/A' }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ $transfer->toCenter->name ?? 'N/A' }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ date('M d, Y', strtotime($transfer->transfer_date)) }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ $transfer->reason }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
+
+    <!-- Table 3: Stock Summary -->
+    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center">Stock Summary</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gradient-to-r from-green-400 to-green-600 dark:from-green-500 dark:to-green-700 text-white">
+                    <tr>
+                        <th class="p-3 text-left">Supply Center</th>
+                        <th class="p-3 text-center">Stock Quantity</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    @foreach ($centers as $center)
+                    <tr class="hover:bg-green-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <td class="p-3 dark:text-gray-300">{{ $center->name }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ $center->stocks->sum('quantity') ?? 0 }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
+
+    <!-- Table 4: Sales Summary -->
+    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center">Sales Summary (Monthly)</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gradient-to-r from-orange-400 to-orange-600 dark:from-orange-500 dark:to-orange-700 text-white">
+                    <tr>
+                        <th class="p-3 text-left">Supply Center</th>
+                        <th class="p-3 text-center">Sales Month</th>
+                        <th class="p-3 text-center">Sales Amount</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    @foreach ($centers as $center)
+                    <tr class="hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <td class="p-3 dark:text-gray-300">{{ $center->name }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">
+                            @if($center->sales->last())
+                                {{ date('F Y', strtotime($center->sales->last()->sales_month)) }}
+                            @else
+                                N/A
+                            @endif
+                        </td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ $center->sales->last()->monthly_sales ?? 0 }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
+
+    <!-- Graph 1: Stock & Sales vs Workforce -->
+    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 transition-all duration-300 hover:shadow-xl border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Stock & Sales vs Workforce</h3>
+        <div class="h-80">
+            <canvas id="stockSalesWorkforceChart"></canvas>
+        </div>
+    </div>
+    <br>
+
+    <!-- Graph 2: Center Performance Post Allocation -->
+    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 transition-all duration-300 hover:shadow-xl border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Center Performance After Workforce Allocation</h3>
+        <div class="h-80">
+            <canvas id="centerPerformanceChart"></canvas>
+        </div>
     </div>
 
-        <!-- Show More/Less Button -->
-        <div class="mt-4 text-center" x-show="workers.length > 8">
-            <button @click="toggleShowAll()"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800">
-                <span x-text="showAll ? 'Show Less' : 'Show More'"></span>
-                <span x-text="`(${showAll ? workers.length : workers.length - 8})`"></span>
-            </button>
-        </div>
+    <div class="flex space-x-2 justify-end mt-4">
+        <!-- PDF Export Button -->
+        <a href="{{ route('workforce.exportPdf') }}" class="flex items-center bg-red-500 dark:bg-red-600 text-white px-4 py-2 rounded-full shadow-md hover:bg-red-600 dark:hover:bg-red-700 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6M8 16H7a2 2 0 01-2-2V6a2 2 0 012-2h6l4 4v8a2 2 0 01-2 2h-1"/>
+            </svg>
+            Export PDF
+        </a>
+
+        <!-- Excel Export Button -->
+        <a href="{{ route('workforce.exportExcel') }}" class="flex items-center bg-green-500 dark:bg-green-600 text-white px-4 py-2 rounded-full shadow-md hover:bg-green-600 dark:hover:bg-green-700 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M10 14h10M4 14h4m-4 4h16"/>
+            </svg>
+            Export Excel
+        </a>
     </div>
 </div>
 
-<!-- Alpine JS for the interactive components -->
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<!-- Chart.js Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
-<!-- Dark Mode Toggle Script -->
 <script>
+    // Color palette for charts (light mode)
+    const lightColors = [
+        'rgba(54, 162, 235, 0.7)',
+        'rgba(255, 99, 132, 0.7)',
+        'rgba(75, 192, 192, 0.7)',
+        'rgba(255, 159, 64, 0.7)',
+        'rgba(153, 102, 255, 0.7)',
+        'rgba(255, 205, 86, 0.7)',
+        'rgba(201, 203, 207, 0.7)',
+        'rgba(54, 162, 235, 0.7)'
+    ];
+
+    // Color palette for charts (dark mode)
+    const darkColors = [
+        'rgba(100, 180, 255, 0.7)',
+        'rgba(255, 120, 150, 0.7)',
+        'rgba(100, 220, 220, 0.7)',
+        'rgba(255, 180, 100, 0.7)',
+        'rgba(180, 150, 255, 0.7)',
+        'rgba(255, 220, 100, 0.7)',
+        'rgba(220, 220, 220, 0.7)',
+        'rgba(100, 180, 255, 0.7)'
+    ];
+
+    // Initialize charts
+    let stockSalesChart, centerPerfChart;
+
+    function createCharts() {
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        const colors = isDarkMode ? darkColors : lightColors;
+        const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+        const textColor = isDarkMode ? '#fff' : '#374151';
+        const axisColor = isDarkMode ? '#fff' : '#666';
+        const fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+
+        // Destroy existing charts if they exist
+        if (stockSalesChart) stockSalesChart.destroy();
+        if (centerPerfChart) centerPerfChart.destroy();
+
+        // Graph 1: Stock & Sales vs Workforce
+        const stockSalesCtx = document.getElementById('stockSalesWorkforceChart').getContext('2d');
+        stockSalesChart = new Chart(stockSalesCtx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($centers->pluck('name')) !!},
+                datasets: [
+                    {
+                        label: 'Stock Available',
+                        data: {!! json_encode($centers->map(fn($c) => $c->stocks->sum('quantity') ?? 0)) !!},
+                        backgroundColor: colors,
+                        borderColor: colors.map(c => c.replace('0.7', '1')),
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Sales (Monthly)',
+                        data: {!! json_encode($centers->map(fn($c) => $c->sales->last()->monthly_sales ?? 0)) !!},
+                        backgroundColor: colors.map(c => c.replace('0.7', '0.4')),
+                        borderColor: colors.map(c => c.replace('0.7', '1')),
+                        borderWidth: 1,
+                        type: 'line',
+                        tension: 0.3,
+                        fill: false,
+                        pointBackgroundColor: colors,
+                        pointBorderColor: isDarkMode ? '#1f2937' : '#fff',
+                        pointHoverRadius: 6,
+                        pointHoverBorderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: textColor,
+                            font: {
+                                family: fontFamily,
+                                size: 12
+                            }
+                        }
+                    },
+                    datalabels: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: gridColor
+                        },
+                        ticks: {
+                            color: axisColor,
+                            font: {
+                                family: fontFamily,
+                                size: 11
+                            },
+                            padding: 10,
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: 8
+                        },
+                        title: {
+                            display: true,
+                            text: 'Quantity',
+                            color: axisColor,
+                            font: {
+                                family: fontFamily,
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            padding: {top: 20, bottom: 10}
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: axisColor,
+                            font: {
+                                family: fontFamily,
+                                size: 11
+                            },
+                            maxRotation: 45,
+                            minRotation: 45,
+                            padding: 5
+                        },
+                        title: {
+                            display: true,
+                            text: 'Supply Centers',
+                            color: axisColor,
+                            font: {
+                                family: fontFamily,
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            padding: {top: 10, bottom: 20}
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                },
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 10,
+                        top: 10,
+                        bottom: 10
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+        // Graph 2: Center Performance Post Allocation
+        const centerPerfCtx = document.getElementById('centerPerformanceChart').getContext('2d');
+        centerPerfChart = new Chart(centerPerfCtx, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($centers->pluck('name')) !!},
+                datasets: [
+                    {
+                        label: 'Sales After Allocation',
+                        data: {!! json_encode($centers->map(fn($c) => $c->sales->last()->monthly_sales ?? 0)) !!},
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: isDarkMode ? 'rgba(255, 99, 132, 0.2)' : 'rgba(255, 99, 132, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                        pointBorderColor: isDarkMode ? '#1f2937' : '#fff',
+                        pointHoverRadius: 6,
+                        pointHoverBorderWidth: 2,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Workers After Allocation',
+                        data: {!! json_encode($centers->map(fn($c) => $c->workers->count() ?? 0)) !!},
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: isDarkMode ? 'rgba(54, 162, 235, 0.2)' : 'rgba(54, 162, 235, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                        pointBorderColor: isDarkMode ? '#1f2937' : '#fff',
+                        pointHoverRadius: 6,
+                        pointHoverBorderWidth: 2,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: textColor,
+                            font: {
+                                family: fontFamily,
+                                size: 12
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: gridColor
+                        },
+                        ticks: {
+                            color: axisColor,
+                            font: {
+                                family: fontFamily,
+                                size: 11
+                            },
+                            padding: 10,
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: 8
+                        },
+                        title: {
+                            display: true,
+                            text: 'Quantity/Count',
+                            color: axisColor,
+                            font: {
+                                family: fontFamily,
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            padding: {top: 20, bottom: 10}
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: axisColor,
+                            font: {
+                                family: fontFamily,
+                                size: 11
+                            },
+                            maxRotation: 45,
+                            minRotation: 45,
+                            padding: 5
+                        },
+                        title: {
+                            display: true,
+                            text: 'Supply Centers',
+                            color: axisColor,
+                            font: {
+                                family: fontFamily,
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            padding: {top: 10, bottom: 20}
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                },
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 10,
+                        top: 10,
+                        bottom: 10
+                    }
+                }
+            }
+        });
+    }
+
+    // Dark mode toggle functionality
     document.addEventListener('DOMContentLoaded', function() {
         const themeToggleBtn = document.getElementById('theme-toggle');
         const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
@@ -287,6 +500,9 @@
             document.documentElement.classList.remove('dark');
             themeToggleDarkIcon.classList.remove('hidden');
         }
+
+        // Create charts with initial theme
+        createCharts();
 
         themeToggleBtn.addEventListener('click', function() {
             // Toggle icons
@@ -312,35 +528,70 @@
                     localStorage.setItem('color-theme', 'dark');
                 }
             }
+
+            // Recreate charts with new theme
+            createCharts();
         });
     });
 </script>
 
 <style>
-    /* Custom scrollbar for dark mode */
-    .dark ::-webkit-scrollbar {
-        width: 8px;
+    /* Smooth transitions for all interactive elements */
+    a, button, .hover\:shadow-lg:hover, .hover\:bg-blue-50:hover, .hover\:bg-purple-50:hover, 
+    .hover\:bg-green-50:hover, .hover\:bg-orange-50:hover {
+        transition: all 0.3s ease;
+    }
+
+    /* Table row hover effects */
+    tr:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Custom scrollbar for tables */
+    .overflow-x-auto::-webkit-scrollbar {
         height: 8px;
     }
-    .dark ::-webkit-scrollbar-track {
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+    }
+    .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    /* Dark mode scrollbar */
+    .dark .overflow-x-auto::-webkit-scrollbar-track {
         background: #374151;
     }
-    .dark ::-webkit-scrollbar-thumb {
+    .dark .overflow-x-auto::-webkit-scrollbar-thumb {
         background: #6b7280;
-        border-radius: 4px;
     }
-    .dark ::-webkit-scrollbar-thumb:hover {
-        background: #7c7f85ff;
-    }
-
-    /* Smooth transitions for dark mode */
-    .dark * {
-        transition: background-color 0.3s ease, border-color 0.3s ease;
+    .dark .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
     }
 
-    /* Table row hover effects in dark mode */
-    .dark tr:hover {
-        background-color: rgba(190, 215, 255, 0.5) !important;
+    /* Enhanced table shadows */
+    .shadow-lg {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    .dark .shadow-lg {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+    }
+    .hover\:shadow-xl:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .dark .hover\:shadow-xl:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Chart container sizing */
+    .h-80 {
+        height: 20rem;
     }
 </style>
 @endsection

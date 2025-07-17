@@ -30,7 +30,7 @@
     </div>
 
     <!-- Table 1: Supply Center Summary -->
-    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+    <div class="bg-white dark:bg-gray-800 dark:shadow-2xl dark:bg-opacity-80 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
         <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center">Supply Center Summary</h3>
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
@@ -45,20 +45,14 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                    @foreach ($analysis as $item)
+                    @foreach ($centers as $center)
                     <tr class="hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                        <td class="p-3 dark:text-gray-300">{{ $item['center']->name }}</td>
-                        <td class="p-3 text-center dark:text-gray-300">{{ number_format($item['center']->sales->last()->monthly_sales ?? 0) }}</td>
-                        <td class="p-3 text-center dark:text-gray-300">{{ number_format($item['center']->stocks->sum('quantity')) }}</td>
-                        <td class="p-3 text-center dark:text-gray-300">{{ $item['center']->workers->count() }}</td>
-                        <td class="p-3 text-center font-bold 
-                            @if($item['analysis']['status'] == 'Surplus') text-red-500 dark:text-red-400
-                            @elseif($item['analysis']['status'] == 'Deficit') text-yellow-500 dark:text-yellow-400
-                            @else text-green-500 dark:text-green-400
-                            @endif">
-                            {{ $item['analysis']['status'] }}
-                        </td>
-                        <td class="p-3 text-center dark:text-gray-300">{{ $item['analysis']['reason'] }}</td>
+                        <td class="p-3 dark:text-gray-300">{{ $center->name }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ $center->sales->last()->monthly_sales ?? 0 }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ $center->stocks->sum('quantity') ?? 0 }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ $center->workers->count() ?? 0 }}</td>
+                        <td class="p-3 text-center font-bold text-gray-500 dark:text-gray-400">-</td>
+                        <td class="p-3 text-center dark:text-gray-300">-</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -68,7 +62,7 @@
     <br>
 
     <!-- Table 2: Workforce Allocation History -->
-    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+    <div class="bg-white dark:bg-gray-800 dark:shadow-2xl dark:bg-opacity-80 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
         <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center">Workforce Allocation History</h3>
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
@@ -98,7 +92,7 @@
     <br>
 
     <!-- Table 3: Stock Summary -->
-    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+    <div class="bg-white dark:bg-gray-800 dark:shadow-2xl dark:bg-opacity-80 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
         <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center">Stock Summary</h3>
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
@@ -109,10 +103,10 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                    @foreach ($stocks as $stock)
+                    @foreach ($centers as $center)
                     <tr class="hover:bg-green-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                        <td class="p-3 dark:text-gray-300">{{ $stock->supplyCenter->name }}</td>
-                        <td class="p-3 text-center dark:text-gray-300">{{ number_format($stock->quantity) }}</td>
+                        <td class="p-3 dark:text-gray-300">{{ $center->name }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ $center->stocks->sum('quantity') ?? 0 }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -122,7 +116,7 @@
     <br>
 
     <!-- Table 4: Sales Summary -->
-    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+    <div class="bg-white dark:bg-gray-800 dark:shadow-2xl dark:bg-opacity-80 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
         <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center">Sales Summary (Monthly)</h3>
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
@@ -134,11 +128,17 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                    @foreach ($sales as $sale)
+                    @foreach ($centers as $center)
                     <tr class="hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                        <td class="p-3 dark:text-gray-300">{{ $sale->supplyCenter->name }}</td>
-                        <td class="p-3 text-center dark:text-gray-300">{{ date('F Y', strtotime($sale->sales_month)) }}</td>
-                        <td class="p-3 text-center dark:text-gray-300">{{ number_format($sale->monthly_sales) }}</td>
+                        <td class="p-3 dark:text-gray-300">{{ $center->name }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">
+                            @if($center->sales->last())
+                                {{ date('F Y', strtotime($center->sales->last()->sales_month)) }}
+                            @else
+                                N/A
+                            @endif
+                        </td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ $center->sales->last()->monthly_sales ?? 0 }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -148,7 +148,7 @@
     <br>
 
     <!-- Graph 1: Stock & Sales vs Workforce -->
-    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 transition-all duration-300 hover:shadow-xl">
+    <div class="bg-white dark:bg-gray-800 dark:shadow-2xl dark:bg-opacity-80 shadow-lg rounded-lg p-6 transition-all duration-300 hover:shadow-xl">
         <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Stock & Sales vs Workforce</h3>
         <div class="h-80">
             <canvas id="stockSalesWorkforceChart"></canvas>
@@ -157,7 +157,7 @@
     <br>
 
     <!-- Graph 2: Center Performance Post Allocation -->
-    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 transition-all duration-300 hover:shadow-xl">
+    <div class="bg-white dark:bg-gray-800 dark:shadow-2xl dark:bg-opacity-80 shadow-lg rounded-lg p-6 transition-all duration-300 hover:shadow-xl">
         <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Center Performance After Workforce Allocation</h3>
         <div class="h-80">
             <canvas id="centerPerformanceChart"></canvas>
@@ -219,7 +219,7 @@
         const isDarkMode = document.documentElement.classList.contains('dark');
         const colors = isDarkMode ? darkColors : lightColors;
         const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
-        const textColor = isDarkMode ? '#e5e7eb' : '#374151';
+        const textColor = isDarkMode ? '#fff' : '#374151';
 
         // Destroy existing charts if they exist
         if (stockSalesChart) stockSalesChart.destroy();
@@ -230,18 +230,18 @@
         stockSalesChart = new Chart(stockSalesCtx, {
             type: 'bar',
             data: {
-                labels: {!! json_encode($analysis->pluck('center.name')) !!},
+                labels: {!! json_encode($centers->pluck('name')) !!},
                 datasets: [
                     {
                         label: 'Stock Available',
-                        data: {!! json_encode($analysis->map(fn($a) => $a['center']->stocks->sum('quantity'))) !!},
+                        data: {!! json_encode($centers->map(fn($c) => $c->stocks->sum('quantity') ?? 0)) !!},
                         backgroundColor: colors,
                         borderColor: colors.map(c => c.replace('0.7', '1')),
                         borderWidth: 1
                     },
                     {
                         label: 'Sales (Monthly)',
-                        data: {!! json_encode($analysis->map(fn($a) => $a['center']->sales->last()->monthly_sales ?? 0)) !!},
+                        data: {!! json_encode($centers->map(fn($c) => $c->sales->last()->monthly_sales ?? 0)) !!},
                         backgroundColor: colors.map(c => c.replace('0.7', '0.4')),
                         borderColor: colors.map(c => c.replace('0.7', '1')),
                         borderWidth: 1,
@@ -281,6 +281,10 @@
                         },
                         ticks: {
                             color: textColor
+                        },
+                        title: {
+                            display: false, // or true if you want a title
+                            color: textColor
                         }
                     },
                     x: {
@@ -288,6 +292,10 @@
                             display: false
                         },
                         ticks: {
+                            color: textColor
+                        },
+                        title: {
+                            display: false, // or true if you want a title
                             color: textColor
                         }
                     }
@@ -310,11 +318,11 @@
         centerPerfChart = new Chart(centerPerfCtx, {
             type: 'line',
             data: {
-                labels: {!! json_encode($analysis->pluck('center.name')) !!},
+                labels: {!! json_encode($centers->pluck('name')) !!},
                 datasets: [
                     {
                         label: 'Sales After Allocation',
-                        data: {!! json_encode($analysis->map(fn($a) => $a['center']->sales->last()->monthly_sales ?? 0)) !!},
+                        data: {!! json_encode($centers->map(fn($c) => $c->sales->last()->monthly_sales ?? 0)) !!},
                         borderColor: 'rgba(255, 99, 132, 1)',
                         backgroundColor: isDarkMode ? 'rgba(255, 99, 132, 0.2)' : 'rgba(255, 99, 132, 0.1)',
                         fill: true,
@@ -327,7 +335,7 @@
                     },
                     {
                         label: 'Workers After Allocation',
-                        data: {!! json_encode($analysis->map(fn($a) => $a['center']->workers->count())) !!},
+                        data: {!! json_encode($centers->map(fn($c) => $c->workers->count() ?? 0)) !!},
                         borderColor: 'rgba(54, 162, 235, 1)',
                         backgroundColor: isDarkMode ? 'rgba(54, 162, 235, 0.2)' : 'rgba(54, 162, 235, 0.1)',
                         fill: true,
@@ -363,6 +371,10 @@
                         },
                         ticks: {
                             color: textColor
+                        },
+                        title: {
+                            display: false, // or true if you want a title
+                            color: textColor
                         }
                     },
                     x: {
@@ -370,6 +382,10 @@
                             display: false
                         },
                         ticks: {
+                            color: textColor
+                        },
+                        title: {
+                            display: false, // or true if you want a title
                             color: textColor
                         }
                     }
@@ -474,6 +490,11 @@
     }
     .dark .overflow-x-auto::-webkit-scrollbar-thumb:hover {
         background: #9ca3af;
+    }
+
+    /* Extra pronounced shadow for dark mode */
+    .dark .dark\:shadow-2xl {
+        box-shadow: 0 8px 32px 0 rgba(31, 41, 55, 0.85), 0 1.5px 4px 0 rgba(0,0,0,0.10);
     }
 </style>
 @endsection

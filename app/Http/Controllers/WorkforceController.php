@@ -31,7 +31,7 @@ public function index()
     ];
 
     // Prepare $analysis (example logic, adjust as needed)
-    $centers = \App\Models\SupplyCenter::with(['stocks', 'sales', 'workers'])->get();
+    $centers = \App\Models\SupplyCenter::with(['sales', 'stocks', 'workers'])->get();
     $analysis = $centers->map(function ($center) use ($service) {
         $analysisResult = $service->analyzeCapacity($center);
         return [
@@ -46,7 +46,7 @@ public function index()
     $sales = \App\Models\Sale::with('supplyCenter')->get();
     $workers = \App\Models\Worker::with('supplyCenter')->get(); // Fetch all workers with their supply center
 
-    return view('workforce.index', compact('allocations', 'chartData', 'analysis', 'transfers', 'stocks', 'sales', 'workers'));
+    return view('workforce.index', compact('allocations', 'chartData', 'analysis', 'transfers', 'stocks', 'sales', 'workers', 'centers'));
 }
 
   // Allocate Workers between centers
