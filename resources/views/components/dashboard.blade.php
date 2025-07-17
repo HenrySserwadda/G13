@@ -16,9 +16,9 @@
                 extend: {
                     colors: {
                         primary: {
-                            dark: '#1f2937', // gray-800
-                            darker: '#111827', // gray-900
-                            hover: '#374151'  // gray-700
+                            dark: '#1f2937', 
+                            darker: '#111827', 
+                            hover: '#374151'  
                         }
                     }
                 }
@@ -41,8 +41,8 @@
                                 <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
                             </svg>
                         </button>
-                        <a href="{{ url('/') }}" class="flex ms-2 md:me-24">
-                            <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" />
+                        <a href="{{ url('/') }}" class="flex ms-2 md:me-24 items-center">
+                            <i class="fas fa-bag-shopping me-2 text-2xl text-white"></i>
                             <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">DURABAG</span>
                         </a>
                         <!-- Cart Link -->
