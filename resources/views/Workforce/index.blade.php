@@ -23,7 +23,7 @@
         <a href="{{ url('/workers') }}" class="flex items-center bg-white dark:bg-gray-800 text-blue-700 dark:text-blue-300 font-semibold px-6 py-3 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
     <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-    </svg>
+                </svg>
     Manage
 </a>
 
@@ -137,9 +137,9 @@
                             @else
                                 N/A
                             @endif
-                        </td>
+                            </td>
                         <td class="p-3 text-center dark:text-gray-300">{{ $center->sales->last()->monthly_sales ?? 0 }}</td>
-                    </tr>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
@@ -228,11 +228,11 @@
         // Graph 1: Stock & Sales vs Workforce
         const stockSalesCtx = document.getElementById('stockSalesWorkforceChart').getContext('2d');
         stockSalesChart = new Chart(stockSalesCtx, {
-            type: 'bar',
-            data: {
+    type: 'bar',
+    data: {
                 labels: {!! json_encode($centers->pluck('name')) !!},
-                datasets: [
-                    {
+        datasets: [
+            {
                         label: 'Stock Available',
                         data: {!! json_encode($centers->map(fn($c) => $c->stocks->sum('quantity') ?? 0)) !!},
                         backgroundColor: colors,
@@ -252,13 +252,13 @@
                         pointBorderColor: isDarkMode ? '#1f2937' : '#fff',
                         pointHoverRadius: 6,
                         pointHoverBorderWidth: 2
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
+        plugins: {
                     tooltip: {
                         mode: 'index',
                         intersect: false,
@@ -299,25 +299,25 @@
                             color: textColor
                         }
                     }
-                },
-                interaction: {
-                    mode: 'nearest',
-                    axis: 'x',
-                    intersect: false
+        },
+        interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
                 },
                 animation: {
                     duration: 1000,
                     easing: 'easeOutQuart'
-                }
+        }
             },
             plugins: [ChartDataLabels]
-        });
+});
 
         // Graph 2: Center Performance Post Allocation
         const centerPerfCtx = document.getElementById('centerPerformanceChart').getContext('2d');
         centerPerfChart = new Chart(centerPerfCtx, {
-            type: 'line',
-            data: {
+    type: 'line',
+    data: {
                 labels: {!! json_encode($centers->pluck('name')) !!},
                 datasets: [
                     {
@@ -347,11 +347,11 @@
                         borderWidth: 2
                     }
                 ]
-            },
-            options: {
-                responsive: true,
+    },
+    options: {
+        responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
+        plugins: {
                     tooltip: {
                         mode: 'index',
                         intersect: false,
@@ -389,11 +389,11 @@
                             color: textColor
                         }
                     }
-                },
-                interaction: {
-                    mode: 'nearest',
-                    axis: 'x',
-                    intersect: false
+        },
+        interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
                 },
                 animation: {
                     duration: 1000,

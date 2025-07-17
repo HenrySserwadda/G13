@@ -86,6 +86,7 @@ public function manage()
     return view('workforce.manage', [
         'centers' => SupplyCenter::all(),
         'workers' => Worker::with('supplyCenter')->get(),
+        'transfers' => \App\Models\WorkforceTransfer::with(['worker', 'fromCenter', 'toCenter'])->get(),
     ]);
 }
 // Excel
