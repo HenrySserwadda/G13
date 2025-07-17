@@ -33,6 +33,8 @@
         .dark .no-image-placeholder {
             background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
         }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px);} to { opacity: 1; transform: none; } }
+        .slide-up { animation: slideUp 0.7s cubic-bezier(.4,0,.2,1) both; }
     </style>
 @endpush
 
@@ -89,7 +91,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             @forelse($products as $product)
-                <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl">
+                <div class="product-card recommendation-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl opacity-0 translate-y-10" data-index="{{ $loop->index }}">
                     <div class="product-image-container">
                         @if($product->image)
                             @if($product->is_ml_generated)
@@ -307,3 +309,25 @@ document.addEventListener('DOMContentLoaded', fetchAllProductsTags);
 .tab-btn.bg-blue-600 { border-bottom: 2px solid #2563eb; }
 </style>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Slide-up animation for product cards
+    const cards = document.querySelectorAll('.product-card.recommendation-card');
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const i = parseInt(entry.target.getAttribute('data-index')) || 0;
+                setTimeout(() => {
+                    entry.target.classList.add('slide-up');
+                    entry.target.classList.remove('opacity-0', 'translate-y-10');
+                }, i * 120);
+                obs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+    cards.forEach(card => observer.observe(card));
+});
+</script>
+@endpush

@@ -296,7 +296,20 @@ class MLController extends Controller
             ];
         }
 
-        return view('ml.dashboard', compact('chartData'));
+        // Always provide $images (use placeholders if not set)
+        $images = [
+            'monthly_sales' => asset('images/sales_by_month.png'),
+            'material_sales' => asset('images/sales_by_material.png'),
+            'gender_sales' => asset('images/sales_by_gender.png'),
+        ];
+        foreach ($images as $key => $image) {
+            $imagePath = public_path(str_replace(asset(''), '', $image));
+            if (!file_exists($imagePath)) {
+                $images[$key] = 'https://via.placeholder.com/400x300?text=Chart+Not+Available';
+            }
+        }
+
+        return view('ml.dashboard', compact('images', 'chartData'));
     }
 
     public function predictSales(Request $request)
