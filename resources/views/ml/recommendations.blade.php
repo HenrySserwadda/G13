@@ -123,6 +123,21 @@
         .profile-stat strong {
             color: #1f2937;
         }
+        .for-you-sticker {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            z-index: 20;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
     </style>
 @endpush
 
@@ -274,15 +289,56 @@ function renderPersonalizedRecommendations(products) {
         return;
     }
     
-    products.forEach(product => {
+    products.forEach((product, i) => {
         const hasImage = product.image && product.image !== 'images/dataset/none';
-        let card = `<div class="product-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl relative">`;
+        let card = `<div class="product-card recommendation-card opacity-0 translate-y-10 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl relative" data-index="${i}">`;
         
         // Add personalized badge
         if (product.is_personalized) {
             card += `<div class="personalized-badge"><i class="fas fa-star mr-1"></i>For You</div>`;
         }
         
+        card += `<div class="product-image-container">`;
+        // Remove the orange FOR YOU sticker on the image itself
+        // if (product.is_personalized) {
+        //     card += `<div class=\"for-you-sticker\">FOR YOU</div>`;
+        // }
+        if (hasImage) {
+            card += `<img src="/${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
+            card += `<div class="no-image-placeholder" style="display: none;"><i class="fas fa-camera text-5xl text-gray-400"></i></div>`;
+        } else {
+            card += `<div class="no-image-placeholder"><i class="fas fa-camera text-5xl text-gray-400"></i></div>`;
+        }
+        card += `</div>`;
+        card += `<div class="p-5">`;
+        card += `<div class="flex justify-between items-start">`;
+        card += `<h2 class="text-xl font-bold text-gray-800 mb-2">${product.name}</h2>`;
+        card += `<div class="text-lg font-bold text-blue-600">UGX ${Number(product.price).toLocaleString()}</div>`;
+        card += `</div>`;
+        card += `<p class="text-gray-600 mb-4 line-clamp-2">${product.description}</p>`;
+        card += `<div class="flex space-x-3">`;
+        card += `<a href="/products/${product.id}?from=ml" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center transition-colors duration-300 flex-1 justify-center"><i class="fas fa-eye mr-2"></i> View</a>`;
+        card += `<form action="${window.LaravelCartAddRoute.replace('PRODUCT_ID', product.id)}" method="POST" class="flex-1">`;
+        card += `<input type="hidden" name="_token" value="${window.LaravelCsrfToken}">`;
+        card += `<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center transition-colors duration-300"><i class="fas fa-cart-plus mr-2"></i> Add to Cart</button>`;
+        card += `</form>`;
+        card += `</div>`;
+        card += `</div>`;
+        card += `</div>`;
+        personalizedRecommendationsDiv.innerHTML += card;
+    });
+    animateRecommendationCards(personalizedRecommendationsDiv);
+}
+
+function renderRecommendations(products) {
+    recommendationsDiv.innerHTML = '';
+    if (!products.length) {
+        recommendationsDiv.innerHTML = '<div class="col-span-full text-center py-12"><div class="text-gray-500 text-xl"><i class="fas fa-box-open text-5xl mb-4"></i><p class="text-2xl font-light">No recommendations found</p></div></div>';
+        return;
+    }
+    products.forEach((product, i) => {
+        const hasImage = product.image && product.image !== 'images/dataset/none';
+        let card = `<div class="product-card recommendation-card opacity-0 translate-y-10 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl" data-index="${i}">`;
         card += `<div class="product-image-container">`;
         if (hasImage) {
             card += `<img src="/${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
@@ -298,7 +354,7 @@ function renderPersonalizedRecommendations(products) {
         card += `</div>`;
         card += `<p class="text-gray-600 mb-4 line-clamp-2">${product.description}</p>`;
         card += `<div class="flex space-x-3">`;
-        card += `<a href="/products?name=${encodeURIComponent(product.name)}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center transition-colors duration-300 flex-1 justify-center"><i class="fas fa-eye mr-2"></i> View</a>`;
+        card += `<a href="/products/${product.id}?from=ml" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center transition-colors duration-300 flex-1 justify-center"><i class="fas fa-eye mr-2"></i> View</a>`;
         card += `<form action="${window.LaravelCartAddRoute.replace('PRODUCT_ID', product.id)}" method="POST" class="flex-1">`;
         card += `<input type="hidden" name="_token" value="${window.LaravelCsrfToken}">`;
         card += `<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center transition-colors duration-300"><i class="fas fa-cart-plus mr-2"></i> Add to Cart</button>`;
@@ -306,8 +362,33 @@ function renderPersonalizedRecommendations(products) {
         card += `</div>`;
         card += `</div>`;
         card += `</div>`;
-        personalizedRecommendationsDiv.innerHTML += card;
+        recommendationsDiv.innerHTML += card;
     });
+    animateRecommendationCards(recommendationsDiv);
+}
+
+function animateRecommendationCards(container) {
+    const cards = container.querySelectorAll('.recommendation-card');
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const idx = parseInt(entry.target.dataset.index) || 0;
+                    setTimeout(() => {
+                        entry.target.classList.add('slide-up');
+                        entry.target.classList.remove('opacity-0', 'translate-y-10');
+                    }, idx * 120);
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        cards.forEach(card => observer.observe(card));
+    } else {
+        cards.forEach(card => {
+            card.classList.add('slide-up');
+            card.classList.remove('opacity-0', 'translate-y-10');
+        });
+    }
 }
 
 // Fetch all products for tag extraction
@@ -405,43 +486,6 @@ async function fetchRecommendations() {
     recommendationsDiv.classList.remove('opacity-50', 'pointer-events-none');
 }
 
-function renderRecommendations(products) {
-    recommendationsDiv.innerHTML = '';
-    if (!products.length) {
-        recommendationsDiv.innerHTML = '<div class="col-span-full text-center py-12"><div class="text-gray-500 text-xl"><i class="fas fa-box-open text-5xl mb-4"></i><p class="text-2xl font-light">No recommendations found</p></div></div>';
-        return;
-    }
-    products.forEach(product => {
-        const hasImage = product.image && product.image !== 'images/dataset/none';
-        let card = `<div class="product-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl">`;
-        card += `<div class="product-image-container">`;
-        if (hasImage) {
-            card += `<img src="/${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
-            card += `<div class="no-image-placeholder" style="display: none;"><i class="fas fa-camera text-5xl text-gray-400"></i></div>`;
-        } else {
-            card += `<div class="no-image-placeholder"><i class="fas fa-camera text-5xl text-gray-400"></i></div>`;
-        }
-        card += `</div>`;
-        card += `<div class="p-5">`;
-        card += `<div class="flex justify-between items-start">`;
-        card += `<h2 class="text-xl font-bold text-gray-800 mb-2">${product.name}</h2>`;
-        card += `<div class="text-lg font-bold text-blue-600">UGX ${Number(product.price).toLocaleString()}</div>`;
-        card += `</div>`;
-        card += `<p class="text-gray-600 mb-4 line-clamp-2">${product.description}</p>`;
-        card += `<div class="flex space-x-3">`;
-        card += `<a href="/products?name=${encodeURIComponent(product.name)}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center transition-colors duration-300 flex-1 justify-center"><i class="fas fa-eye mr-2"></i> View</a>`;
-        // Add to Cart button (now available for all users since ML products are in database)
-        card += `<form action="${window.LaravelCartAddRoute.replace('PRODUCT_ID', product.id)}" method="POST" class="flex-1">`;
-        card += `<input type="hidden" name="_token" value="${window.LaravelCsrfToken}">`;
-        card += `<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center transition-colors duration-300"><i class="fas fa-cart-plus mr-2"></i> Add to Cart</button>`;
-        card += `</form>`;
-        card += `</div>`;
-        card += `</div>`;
-        card += `</div>`;
-        recommendationsDiv.innerHTML += card;
-    });
-}
-
 // Event listeners
 refreshPersonalizedBtn.addEventListener('click', loadPersonalizedRecommendations);
 
@@ -450,3 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchTagsAndProducts();
 });
 </script>
+<style>
+@keyframes slideUp { from { opacity: 0; transform: translateY(40px);} to { opacity: 1; transform: none; } }
+.slide-up { animation: slideUp 0.7s cubic-bezier(.4,0,.2,1) both; }
+</style>

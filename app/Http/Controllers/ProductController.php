@@ -18,16 +18,27 @@ class ProductController extends Controller
     // Show a single product (optional)
     public function show(Product $product)
     {
-        
-    $recommendations = json_decode(shell_exec(
-        escapeshellcmd(config('ml.python_path') . " " . 
-        config('ml.scripts_path') . "/recommendations.py " . 
-        $product->id
-    ), true));
-    
-    return view('products.show', compact('product', 'recommendations'));
+        // Find related products by style, color, and gender (excluding the current product)
+        $query = Product::where('id', '!=', $product->id)
+            ->where(function($q) use ($product) {
+                $q->where('ml_style', $product->ml_style)
+                  ->orWhere('ml_color', $product->ml_color)
+                  ->orWhere('ml_gender', $product->ml_gender)
+                  ->orWhere('style', $product->style)
+                  ->orWhere('color', $product->color)
+                  ->orWhere('gender', $product->gender);
+            });
+        $recommendations = $query->inRandomOrder()->limit(8)->get()->toArray();
 
-        //return view('products.show', compact('product'));
+        // If not enough, fill with random products (excluding current and already selected)
+        if (count($recommendations) < 4) {
+            $excludeIds = array_merge([$product->id], array_column($recommendations, 'id'));
+            $more = Product::whereNotIn('id', $excludeIds)
+                ->inRandomOrder()->limit(8 - count($recommendations))->get()->toArray();
+            $recommendations = array_merge($recommendations, $more);
+        }
+
+        return view('products.show', compact('product', 'recommendations'));
     }
 
     // Only systemadmin can access create form

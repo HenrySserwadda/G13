@@ -5,13 +5,12 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
+{public function up()
 {
-    public function up(): void
-    {
-        Schema::table('chat_messages', function (Blueprint $table) {
-            $table->boolean('read')->default(false)->after('original_file_name');
-        });
-    }
+    Schema::table('chat_messages', function (Blueprint $table) {
+        $table->boolean('read')->default(false)->after('receiver_id');
+    });
+}
 
     public function down(): void
     {
