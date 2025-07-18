@@ -232,3 +232,6 @@ Route::get('/supply-centers', [SupplyCenterController::class, 'index'])->name('m
 Route::get('/api/products-for-ml', [App\Http\Controllers\MLController::class, 'productsForML']);
 Route::get('/workforce/manage', [SupplyCenterController::class, 'index'])->name('workforce.manage');
 Route::post('/workers/allocate', [WorkforceController::class, 'allocateWorkers'])->name('workers.allocate');
+
+Route::get('/user-profile',[UserController::class,'userProfile']
+)->name('user-profile');

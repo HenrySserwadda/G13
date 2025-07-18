@@ -76,7 +76,7 @@
                                 </div>
                                 <ul class="py-1" role="none">
                                     <li>
-                                        <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-primary-hover" role="menuitem">Profile</a>
+                                        <a href="{{ route('user-profile') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-primary-hover" role="menuitem">Profile</a>
                                     </li>
                                     <li>
                                         <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-primary-hover" role="menuitem">Settings</a>
@@ -294,7 +294,7 @@
             <nav class="flex mb-4" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2">
                     <li class="inline-flex items-center">
-                        <a href="#" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                        <a href="{{ route('redirect') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
                             <i class="fas fa-home mr-2"></i>
                             Home
                         </a>
