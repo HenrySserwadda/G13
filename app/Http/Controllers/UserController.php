@@ -45,4 +45,9 @@ class UserController extends Controller
         }
         return redirect()->back()->with('error', 'Invalid application category selected.');
     }
+
+    public function userProfile(){
+        $user=Auth::user();
+        return view('user-profile',compact('user'));
+    }
 }

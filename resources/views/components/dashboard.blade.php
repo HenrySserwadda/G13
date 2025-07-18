@@ -51,9 +51,7 @@
                         <a href="{{ route('cart.show') }}" class="relative ml-4 inline-flex items-center px-3 py-2 text-sm font-medium text-blue-100 bg-blue-800 rounded hover:bg-blue-700">
                             <i class="fas fa-shopping-cart mr-1"></i> Cart
                             @php $cart = session('cart', []); $cartCount = array_sum(array_column($cart, 'quantity')); @endphp
-                            @if($cartCount > 0)
-                                <span class="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">{{ $cartCount }}</span>
-                            @endif
+                            <span id="cart-count-badge" class="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full" style="{{ $cartCount == 0 ? 'display:none;' : '' }}">{{ $cartCount }}</span>
                         </a>
                         @endif
                     </div>
@@ -62,7 +60,7 @@
                             <div>
                                 <button type="button" class="flex text-sm bg-gray-600 rounded-full focus:outline-none" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                                     <span class="sr-only">Open user menu</span>
-                                    <img class="w-8 h-8 rounded-full" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name ?? 'User') }}&background=random" alt="user photo">
+                                    <img class="w-8 h-8 rounded-full" src="{{ Auth::user()->avatar_url }}" alt="user photo">
                                 </button>
                             </div>
                             <div class="z-50 hidden my-4 text-base list-none bg-primary-dark divide-y divide-primary-darker rounded-md shadow" id="dropdown-user">
@@ -76,7 +74,7 @@
                                 </div>
                                 <ul class="py-1" role="none">
                                     <li>
-                                        <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-primary-hover" role="menuitem">Profile</a>
+                                        <a href="{{ route('user-profile') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-primary-hover" role="menuitem">Profile</a>
                                     </li>
                                     <li>
                                         <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-primary-hover" role="menuitem">Settings</a>
@@ -294,7 +292,7 @@
             <nav class="flex mb-4" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2">
                     <li class="inline-flex items-center">
-                        <a href="#" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                        <a href="{{ route('redirect') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
                             <i class="fas fa-home mr-2"></i>
                             Home
                         </a>

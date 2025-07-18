@@ -1,7 +1,6 @@
 {{-- filepath: resources/views/products/index.blade.php --}}
 @extends('components.dashboard')
 
-
 @section('title', 'Products - DURABAG')
 @section('page-title', 'Products')
 @section('page-description', 'Browse and manage all available products in the shop.')
@@ -12,7 +11,7 @@
         .product-image-container {
             position: relative;
             overflow: hidden;
-            height: 300px; /* Increased height for better image display */
+            height: 300px;
         }
         .product-image {
             width: 100%;
@@ -21,7 +20,7 @@
             transition: transform 0.3s ease;
         }
         .product-card:hover .product-image {
-            transform: scale(1.05); /* Subtle zoom effect on hover */
+            transform: scale(1.05);
         }
         .no-image-placeholder {
             height: 300px;
@@ -35,6 +34,12 @@
         }
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px);} to { opacity: 1; transform: none; } }
         .slide-up { animation: slideUp 0.7s cubic-bezier(.4,0,.2,1) both; }
+        #cart-toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+        }
     </style>
 @endpush
 
@@ -43,8 +48,8 @@
     <script>
         window.LaravelUserCategory = @json(Auth::user()->category ?? null);
         window.LaravelCsrfToken = '{{ csrf_token() }}';
-        window.LaravelCartAddRoute = '{{ route('cart.add', ['product' => 'PRODUCT_ID']) }}';
     </script>
+
     <div class="mb-8">
         <div class="flex space-x-2">
             <button id="tab-products" class="tab-btn bg-blue-600 text-white px-4 py-2 rounded-t focus:outline-none">All Products</button>
@@ -57,16 +62,16 @@
     </div>
 
     <div id="products-section">
-        <!-- Tag Bar for All Products -->
-          @auth
-          @if(Auth::user()->category === 'wholesaler' || Auth::user()->category === 'retailer')
-        <div class="mb-2 text-gray-700 font-semibold text-sm">What could you be interested in?</div>
-        <div id="all-products-tag-bar-loader" class="hidden flex justify-center items-center py-2">
-            <div class="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-opacity-50"></div>
-        </div>
-        <div id="all-products-tag-bar" class="flex overflow-x-auto space-x-2 py-2 mb-6"></div>
-         @endif
-            @endauth
+        @auth
+            @if(Auth::user()->category === 'wholesaler' || Auth::user()->category === 'retailer')
+                <div class="mb-2 text-gray-700 font-semibold text-sm">What could you be interested in?</div>
+                <div id="all-products-tag-bar-loader" class="hidden flex justify-center items-center py-2">
+                    <div class="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-opacity-50"></div>
+                </div>
+                <div id="all-products-tag-bar" class="flex overflow-x-auto space-x-2 py-2 mb-6"></div>
+            @endif
+        @endauth
+        
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-extrabold text-gray-800 mb-4 flex items-center">
                 <i class="fas fa-shopping-bag mr-3"></i> Our Bag Collection
@@ -127,7 +132,7 @@
 
                             @auth
                                 @if(Auth::user()->category === 'wholesaler' || Auth::user()->category === 'retailer')
-                                    <form action="{{ route('cart.add', $product->id) }}" method="POST" class="flex-1">
+                                    <form action="{{ route('cart.add', $product->id) }}" method="POST" class="flex-1 ajax-add-to-cart">
                                         @csrf
                                         <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center transition-colors duration-300">
                                             <i class="fas fa-cart-plus mr-2"></i> Add to Cart
@@ -147,14 +152,12 @@
                                         </button>
                                     </form>
                                 @endif
-
                             @else
                                 <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center transition-colors duration-300 flex-1">
                                     <i class="fas fa-sign-in-alt mr-2"></i> Login
                                 </a>
                             @endauth
                         </div>
-
                     </div>
                 </div>
             @empty
@@ -190,115 +193,6 @@
     @endauth
 </div>
 
-{{-- Tab Switcher JS --}}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const tabProducts = document.getElementById('tab-products');
-    const tabRecs = document.getElementById('tab-recommendations');
-    const productsSection = document.getElementById('products-section');
-    const recsSection = document.getElementById('recommendations-section');
-
-    if (tabProducts) {
-        tabProducts.addEventListener('click', function() {
-            tabProducts.classList.add('bg-blue-600', 'text-white');
-            tabProducts.classList.remove('bg-gray-200', 'text-gray-800');
-            if (tabRecs) {
-                tabRecs.classList.remove('bg-blue-600', 'text-white');
-                tabRecs.classList.add('bg-gray-200', 'text-gray-800');
-            }
-            productsSection.classList.remove('hidden');
-            if (recsSection) recsSection.classList.add('hidden');
-        });
-    }
-    if (tabRecs) {
-        tabRecs.addEventListener('click', function() {
-            tabRecs.classList.add('bg-blue-600', 'text-white');
-            tabRecs.classList.remove('bg-gray-200', 'text-gray-800');
-            tabProducts.classList.remove('bg-blue-600', 'text-white');
-            tabProducts.classList.add('bg-gray-200', 'text-gray-800');
-            productsSection.classList.add('hidden');
-            if (recsSection) recsSection.classList.remove('hidden');
-        });
-    }
-});
-
-// Tag bar for All Products section
-let allProductsTags = { colors: [], styles: [] };
-let allProductsTagBar = document.getElementById('all-products-tag-bar');
-
-// Fetch tag data from recommendations API (reuse the same endpoint)
-async function fetchAllProductsTags() {
-    // Show loader
-    document.getElementById('all-products-tag-bar-loader').classList.remove('hidden');
-    allProductsTagBar.classList.add('opacity-50', 'pointer-events-none');
-
-    const res = await fetch('/api/products-for-ml');
-    const data = await res.json();
-    const products = data.products || [];
-    const colors = [...new Set(products.map(p => p.color).filter(Boolean))];
-    const styles = [...new Set(products.map(p => p.style).filter(Boolean))];
-    allProductsTags = { colors, styles };
-    renderAllProductsTagBar(colors, styles, products);
-
-    // Hide loader
-    document.getElementById('all-products-tag-bar-loader').classList.add('hidden');
-    allProductsTagBar.classList.remove('opacity-50', 'pointer-events-none');
-}
-
-function renderAllProductsTagBar(colors, styles, products) {
-    allProductsTagBar.innerHTML = '';
-    // Color tags
-    colors.forEach(color => {
-        const product = products.find(p => p.color === color);
-        const img = product ? product.image : '';
-        const tag = document.createElement('div');
-        tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-green-200 hover:bg-green-300';
-        tag.onclick = () => handleAllProductsTagClick('color', color);
-        tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${color}"><span>${color}</span>`;
-        allProductsTagBar.appendChild(tag);
-    });
-    // Style tags
-    styles.forEach(style => {
-        const product = products.find(p => p.style === style);
-        const img = product ? product.image : '';
-        const tag = document.createElement('div');
-        tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-blue-200 hover:bg-blue-300';
-        tag.onclick = () => handleAllProductsTagClick('style', style);
-        tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${style}"><span>${style}</span>`;
-        allProductsTagBar.appendChild(tag);
-    });
-}
-
-function handleAllProductsTagClick(type, value) {
-    // Switch to recommendations tab
-    const tabRecs = document.getElementById('tab-recommendations');
-    if (tabRecs) tabRecs.click();
-    // Wait for recommendations section to be visible, then set the filter
-    setTimeout(() => {
-        // Set the filter in the recommendations section
-        if (window.selectedTags) {
-            if (type === 'color') {
-                window.selectedTags.color = value;
-            } else if (type === 'style') {
-                window.selectedTags.style = value;
-            }
-        }
-        // Trigger recommendations update
-        if (typeof window.fetchRecommendations === 'function') {
-            window.fetchRecommendations();
-        }
-        // Optionally, highlight the selected tag in the recommendations tag bar
-    }, 100);
-}
-
-document.addEventListener('DOMContentLoaded', fetchAllProductsTags);
-</script>
-<style>
-.tab-btn { transition: background 0.2s, color 0.2s; }
-.tab-btn.bg-blue-600 { border-bottom: 2px solid #2563eb; }
-</style>
-@endsection
-
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -317,6 +211,121 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, { threshold: 0.15 });
     cards.forEach(card => observer.observe(card));
+
+    // Function to update all cart badges
+    function updateCartBadges(count) {
+        const badges = document.querySelectorAll('#cart-count-badge');
+        badges.forEach(badge => {
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'inline-flex' : 'none';
+        });
+    }
+
+    // AJAX Add to Cart with immediate UI update
+    document.addEventListener('submit', async function(e) {
+        if (e.target.matches('.ajax-add-to-cart')) {
+            e.preventDefault();
+            const form = e.target;
+            const button = form.querySelector('button');
+            const originalText = button.innerHTML;
+            
+            // Save current scroll position
+            const scrollPosition = window.scrollY || window.pageYOffset;
+            
+            // Disable button and show loading state
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Adding...';
+
+            try {
+                // Get current cart count from existing badge
+                const currentCount = parseInt(document.querySelector('#cart-count-badge')?.textContent) || 0;
+                
+                // Optimistically update UI immediately
+                updateCartBadges(currentCount + 1);
+                
+                // Make the API call
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': window.LaravelCsrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: new FormData(form)
+                });
+                
+                const data = await response.json();
+                
+                if (data && data.success) {
+                    showToast(data.success);
+                    // Update with accurate count from server if provided
+                    if (data.count !== undefined) {
+                        updateCartBadges(data.count);
+                    }
+                } else {
+                    // Revert if server indicates failure
+                    updateCartBadges(currentCount);
+                }
+            } catch (e) {
+                console.error('Add to cart failed:', e);
+                // On error, revert to previous count
+                const currentCount = parseInt(document.querySelector('#cart-count-badge')?.textContent) || 0;
+                updateCartBadges(Math.max(0, currentCount - 1));
+            } finally {
+                // Restore button state
+                button.disabled = false;
+                button.innerHTML = originalText;
+                
+                // Restore scroll position
+                window.scrollTo(0, scrollPosition);
+            }
+        }
+    });
+
+    // Toast notification function
+    function showToast(msg) {
+        if (!document.getElementById('cart-toast-container')) {
+            const toastContainer = document.createElement('div');
+            toastContainer.id = 'cart-toast-container';
+            document.body.appendChild(toastContainer);
+        }
+        
+        const toast = document.createElement('div');
+        toast.className = 'bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center mb-2';
+        toast.innerHTML = '<i class="fas fa-check-circle mr-2"></i>' + msg;
+        document.getElementById('cart-toast-container').appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = 0;
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Tab switching logic
+    const tabProducts = document.getElementById('tab-products');
+    const tabRecs = document.getElementById('tab-recommendations');
+    const productsSection = document.getElementById('products-section');
+    const recsSection = document.getElementById('recommendations-section');
+
+    if (tabProducts && tabRecs) {
+        tabProducts.addEventListener('click', function() {
+            tabProducts.classList.add('bg-blue-600', 'text-white');
+            tabProducts.classList.remove('bg-gray-200', 'text-gray-800');
+            tabRecs.classList.remove('bg-blue-600', 'text-white');
+            tabRecs.classList.add('bg-gray-200', 'text-gray-800');
+            productsSection.classList.remove('hidden');
+            if (recsSection) recsSection.classList.add('hidden');
+        });
+
+        tabRecs.addEventListener('click', function() {
+            tabRecs.classList.add('bg-blue-600', 'text-white');
+            tabRecs.classList.remove('bg-gray-200', 'text-gray-800');
+            tabProducts.classList.remove('bg-blue-600', 'text-white');
+            tabProducts.classList.add('bg-gray-200', 'text-gray-800');
+            productsSection.classList.add('hidden');
+            if (recsSection) recsSection.classList.remove('hidden');
+        });
+    }
 });
 </script>
 @endpush
+@endsection
