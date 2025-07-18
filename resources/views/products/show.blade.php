@@ -8,6 +8,9 @@
 @endpush
 
 @section('content')
+    <script>
+        window.LaravelCsrfToken = '{{ csrf_token() }}';
+    </script>
     <div class="container mx-auto px-4 py-8">
         <!-- Back link -->
         <div class="mb-6">
@@ -70,12 +73,16 @@
                 <!-- Action Buttons -->
                 @auth
                     @if(Auth::user()->category !== 'systemadmin')
-                        <form action="{{ route('cart.add', $product->id) }}" method="POST" class="w-full">
+                        <form action="{{ route('cart.add', $product->id) }}" method="POST" class="w-full ajax-add-to-cart">
                             @csrf
                             <button type="submit" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl w-full flex items-center justify-center text-lg font-semibold shadow-lg transition-all duration-300">
                                 <i class="fas fa-cart-plus mr-3"></i> Add to Cart
                             </button>
                         </form>
+                        <div id="cart-toast" style="display:none; position:fixed; top:30px; right:30px; z-index:9999;" class="bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            <span id="cart-toast-message"></span>
+                        </div>
                     @else
                         <div class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg text-center">
                             <p class="text-sm text-gray-600 dark:text-gray-300">
@@ -211,3 +218,85 @@
         @endif
     </div>
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // AJAX Add to Cart for show page
+    // Remove per-form event listeners and use event delegation for Add to Cart
+
+    document.addEventListener('submit', async function(e) {
+        if (e.target.matches('.ajax-add-to-cart')) {
+            e.preventDefault();
+            const form = e.target;
+            const url = form.action;
+            const formData = new FormData(form);
+            const button = form.querySelector('button');
+            const original = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class=\'fas fa-spinner fa-spin mr-2\'></i> Adding...';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': window.LaravelCsrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+                const data = await response.json();
+                if (data && data.success) {
+                    showToast(data.success);
+                    updateCartCount();
+                    // (Reverted) No reload, just AJAX update
+                }
+                // Do nothing on error or network failure
+            } catch (e) {
+                // Do nothing on network error
+            } finally {
+                button.disabled = false;
+                button.innerHTML = original;
+            }
+        }
+    });
+
+    async function updateCartCount() {
+        try {
+            const res = await fetch('{{ route('cart.count') }}?t=' + Date.now());
+            const data = await res.json();
+            // Update all cart count badges in the DOM
+            const badges = document.querySelectorAll('#cart-count-badge');
+            badges.forEach(badge => {
+                badge.textContent = data.count;
+                badge.style.display = data.count > 0 ? 'inline-flex' : 'none';
+            });
+        } catch {}
+    }
+
+
+    if (!document.getElementById('cart-toast-container')) {
+        const toastContainer = document.createElement('div');
+        toastContainer.id = 'cart-toast-container';
+        toastContainer.style.position = 'fixed';
+        toastContainer.style.top = '30px';
+        toastContainer.style.right = '30px';
+        toastContainer.style.zIndex = '999999'; // very high for debug
+        toastContainer.style.border = '3px solid red'; // debug border
+        toastContainer.style.background = 'rgba(255,255,255,0.1)'; // debug background
+        document.body.appendChild(toastContainer);
+    }
+
+    function showToast(msg) {
+        const toast = document.createElement('div');
+        toast.className = 'bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center mb-2';
+        toast.innerHTML = '<i class="fas fa-check-circle mr-2"></i>' + msg;
+        document.getElementById('cart-toast-container').appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = 0;
+            setTimeout(() => toast.remove(), 300);
+        }, 1500);
+    }
+});
+
+// Remove scroll position restore logic
+</script>

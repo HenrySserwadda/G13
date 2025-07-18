@@ -39,6 +39,11 @@ class CartController extends Controller
             $this->mlProductService->incrementPopularity($product->id);
         }
         
+        if ($request->expectsJson() || $request->ajax()) {
+            $cart = session('cart', []);
+            $count = array_sum(array_column($cart, 'quantity'));
+            return response()->json(['success' => 'Product added to cart!', 'count' => $count]);
+        }
         return back()->with('success', 'Product added to cart!');
     }
 

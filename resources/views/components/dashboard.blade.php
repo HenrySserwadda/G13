@@ -51,9 +51,7 @@
                         <a href="{{ route('cart.show') }}" class="relative ml-4 inline-flex items-center px-3 py-2 text-sm font-medium text-blue-100 bg-blue-800 rounded hover:bg-blue-700">
                             <i class="fas fa-shopping-cart mr-1"></i> Cart
                             @php $cart = session('cart', []); $cartCount = array_sum(array_column($cart, 'quantity')); @endphp
-                            @if($cartCount > 0)
-                                <span class="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">{{ $cartCount }}</span>
-                            @endif
+                            <span id="cart-count-badge" class="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full" style="{{ $cartCount == 0 ? 'display:none;' : '' }}">{{ $cartCount }}</span>
                         </a>
                         @endif
                     </div>

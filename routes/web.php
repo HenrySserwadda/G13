@@ -25,6 +25,7 @@ use App\Http\Controllers\MLController;
 use App\Http\Controllers\RawMaterialOrderController;
 use App\Models\Wholesaler;
 use App\Http\Controllers\SupplierController;
+use Illuminate\Http\Request;
 
 
 Route::get('/', function () {
@@ -124,6 +125,11 @@ Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.a
 Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
 Route::post('/cart/update/{productId}', [CartController::class, 'update'])->name('cart.update');
 Route::post('/cart/remove/{productId}', [CartController::class, 'remove'])->name('cart.remove');
+Route::get('/cart/count', function(Request $request) {
+    $cart = session('cart', []);
+    $count = array_sum(array_column($cart, 'quantity'));
+    return response()->json(['count' => $count]);
+})->name('cart.count');
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
