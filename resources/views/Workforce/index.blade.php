@@ -217,23 +217,7 @@
         </div>
     </div>
 
-    <div class="flex space-x-2 justify-end mt-4">
-        <!-- PDF Export Button -->
-        <a href="{{ route('workforce.exportPdf') }}" class="flex items-center bg-red-500 dark:bg-red-600 text-white px-4 py-2 rounded-full shadow-md hover:bg-red-600 dark:hover:bg-red-700 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6M8 16H7a2 2 0 01-2-2V6a2 2 0 012-2h6l4 4v8a2 2 0 01-2 2h-1"/>
-            </svg>
-            Export PDF
-        </a>
-
-        <!-- Excel Export Button -->
-        <a href="{{ route('workforce.exportExcel') }}" class="flex items-center bg-green-500 dark:bg-green-600 text-white px-4 py-2 rounded-full shadow-md hover:bg-green-600 dark:hover:bg-green-700 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M10 14h10M4 14h4m-4 4h16"/>
-            </svg>
-            Export Excel
-        </a>
-    </div>
+    
 </div>
 
 <!-- Chart.js Scripts -->
