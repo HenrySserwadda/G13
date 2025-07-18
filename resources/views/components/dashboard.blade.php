@@ -62,7 +62,7 @@
                             <div>
                                 <button type="button" class="flex text-sm bg-gray-600 rounded-full focus:outline-none" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                                     <span class="sr-only">Open user menu</span>
-                                    <img class="w-8 h-8 rounded-full" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name ?? 'User') }}&background=random" alt="user photo">
+                                    <img class="w-8 h-8 rounded-full" src="{{ Auth::user()->avatar_url }}" alt="user photo">
                                 </button>
                             </div>
                             <div class="z-50 hidden my-4 text-base list-none bg-primary-dark divide-y divide-primary-darker rounded-md shadow" id="dropdown-user">
