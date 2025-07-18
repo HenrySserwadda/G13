@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
 
     // Call additional seeders
     $this->call([
+        SupplierSeeder::class,
         OrdersandProductsSeeder::class,
         RawMaterialSeeder::class,
         SupplyCenterSeeder::class,

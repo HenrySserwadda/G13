@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('user_id')->nullable()->unique();
             $table->enum('category',['staff','supplier','wholesaler','retailer','customer','systemadmin'])->default('customer');
-             $table->string('gender');
+             $table->string('gender')->default('null');
             $table->string('password');           
             $table->boolean('is_admin')->default(false);
             $table->enum('status',['no application','application received','application approved','application rejected'])->default('no application');            

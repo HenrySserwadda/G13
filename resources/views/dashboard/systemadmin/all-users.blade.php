@@ -55,7 +55,7 @@
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->category }}</td>
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->email }}</td>
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">
-                    <form method="POST" action="{{ route('delete', $user->id) }}">
+                    <form method="POST" action="{{ route('delete', $user->id) }}" onsubmit="return confirm('Are you sure you want to delete this user?')">
                         @csrf
                         @method('DELETE')
                         <x-primary-button>Delete</x-primary-button>

@@ -90,6 +90,8 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard/systemadmin')->name('
 
     Route::get('/pending-suppliers', [SystemadminController::class, 'pendingSuppliers'])->name('pending-suppliers');
 
+    Route::get('/pending-wholesalers', [SystemadminController::class, 'pendingWholesalers'])->name('pending-wholesalers');
+
     Route::get('/make-system-administrator', [SystemadminController::class, 'makeSystemAdministrator'])->name('make-system-administrator');
 
     Route::get('/make-staff-member', [SystemadminController::class, 'makeStaffMember'])->name('make-staff-member');
@@ -98,12 +100,9 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard/systemadmin')->name('
 
     Route::post('/make-staff/{id}', [SystemadminController::class, 'makeStaff'])->name('make-staff');
 
-    Route::post('/approve/{id}', [SystemadminController::class, 'approveSuppliers'])->name('approve');
-    Route::post('/approve/{id}', [SystemadminController::class, 'approveRatilers'])->name('approve');
+    Route::post('/handle-admin-action/{id}', [SystemadminController::class, 'handleAdminAction'])
+    ->name('handleAdminAction');
 
-    Route::post('/reject-retailers/{id}', [SystemadminController::class, 'rejectRetailers'])->name('rejectRetailers');
-    Route::post('/reject-suppliers/{id}', [SystemadminController::class, 'rejectSuppliers'])->name('rejectSuppliers');
-    Route::post('/approve-retailers/{id}', [SystemadminController::class, 'approveRetailers'])->name('approve-retailers');
 });
 
 Route::post('/application',[UserController::class,'application'])->name('application');
