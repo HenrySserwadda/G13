@@ -11,30 +11,51 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class InventoryController extends Controller
 {
     use AuthorizesRequests;
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
+        $centers = \App\Models\SupplyCenter::all();
+        $selectedCenterId = $request->get('center_id');
         
+        // Default to first center if none selected and centers exist
+        if (!$selectedCenterId && $centers->count()) {
+            $selectedCenterId = $centers->first()->id;
+        }
+
         if ($user->category === 'staff') {
-            // Staff can view all inventories
-            $inventories = Inventory::with(['rawMaterial', 'user'])
-                ->latest()
-                ->paginate(10);
+            // Staff can view all inventories, filtered by supply center if selected
+            $query = Inventory::with(['rawMaterial', 'user']);
+            if ($selectedCenterId) {
+                $query = $query->whereHas('rawMaterial', function($q) use ($selectedCenterId) {
+                    $q->where('supply_center_id', $selectedCenterId);
+                });
+            }
+            $inventories = $query->latest()->paginate(10);
         } else {
-            // Others can only view their own inventories
-            $inventories = Inventory::with('rawMaterial')
-                ->where('user_id', Auth::id())
-                ->latest()
-                ->paginate(10);
+            // Others can only view their own inventories, filtered by supply center if selected
+            $query = Inventory::with('rawMaterial')->where('user_id', Auth::id());
+            if ($selectedCenterId) {
+                $query = $query->whereHas('rawMaterial', function($q) use ($selectedCenterId) {
+                    $q->where('supply_center_id', $selectedCenterId);
+                });
+            }
+            $inventories = $query->latest()->paginate(10);
         }
 
         // Get products for inventory management (staff and systemadmin)
         $products = null;
         if (in_array($user->category, ['staff', 'systemadmin'])) {
-            $products = \App\Models\Product::latest()->get();
+            $productsQuery = \App\Models\Product::latest();
+            
+            // Filter products by selected supply center
+            if ($selectedCenterId) {
+                $productsQuery->where('supply_center_id', $selectedCenterId);
+            }
+            
+            $products = $productsQuery->get();
         }
 
-        return view('inventories.index', compact('inventories', 'products'));
+        return view('inventories.index', compact('inventories', 'products', 'centers', 'selectedCenterId'));
     }
 
     public function create()

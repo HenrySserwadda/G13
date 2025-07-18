@@ -78,6 +78,10 @@ class ProductController extends Controller
         if (isset($validated['gender'])) {
             $validated['gender'] = ucfirst(strtolower($validated['gender']));
         }
+        
+        // Assign a random supply center to the product
+        $validated['supply_center_id'] = \App\Models\SupplyCenter::inRandomOrder()->first()->id;
+        
         Product::create($validated);
         return redirect()->route('products.index')->with('success', 'Product added!');
     }

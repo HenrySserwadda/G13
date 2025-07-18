@@ -17,6 +17,7 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order #</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supply Center</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mobile</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
@@ -43,6 +44,19 @@
                                 {{ ucfirst($order->status) }}
                             </span>
                         </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <select class="supply-center-select text-sm border rounded px-2 py-1" 
+                                    data-order-id="{{ $order->id }}" 
+                                    onchange="updateSupplyCenter({{ $order->id }}, this.value)">
+                                <option value="">Select Center</option>
+                                @foreach(\App\Models\SupplyCenter::all() as $center)
+                                    <option value="{{ $center->id }}" 
+                                            {{ $order->supply_center_id == $center->id ? 'selected' : '' }}>
+                                        {{ $center->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $order->location }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $order->mobile }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $order->created_at->format('Y-m-d H:i') }}</td>
@@ -66,4 +80,36 @@
         </div>
     </div>
 </div>
+
+<script>
+function updateSupplyCenter(orderId, supplyCenterId) {
+    fetch(`/orders/${orderId}/update-supply-center`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            supply_center_id: supplyCenterId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            const select = document.querySelector(`select[data-order-id="${orderId}"]`);
+            select.style.backgroundColor = '#d4edda';
+            setTimeout(() => {
+                select.style.backgroundColor = '';
+            }, 2000);
+        } else {
+            alert('Error updating supply center: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating supply center. Please try again.');
+    });
+}
+</script>
 @endsection

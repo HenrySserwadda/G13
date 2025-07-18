@@ -159,6 +159,7 @@ Route::middleware(['auth','verified'])->group(function(){
     Route::get('/manage-orders', [OrderManagementController::class, 'index'])->name('orders.manage.index');
     Route::get('/manage-orders/{id}', [OrderManagementController::class, 'show'])->name('orders.manage.show');
     Route::post('/manage-orders/{id}/status',[OrderManagementController::class, 'updateStatus'])->name('orders.manage.updateStatus');
+    Route::post('/orders/{id}/update-supply-center', [OrderManagementController::class, 'updateSupplyCenter'])->name('orders.updateSupplyCenter');
 });
 
 Route::middleware(['auth','verified'])->group(function(){

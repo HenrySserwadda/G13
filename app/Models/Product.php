@@ -33,6 +33,7 @@ class Product extends Model
         'style', // newly added
         'color', // newly added
         'gender', // newly added
+        'supply_center_id', // Add supply center relationship
         // Add any other fields that you want to be mass assignable
     ];
 
@@ -46,6 +47,10 @@ class Product extends Model
 
     public function orders(){
         return $this->belongsToMany(Order::class);
+    }
+
+    public function supplyCenter(){
+        return $this->belongsTo(SupplyCenter::class);
     }
 
     // Get stock status based on quantity

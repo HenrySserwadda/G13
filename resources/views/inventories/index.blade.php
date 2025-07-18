@@ -17,6 +17,19 @@
         </div>
     @endif
 
+    @if(isset($centers) && count($centers))
+        <form method="GET" action="{{ route('inventories.index') }}" class="mb-6 flex items-center space-x-4">
+            <label for="center_id" class="font-semibold text-gray-700">Select Supply Center:</label>
+            <select name="center_id" id="center_id" class="border rounded px-3 py-2" onchange="this.form.submit()">
+                @foreach($centers as $center)
+                    <option value="{{ $center->id }}" {{ (isset($selectedCenterId) && $selectedCenterId == $center->id) ? 'selected' : '' }}>
+                        {{ $center->name }}
+                    </option>
+                @endforeach
+            </select>
+        </form>
+    @endif
+
     @if(Auth::user()->category === 'staff' || Auth::user()->category === 'systemadmin')
         <div class="mb-6 flex justify-between items-center">
             <div>

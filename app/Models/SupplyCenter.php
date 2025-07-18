@@ -13,5 +13,6 @@ class SupplyCenter extends Model
     public function workers() { return $this->hasMany(Worker::class); }
 public function stocks() { return $this->hasMany(Stock::class); }
 public function sales() { return $this->hasMany(Sale::class); }
+public function products() { return $this->hasMany(Product::class); }
 
 }

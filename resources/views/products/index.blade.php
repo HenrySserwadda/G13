@@ -94,27 +94,16 @@
                 <div class="product-card recommendation-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl opacity-0 translate-y-10" data-index="{{ $loop->index }}">
                     <div class="product-image-container">
                         @if($product->image)
-                            @if($product->is_ml_generated)
-                                <img src="/{{ $product->image }}" 
-                                     alt="{{ $product->name }}" 
-                                     class="product-image"
-                                     loading="lazy"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="no-image-placeholder" style="display: none;">
-                                    <i class="fas fa-camera text-5xl text-gray-400"></i>
-                                </div>
-                            @else
-                                <img src="{{ asset('storage/'.$product->image) }}" 
-                                     alt="{{ $product->name }}" 
-                                     class="product-image"
-                                     loading="lazy"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                                     srcset="{{ asset('storage/'.$product->image) }} 1x, 
-                                             {{ asset('storage/'.$product->image) }} 2x">
-                                <div class="no-image-placeholder" style="display: none;">
-                                    <i class="fas fa-camera text-5xl text-gray-400"></i>
-                                </div>
-                            @endif
+                            <img src="{{ asset('storage/'.$product->image) }}" 
+                                 alt="{{ $product->name }}" 
+                                 class="product-image"
+                                 loading="lazy"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 srcset="{{ asset('storage/'.$product->image) }} 1x, 
+                                         {{ asset('storage/'.$product->image) }} 2x">
+                            <div class="no-image-placeholder" style="display: none;">
+                                <i class="fas fa-camera text-5xl text-gray-400"></i>
+                            </div>
                         @else
                             <div class="no-image-placeholder">
                                 <i class="fas fa-camera text-5xl text-gray-400"></i>

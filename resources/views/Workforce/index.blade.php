@@ -2,18 +2,6 @@
 
 @section('content')
 <div class="container mx-auto p-4 space-y-6 dark:bg-gray-900 transition-colors duration-300">
-    <!-- Dark Mode Toggle -->
-    <div class="flex justify-end mb-4">
-        <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-2.5">
-            <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-            </svg>
-            <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
-            </svg>
-        </button>
-    </div>
-
     <!-- Workforce Allocation Header -->
     <div class="bg-gradient-to-r from-blue-500 to-indigo-500 dark:from-blue-600 dark:to-indigo-600 text-white p-6 rounded-lg shadow-lg flex flex-col md:flex-row justify-between items-center transition hover:shadow-xl">
         <div class="mb-4 md:mb-0 text-center md:text-left">
@@ -31,7 +19,15 @@
 
     <!-- Table 1: Supply Center Summary -->
     <div class="bg-white dark:bg-gray-800 dark:shadow-2xl dark:bg-opacity-80 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
-        <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center">Supply Center Summary</h3>
+        <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center flex items-center justify-center gap-2">
+            <span class="inline-block align-middle">
+                <!-- Warehouse SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-500 dark:text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9-7 9 7v7a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-7z" />
+                </svg>
+            </span>
+            Supply Center Summary
+        </h3>
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
                 <thead class="bg-gradient-to-r from-purple-400 to-purple-600 dark:from-purple-500 dark:to-purple-700 text-white">
@@ -45,16 +41,44 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                    @foreach ($centers as $center)
-                    <tr class="hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                        <td class="p-3 dark:text-gray-300">{{ $center->name }}</td>
-                        <td class="p-3 text-center dark:text-gray-300">{{ $center->sales->last()->monthly_sales ?? 0 }}</td>
-                        <td class="p-3 text-center dark:text-gray-300">{{ $center->stocks->sum('quantity') ?? 0 }}</td>
-                        <td class="p-3 text-center dark:text-gray-300">{{ $center->workers->count() ?? 0 }}</td>
-                        <td class="p-3 text-center font-bold text-gray-500 dark:text-gray-400">-</td>
-                        <td class="p-3 text-center dark:text-gray-300">-</td>
-                    </tr>
-                    @endforeach
+                    @foreach (
+    $centers as $center)
+@php
+    $sales = $center->sales->last()->monthly_sales ?? 0;
+    $stock = \App\Models\Product::where('supply_center_id', $center->id)->sum('quantity');
+    $workers = $center->workers->count() ?? 0;
+    if ($stock > 0) {
+        $ratio = ($workers / $stock) * 1000;
+    } else {
+        $ratio = 0;
+    }
+    if ($stock == 0 || $ratio <= 40) {
+        $status = 'Deficit';
+        $statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+        $reason = $stock == 0 ? 'No stock available' : 'Too few workers for available stock';
+    } elseif ($ratio > 40 && $ratio <= 60) {
+        $status = 'Adequate';
+        $statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+        $reason = 'Workforce matches stock level';
+    } else {
+        $status = 'Surplus';
+        $statusClass = 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+        $reason = 'More workers than needed for stock';
+    }
+@endphp
+<tr class="hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200">
+    <td class="p-3 dark:text-gray-300">{{ $center->name }}</td>
+    <td class="p-3 text-center dark:text-gray-300">{{ number_format($sales) }}</td>
+    <td class="p-3 text-center dark:text-gray-300">{{ number_format($stock) }}</td>
+    <td class="p-3 text-center dark:text-gray-300">{{ $workers }}</td>
+    <td class="p-3 text-center">
+        <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $statusClass }}">
+            {{ $status }}
+        </span>
+    </td>
+    <td class="p-3 text-center dark:text-gray-300 text-xs">{{ $reason }}</td>
+</tr>
+@endforeach
                 </tbody>
             </table>
         </div>
@@ -63,7 +87,15 @@
 
     <!-- Table 2: Workforce Allocation History -->
     <div class="bg-white dark:bg-gray-800 dark:shadow-2xl dark:bg-opacity-80 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
-        <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center">Workforce Allocation History</h3>
+        <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center flex items-center justify-center gap-2">
+            <span class="inline-block align-middle">
+                <!-- History/Transfer SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-purple-500 dark:text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </span>
+            Workforce Allocation History
+        </h3>
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
                 <thead class="bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-500 dark:to-blue-700 text-white">
@@ -93,7 +125,15 @@
 
     <!-- Table 3: Stock Summary -->
     <div class="bg-white dark:bg-gray-800 dark:shadow-2xl dark:bg-opacity-80 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
-        <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center">Stock Summary</h3>
+        <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center flex items-center justify-center gap-2">
+            <span class="inline-block align-middle">
+                <!-- Box/Inventory SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-500 dark:text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V7a2 2 0 00-2-2H6a2 2 0 00-2 2v6m16 0a2 2 0 01-2 2H6a2 2 0 01-2-2m16 0V7m0 6v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6" />
+                </svg>
+            </span>
+            Stock Summary
+        </h3>
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
                 <thead class="bg-gradient-to-r from-green-400 to-green-600 dark:from-green-500 dark:to-green-700 text-white">
@@ -106,7 +146,12 @@
                     @foreach ($centers as $center)
                     <tr class="hover:bg-green-50 dark:hover:bg-gray-700 transition-colors duration-200">
                         <td class="p-3 dark:text-gray-300">{{ $center->name }}</td>
-                        <td class="p-3 text-center dark:text-gray-300">{{ $center->stocks->sum('quantity') ?? 0 }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">
+                            @php
+                                $totalProductStock = \App\Models\Product::where('supply_center_id', $center->id)->sum('quantity');
+                            @endphp
+                            {{ $totalProductStock }}
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -117,7 +162,15 @@
 
     <!-- Table 4: Sales Summary -->
     <div class="bg-white dark:bg-gray-800 dark:shadow-2xl dark:bg-opacity-80 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
-        <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center">Sales Summary (Monthly)</h3>
+        <h3 class="text-xl font-semibold p-6 pb-2 text-gray-800 dark:text-gray-200 text-center flex items-center justify-center gap-2">
+            <span class="inline-block align-middle">
+                <!-- Sales/Trending Up SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-orange-500 dark:text-orange-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17l6-6 4 4 8-8" />
+                </svg>
+            </span>
+            Sales Summary (Monthly)
+        </h3>
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
                 <thead class="bg-gradient-to-r from-orange-400 to-orange-600 dark:from-orange-500 dark:to-orange-700 text-white">
@@ -138,7 +191,7 @@
                                 N/A
                             @endif
                             </td>
-                        <td class="p-3 text-center dark:text-gray-300">{{ $center->sales->last()->monthly_sales ?? 0 }}</td>
+                        <td class="p-3 text-center dark:text-gray-300">{{ number_format($center->sales->last()->monthly_sales ?? 0) }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -212,14 +265,17 @@
         'rgba(100, 180, 255, 0.7)'
     ];
 
-    // Initialize charts
     let stockSalesChart, centerPerfChart;
 
+    function isDarkMode() {
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
     function createCharts() {
-        const isDarkMode = document.documentElement.classList.contains('dark');
-        const colors = isDarkMode ? darkColors : lightColors;
-        const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
-        const textColor = isDarkMode ? '#fff' : '#374151';
+        const dark = isDarkMode();
+        const colors = dark ? darkColors : lightColors;
+        const gridColor = dark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+        const textColor = dark ? '#fff' : '#374151';
 
         // Destroy existing charts if they exist
         if (stockSalesChart) stockSalesChart.destroy();
@@ -228,13 +284,13 @@
         // Graph 1: Stock & Sales vs Workforce
         const stockSalesCtx = document.getElementById('stockSalesWorkforceChart').getContext('2d');
         stockSalesChart = new Chart(stockSalesCtx, {
-    type: 'bar',
-    data: {
+            type: 'bar',
+            data: {
                 labels: {!! json_encode($centers->pluck('name')) !!},
-        datasets: [
-            {
+                datasets: [
+                    {
                         label: 'Stock Available',
-                        data: {!! json_encode($centers->map(fn($c) => $c->stocks->sum('quantity') ?? 0)) !!},
+                        data: {!! json_encode($centers->map(fn($c) => \App\Models\Product::where('supply_center_id', $c->id)->sum('quantity'))) !!},
                         backgroundColor: colors,
                         borderColor: colors.map(c => c.replace('0.7', '1')),
                         borderWidth: 1
@@ -249,16 +305,16 @@
                         tension: 0.3,
                         fill: false,
                         pointBackgroundColor: colors,
-                        pointBorderColor: isDarkMode ? '#1f2937' : '#fff',
+                        pointBorderColor: dark ? '#1f2937' : '#fff',
                         pointHoverRadius: 6,
                         pointHoverBorderWidth: 2
-            }
-        ]
-    },
-    options: {
-        responsive: true,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
                 maintainAspectRatio: false,
-        plugins: {
+                plugins: {
                     tooltip: {
                         mode: 'index',
                         intersect: false,
@@ -283,7 +339,7 @@
                             color: textColor
                         },
                         title: {
-                            display: false, // or true if you want a title
+                            display: false,
                             color: textColor
                         }
                     },
@@ -295,40 +351,40 @@
                             color: textColor
                         },
                         title: {
-                            display: false, // or true if you want a title
+                            display: false,
                             color: textColor
                         }
                     }
-        },
-        interaction: {
-            mode: 'nearest',
-            axis: 'x',
-            intersect: false
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
                 },
                 animation: {
                     duration: 1000,
                     easing: 'easeOutQuart'
-        }
+                }
             },
             plugins: [ChartDataLabels]
-});
+        });
 
         // Graph 2: Center Performance Post Allocation
         const centerPerfCtx = document.getElementById('centerPerformanceChart').getContext('2d');
         centerPerfChart = new Chart(centerPerfCtx, {
-    type: 'line',
-    data: {
+            type: 'line',
+            data: {
                 labels: {!! json_encode($centers->pluck('name')) !!},
                 datasets: [
                     {
                         label: 'Sales After Allocation',
                         data: {!! json_encode($centers->map(fn($c) => $c->sales->last()->monthly_sales ?? 0)) !!},
                         borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: isDarkMode ? 'rgba(255, 99, 132, 0.2)' : 'rgba(255, 99, 132, 0.1)',
+                        backgroundColor: dark ? 'rgba(255, 99, 132, 0.2)' : 'rgba(255, 99, 132, 0.1)',
                         fill: true,
                         tension: 0.4,
                         pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                        pointBorderColor: isDarkMode ? '#1f2937' : '#fff',
+                        pointBorderColor: dark ? '#1f2937' : '#fff',
                         pointHoverRadius: 6,
                         pointHoverBorderWidth: 2,
                         borderWidth: 2
@@ -337,21 +393,21 @@
                         label: 'Workers After Allocation',
                         data: {!! json_encode($centers->map(fn($c) => $c->workers->count() ?? 0)) !!},
                         borderColor: 'rgba(54, 162, 235, 1)',
-                        backgroundColor: isDarkMode ? 'rgba(54, 162, 235, 0.2)' : 'rgba(54, 162, 235, 0.1)',
+                        backgroundColor: dark ? 'rgba(54, 162, 235, 0.2)' : 'rgba(54, 162, 235, 0.1)',
                         fill: true,
                         tension: 0.4,
                         pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                        pointBorderColor: isDarkMode ? '#1f2937' : '#fff',
+                        pointBorderColor: dark ? '#1f2937' : '#fff',
                         pointHoverRadius: 6,
                         pointHoverBorderWidth: 2,
                         borderWidth: 2
                     }
                 ]
-    },
-    options: {
-        responsive: true,
+            },
+            options: {
+                responsive: true,
                 maintainAspectRatio: false,
-        plugins: {
+                plugins: {
                     tooltip: {
                         mode: 'index',
                         intersect: false,
@@ -373,7 +429,7 @@
                             color: textColor
                         },
                         title: {
-                            display: false, // or true if you want a title
+                            display: false,
                             color: textColor
                         }
                     },
@@ -385,15 +441,15 @@
                             color: textColor
                         },
                         title: {
-                            display: false, // or true if you want a title
+                            display: false,
                             color: textColor
                         }
                     }
-        },
-        interaction: {
-            mode: 'nearest',
-            axis: 'x',
-            intersect: false
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
                 },
                 animation: {
                     duration: 1000,
@@ -403,52 +459,15 @@
         });
     }
 
-    // Dark mode toggle functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
-
-        // Change the icons inside the button based on previous settings
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            themeToggleLightIcon.classList.remove('hidden');
-        } else {
-            document.documentElement.classList.remove('dark');
-            themeToggleDarkIcon.classList.remove('hidden');
-        }
-
-        // Create charts with initial theme
-        createCharts();
-
-        themeToggleBtn.addEventListener('click', function() {
-            // Toggle icons
-            themeToggleDarkIcon.classList.toggle('hidden');
-            themeToggleLightIcon.classList.toggle('hidden');
-
-            // If set via local storage previously
-            if (localStorage.getItem('color-theme')) {
-                if (localStorage.getItem('color-theme') === 'light') {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('color-theme', 'dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('color-theme', 'light');
-                }
-            } else {
-                // If NOT set via local storage previously
-                if (document.documentElement.classList.contains('dark')) {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('color-theme', 'light');
-                } else {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('color-theme', 'dark');
-                }
-            }
-
-            // Recreate charts with new theme
+    // Listen for system color scheme changes and recreate charts
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
             createCharts();
         });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        createCharts();
     });
 </script>
 
