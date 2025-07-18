@@ -44,10 +44,13 @@
 @endpush
 
 @section('content')
+<script>
+    window.LaravelCartAddRoute = '{{ route('cart.add', ['product' => 'PRODUCT_ID']) }}';
+    window.LaravelCsrfToken = '{{ csrf_token() }}';
+</script>
 <div class="container mx-auto px-4 py-8">
     <script>
         window.LaravelUserCategory = @json(Auth::user()->category ?? null);
-        window.LaravelCsrfToken = '{{ csrf_token() }}';
     </script>
 
     <div class="mb-8">

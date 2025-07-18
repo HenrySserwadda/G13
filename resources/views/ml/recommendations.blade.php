@@ -290,6 +290,7 @@ function renderPersonalizedRecommendations(products) {
     }
     
     products.forEach((product, i) => {
+        if (!product || typeof product.id === 'undefined') return; // skip invalid
         const hasImage = product.image && product.image !== 'images/dataset/none';
         let card = `<div class="product-card recommendation-card opacity-0 translate-y-10 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl relative" data-index="${i}">`;
         
@@ -318,7 +319,11 @@ function renderPersonalizedRecommendations(products) {
         card += `<p class="text-gray-600 mb-4 line-clamp-2">${product.description}</p>`;
         card += `<div class="flex space-x-3">`;
         card += `<a href="/products/${product.id}?from=ml" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center transition-colors duration-300 flex-1 justify-center"><i class="fas fa-eye mr-2"></i> View</a>`;
-        card += `<form action="${window.LaravelCartAddRoute.replace('PRODUCT_ID', product.id)}" method="POST" class="flex-1">`;
+        let formAction = '#';
+        if (typeof window.LaravelCartAddRoute === 'string' && (typeof product.id === 'string' || typeof product.id === 'number')) {
+            formAction = window.LaravelCartAddRoute.replace('PRODUCT_ID', product.id);
+        }
+        card += `<form action="${formAction}" method="POST" class="flex-1 ajax-add-to-cart">`;
         card += `<input type="hidden" name="_token" value="${window.LaravelCsrfToken}">`;
         card += `<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center transition-colors duration-300"><i class="fas fa-cart-plus mr-2"></i> Add to Cart</button>`;
         card += `</form>`;
@@ -337,6 +342,7 @@ function renderRecommendations(products) {
         return;
     }
     products.forEach((product, i) => {
+        if (!product || typeof product.id === 'undefined') return; // skip invalid
         const hasImage = product.image && product.image !== 'images/dataset/none';
         let card = `<div class="product-card recommendation-card opacity-0 translate-y-10 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl" data-index="${i}">`;
         card += `<div class="product-image-container">`;
@@ -355,7 +361,11 @@ function renderRecommendations(products) {
         card += `<p class="text-gray-600 mb-4 line-clamp-2">${product.description}</p>`;
         card += `<div class="flex space-x-3">`;
         card += `<a href="/products/${product.id}?from=ml" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center transition-colors duration-300 flex-1 justify-center"><i class="fas fa-eye mr-2"></i> View</a>`;
-        card += `<form action="${window.LaravelCartAddRoute.replace('PRODUCT_ID', product.id)}" method="POST" class="flex-1">`;
+        let formAction = '#';
+        if (typeof window.LaravelCartAddRoute === 'string' && (typeof product.id === 'string' || typeof product.id === 'number')) {
+            formAction = window.LaravelCartAddRoute.replace('PRODUCT_ID', product.id);
+        }
+        card += `<form action="${formAction}" method="POST" class="flex-1 ajax-add-to-cart">`;
         card += `<input type="hidden" name="_token" value="${window.LaravelCsrfToken}">`;
         card += `<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center transition-colors duration-300"><i class="fas fa-cart-plus mr-2"></i> Add to Cart</button>`;
         card += `</form>`;
