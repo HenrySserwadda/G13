@@ -23,22 +23,12 @@ class InventoryController extends Controller
         }
 
         if ($user->category === 'staff') {
-            // Staff can view all inventories, filtered by supply center if selected
+            // Staff can view all inventories, no longer filtered by supply center
             $query = Inventory::with(['rawMaterial', 'user']);
-            if ($selectedCenterId) {
-                $query = $query->whereHas('rawMaterial', function($q) use ($selectedCenterId) {
-                    $q->where('supply_center_id', $selectedCenterId);
-                });
-            }
             $inventories = $query->latest()->paginate(10);
         } else {
-            // Others can only view their own inventories, filtered by supply center if selected
+            // Others can only view their own inventories, no longer filtered by supply center
             $query = Inventory::with('rawMaterial')->where('user_id', Auth::id());
-            if ($selectedCenterId) {
-                $query = $query->whereHas('rawMaterial', function($q) use ($selectedCenterId) {
-                    $q->where('supply_center_id', $selectedCenterId);
-                });
-            }
             $inventories = $query->latest()->paginate(10);
         }
 
