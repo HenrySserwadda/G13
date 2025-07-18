@@ -44,6 +44,7 @@ class CheckoutController extends Controller
             'location' => $request->location,
             'mobile' => $request->mobile,
             'total' => array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart)),
+            'supply_center_id' => \App\Models\SupplyCenter::inRandomOrder()->first()->id,
         ]);
 
         // Create order items and deduct stock
@@ -57,7 +58,46 @@ class CheckoutController extends Controller
             $products[$id]->decrement('quantity', $item['quantity']);
         }
 
+        // If order is automatically completed, process to sales
+        if ($order->status === 'completed') {
+            $this->processOrderToSales($order);
+        }
+
         session()->forget('cart');
         return redirect()->route('products.index')->with('success', 'Order placed!');
+    }
+
+    private function processOrderToSales($order)
+    {
+        if (!$order->supply_center_id) {
+            return; // Skip if no supply center assigned
+        }
+
+        try {
+            $salesMonth = $order->created_at->format('Y-m');
+            $supplyCenterId = $order->supply_center_id;
+
+            // Check if sales record already exists for this supply center and month
+            $existingSale = \App\Models\Sale::where('supply_center_id', $supplyCenterId)
+                                           ->where('sales_month', $salesMonth . '-01')
+                                           ->first();
+
+            if ($existingSale) {
+                // Update existing sales record
+                $existingSale->monthly_sales += $order->total;
+                $existingSale->save();
+            } else {
+                // Create new sales record
+                \App\Models\Sale::create([
+                    'supply_center_id' => $supplyCenterId,
+                    'monthly_sales' => $order->total,
+                    'sales_month' => $salesMonth . '-01',
+                    'order_id' => $order->id,
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Log error but don't fail the order creation
+            \Log::error("Error processing order {$order->id} to sales: " . $e->getMessage());
+        }
     }
 } 

@@ -34,9 +34,14 @@ public function index()
     $centers = \App\Models\SupplyCenter::with(['sales', 'stocks', 'workers'])->get();
     $analysis = $centers->map(function ($center) use ($service) {
         $analysisResult = $service->analyzeCapacity($center);
+        
+        // Calculate total product stock for this supply center
+        $totalProductStock = \App\Models\Product::where('supply_center_id', $center->id)->sum('quantity');
+        
         return [
             'center' => $center,
             'analysis' => $analysisResult,
+            'total_product_stock' => $totalProductStock,
         ];
     });
 

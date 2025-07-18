@@ -18,7 +18,8 @@ class Rawmaterial extends Model
         'unit_price',
         'user_id', // Assuming a foreign key relationship with User
         'supplier_id', // Assuming a foreign key relationship with Supplier
-        'unit', 
+        'unit',
+        'supply_center_id', // Add supply center relationship
     ];
      public function user()
     {
@@ -27,5 +28,9 @@ class Rawmaterial extends Model
     public function invnetories()
     {
         return $this->hasMany(Inventory::class);
+    }
+    public function supplyCenter()
+    {
+        return $this->belongsTo(SupplyCenter::class);
     }
 }

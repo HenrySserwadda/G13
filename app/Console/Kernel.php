@@ -14,6 +14,9 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('ml:retrain')->weekly();
         $schedule->command('ml:cleanup-expired-products')->daily();
+        
+        // Process completed orders to sales table every hour
+        $schedule->command('sales:process-scheduled')->hourly();
     }
 
     /**
