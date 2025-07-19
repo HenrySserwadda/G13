@@ -410,10 +410,10 @@ async function fetchTagsAndProducts() {
     const res = await fetch('/api/products-for-ml');
     const data = await res.json();
     allProducts = data.products || [];
-    // Extract unique colors, styles, and genders from all products
-    const colors = [...new Set(allProducts.map(p => p.color).filter(Boolean))];
-    const styles = [...new Set(allProducts.map(p => p.style).filter(Boolean))];
-    const genders = [...new Set(allProducts.map(p => p.gender).filter(Boolean))];
+    // Extract unique colors, styles, and genders from all products (use ml_color and ml_style)
+    const colors = [...new Set(allProducts.map(p => p.ml_color).filter(Boolean))];
+    const styles = [...new Set(allProducts.map(p => p.ml_style).filter(Boolean))];
+    const genders = [...new Set(allProducts.map(p => p.ml_gender).filter(Boolean))];
     allTags = { colors, styles, genders };
     renderGenderDropdown(genders);
     renderTagBar(colors, styles, allProducts);
@@ -444,24 +444,34 @@ function renderTagBar(colors, styles, products) {
     tagBar.innerHTML = '';
     // Render color tags
     colors.forEach(color => {
-        const product = products.find(p => p.color === color);
+        const product = products.find(p => p.ml_color === color);
         const img = product ? product.image : '';
         const tag = document.createElement('div');
         tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-green-200 hover:bg-green-300';
-        tag.onclick = () => { selectedTags.color = color; fetchRecommendations(); highlightSelectedTags(); };
-        tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${color}" onerror="this.style.display='none'"><span>${color}</span>`;
+        tag.onclick = () => {
+            // Toggle color selection
+            selectedTags.color = (selectedTags.color === color) ? null : color;
+            fetchRecommendations();
+            highlightSelectedTags();
+        };
+        tag.innerHTML = img ? `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${color}" onerror="this.style.display='none'"/><span>${color}</span>` : `<span>${color}</span>`;
         tag.dataset.type = 'color';
         tag.dataset.value = color;
         tagBar.appendChild(tag);
     });
     // Render style tags
     styles.forEach(style => {
-        const product = products.find(p => p.style === style);
+        const product = products.find(p => p.ml_style === style);
         const img = product ? product.image : '';
         const tag = document.createElement('div');
         tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-blue-200 hover:bg-blue-300';
-        tag.onclick = () => { selectedTags.style = style; fetchRecommendations(); highlightSelectedTags(); };
-        tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${style}" onerror="this.style.display='none'"><span>${style}</span>`;
+        tag.onclick = () => {
+            // Toggle style selection
+            selectedTags.style = (selectedTags.style === style) ? null : style;
+            fetchRecommendations();
+            highlightSelectedTags();
+        };
+        tag.innerHTML = img ? `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${style}" onerror="this.style.display='none'"/><span>${style}</span>` : `<span>${style}</span>`;
         tag.dataset.type = 'style';
         tag.dataset.value = style;
         tagBar.appendChild(tag);

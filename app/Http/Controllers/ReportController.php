@@ -67,16 +67,11 @@ class ReportController extends Controller
         return view('reports.inventory');
     }
     
-    /* public function onHand(){
-        $onHand=DB::table('inventories')
-            ->join('raw_materials','inventories.raw_material_id','=','raw_materials.id')
-            ->select('raw_materials.name as name','inventories.on_hand as quantity')
-            ->get();
-        return response()->json($onHand);
-    } */
     public function onHand(){
-        $onHand=DB::table('raw_materials')            
-            ->select('name','quantity')
+        $onHand = \DB::table('raw_materials')
+            ->leftJoin('inventories', 'raw_materials.id', '=', 'inventories.raw_material_id')
+            ->select('raw_materials.name as name', \DB::raw('COALESCE(SUM(inventories.on_hand), 0) as quantity'))
+            ->groupBy('raw_materials.name')
             ->get();
         return response()->json($onHand);
     }

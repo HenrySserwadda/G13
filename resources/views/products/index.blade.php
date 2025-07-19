@@ -328,6 +328,121 @@ document.addEventListener('DOMContentLoaded', function() {
             if (recsSection) recsSection.classList.remove('hidden');
         });
     }
+
+    // ML Tag Bar Logic
+    let allProducts = [];
+    let allTags = { colors: [], styles: [] };
+    let selectedTags = { color: null, style: null };
+
+    const tagBarLoader = document.getElementById('all-products-tag-bar-loader');
+    const tagBar = document.getElementById('all-products-tag-bar');
+
+    async function fetchTagsAndProducts() {
+        tagBarLoader.classList.remove('hidden');
+        tagBar.classList.add('opacity-50', 'pointer-events-none');
+        const res = await fetch('/api/products-for-ml');
+        const data = await res.json();
+        allProducts = data.products || [];
+        // Extract unique colors and styles from all products (use ml_color and ml_style)
+        const colors = [...new Set(allProducts.map(p => p.ml_color).filter(Boolean))];
+        const styles = [...new Set(allProducts.map(p => p.ml_style).filter(Boolean))];
+        allTags = { colors, styles };
+        renderTagBar(colors, styles, allProducts);
+        tagBarLoader.classList.add('hidden');
+        tagBar.classList.remove('opacity-50', 'pointer-events-none');
+    }
+
+    function renderTagBar(colors, styles, products) {
+        tagBar.innerHTML = '';
+        // Render color tags
+        colors.forEach(color => {
+            const product = products.find(p => p.ml_color === color);
+            const img = product ? product.image : '';
+            const tag = document.createElement('div');
+            tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-green-200 hover:bg-green-300';
+            tag.onclick = () => { selectedTags.color = color; selectedTags.style = null; filterProducts(); highlightSelectedTags(); };
+            tag.innerHTML = img ? `<img src="/storage/${img}" class="w-8 h-8 rounded-full mr-2" alt="${color}" onerror="this.style.display='none'"/><span>${color}</span>` : `<span>${color}</span>`;
+            tag.dataset.type = 'color';
+            tag.dataset.value = color;
+            tagBar.appendChild(tag);
+        });
+        // Render style tags
+        styles.forEach(style => {
+            const product = products.find(p => p.ml_style === style);
+            const img = product ? product.image : '';
+            const tag = document.createElement('div');
+            tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-blue-200 hover:bg-blue-300';
+            tag.onclick = () => { selectedTags.style = style; selectedTags.color = null; filterProducts(); highlightSelectedTags(); };
+            tag.innerHTML = img ? `<img src="/storage/${img}" class="w-8 h-8 rounded-full mr-2" alt="${style}" onerror="this.style.display='none'"/><span>${style}</span>` : `<span>${style}</span>`;
+            tag.dataset.type = 'style';
+            tag.dataset.value = style;
+            tagBar.appendChild(tag);
+        });
+    }
+
+    function filterProducts() {
+        document.querySelectorAll('.product-card').forEach(card => {
+            const name = card.querySelector('h2').textContent;
+            const desc = card.querySelector('p').textContent;
+            let show = true;
+            if (selectedTags.color) {
+                show = desc.includes(selectedTags.color);
+            } else if (selectedTags.style) {
+                show = desc.includes(selectedTags.style);
+            }
+            card.style.display = show ? '' : 'none';
+        });
+    }
+
+    function highlightSelectedTags() {
+        document.querySelectorAll('.tag-item').forEach(tag => {
+            const type = tag.dataset.type;
+            const value = tag.dataset.value;
+            const isColor = type === 'color';
+            const isStyle = type === 'style';
+
+            if (isColor) {
+                tag.classList.toggle('bg-green-500', value === selectedTags.color);
+                tag.classList.toggle('text-white', value === selectedTags.color);
+            } else if (isStyle) {
+                tag.classList.toggle('bg-blue-500', value === selectedTags.style);
+                tag.classList.toggle('text-white', value === selectedTags.style);
+            }
+        });
+    }
+
+    // Initial fetch and render
+    fetchTagsAndProducts();
+
+    // Add event listeners for tag bar items
+    tagBar.addEventListener('click', function(e) {
+        const tag = e.target.closest('.tag-item');
+        if (tag) {
+            const type = tag.dataset.type;
+            const value = tag.dataset.value;
+
+            if (type === 'color') {
+                selectedTags.color = value;
+                selectedTags.style = null;
+            } else if (type === 'style') {
+                selectedTags.style = value;
+                selectedTags.color = null;
+            }
+            filterProducts();
+            highlightSelectedTags();
+        }
+    });
+
+    // Clear filters button
+    const clearFiltersBtn = document.createElement('button');
+    clearFiltersBtn.className = 'bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg ml-2';
+    clearFiltersBtn.innerHTML = '<i class="fas fa-times-circle mr-2"></i> Clear Filters';
+    clearFiltersBtn.onclick = () => {
+        selectedTags = { color: null, style: null };
+        filterProducts();
+        highlightSelectedTags();
+    };
+    document.getElementById('all-products-tag-bar').appendChild(clearFiltersBtn);
 });
 </script>
 @endpush

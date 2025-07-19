@@ -27,7 +27,7 @@
 @endsection
 @push('scripts')
 <script>
-    fetch('/reports/rawMaterialsOnHand')
+    fetch('/reports/onHand')
         .then(response => response.json())
         .then(onHand => {
             const labels = onHand.map(item => item.name);

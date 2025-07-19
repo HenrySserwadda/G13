@@ -180,6 +180,11 @@ class Chat extends Component
         $this->dispatch('chat-selected');
     }
 
+    public function updatedSearchTerm()
+    {
+        $this->loadUsers();
+    }
+
     public function render()
     {
         $selectedUser = null;

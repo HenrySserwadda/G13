@@ -155,6 +155,8 @@ Route::get('/reports/pdtsByPrice',[ReportController::class,'productsByPrice'])->
 Route::get('/reports/inventory',[ReportController::class,'showOnHand'])->name('reports.inventory');
 Route::get('/reports/onHand',[ReportController::class,'onHand'])->name('reports.onHand');
 
+Route::get('/reports/availableProducts', [ReportController::class, 'availableProducts'])->name('reports.availableProducts');
+
 Route::get('/noOfOrders',[ReportController::class,'noOfOrders'])->name('noOfOrders');
 
 Route::get('reports/pdtsPerMonth',[ReportController::class,'productsOrderedPerMonth'])->name('reports.pdtsPerMonth');
