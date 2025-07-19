@@ -77,9 +77,6 @@
                                         <a href="{{ route('user-profile') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-primary-hover" role="menuitem">Profile</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-primary-hover" role="menuitem">Settings</a>
-                                    </li>
-                                    <li>
                                         <form method="POST" action="{{ route('logout') }}">
                                             @csrf
                                             <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();" class="block px-4 py-2 text-sm text-gray-300 hover:bg-primary-hover" role="menuitem">Logout</a>
@@ -101,7 +98,7 @@
                 <ul class="space-y-2 font-medium">
                     <!-- Dashboard -->
                     <li>
-                        <a href="{{ route('redirect') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                        <a href="{{ route('redirect') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group @if(request()->routeIs('redirect')) underline underline-offset-4 font-semibold @endif">
                             <i class="fas fa-tachometer-alt w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                             <span class="ms-3">Dashboard</span>
                         </a>
@@ -111,7 +108,7 @@
                         <!-- Orders -->
                         @if(Auth::user()->category === 'supplier')
                         <li>
-                            <a href="{{ route('raw-material-orders.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                            <a href="{{ route('raw-material-orders.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group @if(request()->routeIs('raw-material-orders.index')) underline underline-offset-4 font-semibold @endif">
                                 <i class="fas fa-shopping-cart w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                                 <span class="flex-1 ms-3 whitespace-nowrap">Manage Orders</span>
                                 @php
@@ -125,7 +122,7 @@
                         @endif
                         @if(Auth::user()->category === 'wholesaler' || Auth::user()->category === 'retailer')
                         <li>
-                            <a href="{{ route('user-orders.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                            <a href="{{ route('user-orders.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group @if(request()->routeIs('user-orders.index')) underline underline-offset-4 font-semibold @endif">
                                 <i class="fas fa-shopping-cart w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                                 <span class="flex-1 ms-3 whitespace-nowrap">Orders</span>
                                 @php
@@ -137,7 +134,7 @@
                         @endif
                         @if(Auth::user()->category === 'staff' || Auth::user()->category === 'systemadmin')
                           <li>
-                            <a href="{{route('orders.manage.index')}}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                            <a href="{{route('orders.manage.index')}}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group @if(request()->routeIs('orders.manage.index')) underline underline-offset-4 font-semibold @endif">
                                 <i class="fas fa-shopping-cart w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                                 <span class="flex-1 ms-3 whitespace-nowrap">Sales Orders</span>
                               
@@ -146,7 +143,7 @@
                         @endif
                         @if(Auth::user()->category === 'systemadmin'|| Auth::user()->category === 'staff')
                          <li>
-                            <a href="{{route('raw-material-orders.index')}}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                            <a href="{{route('raw-material-orders.index')}}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group @if(request()->routeIs('raw-material-orders.index')) underline underline-offset-4 font-semibold @endif">
                                 <i class="fas fa-shopping-cart w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                                 <span class="flex-1 ms-3 whitespace-nowrap">Raw Material Orders</span>
                               
@@ -156,7 +153,7 @@
                          
                         
                         <li>
-                            <a href="{{ route('chat') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                            <a href="{{ route('chat') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group @if(request()->routeIs('chat')) underline underline-offset-4 font-semibold @endif">
                                 <svg class="shrink-0 w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                             <path d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z"/>
                         </svg>
@@ -170,7 +167,7 @@
                         <!-- Products -->
                         @if(in_array(Auth::user()->category, ['systemadmin', 'wholesaler', 'staff', 'retailer']))
                         <li>
-                            <a href="{{ route('products.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                            <a href="{{ route('products.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group @if(request()->routeIs('products.index')) underline underline-offset-4 font-semibold @endif">
                                 <i class="fas fa-box-open w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                                 <span class="flex-1 ms-3 whitespace-nowrap">Products</span>
                             </a>
@@ -180,7 +177,7 @@
                         <!-- Raw Materials -->
                         @if(in_array(Auth::user()->category, ['systemadmin', 'staff', 'supplier']))
                         <li>
-                            <a href="{{ route('raw_materials.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                            <a href="{{ route('raw_materials.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group @if(request()->routeIs('raw_materials.index')) underline underline-offset-4 font-semibold @endif">
                                 <i class="fas fa-cubes w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                                 <span class="flex-1 ms-3 whitespace-nowrap">Raw Materials</span>
                             </a>
@@ -190,7 +187,7 @@
                         <!-- Inventory -->
                         @if(Auth::user()->category === 'systemadmin' || Auth::user()->category === 'staff')
                         <li>
-                            <a href="{{ route('inventories.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                            <a href="{{ route('inventories.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group @if(request()->routeIs('inventories.index')) underline underline-offset-4 font-semibold @endif">
                                 <i class="fas fa-warehouse w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                                 <span class="flex-1 ms-3 whitespace-nowrap">Inventory</span>
                             </a>
@@ -205,7 +202,7 @@
                         </li>
                         @elseif(Auth::user()->category === 'wholesaler' || Auth::user()->category === 'retailer')
                         <li>
-                            <a href="{{ route('wholesaler-retailer-inventory.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                            <a href="{{ route('wholesaler-retailer-inventory.index') }}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group @if(request()->routeIs('wholesaler-retailer-inventory.index')) underline underline-offset-4 font-semibold @endif">
                                 <i class="fas fa-warehouse w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                                 <span class="flex-1 ms-3 whitespace-nowrap">Inventory</span>
                             </a>
@@ -264,7 +261,7 @@
                         <!-- Users (Admin Only) -->
                         @if(Auth::user()->category === 'systemadmin')
                         <li>
-                            <a href="{{route('dashboard.systemadmin.all-users')}}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group">
+                            <a href="{{route('dashboard.systemadmin.all-users')}}" class="flex items-center p-2 text-white rounded-lg hover:bg-primary-hover group @if(request()->routeIs('dashboard.systemadmin.all-users')) underline underline-offset-4 font-semibold @endif">
                                 <i class="fas fa-users w-5 h-5 text-gray-300 transition duration-75 group-hover:text-white"></i>
                                 <span class="flex-1 ms-3 whitespace-nowrap">Users</span>
                             </a>
