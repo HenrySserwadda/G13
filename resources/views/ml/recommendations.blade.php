@@ -290,6 +290,7 @@ function renderPersonalizedRecommendations(products) {
     }
     
     products.forEach((product, i) => {
+        if (!product || typeof product.id === 'undefined') return; // skip invalid
         const hasImage = product.image && product.image !== 'images/dataset/none';
         let card = `<div class="product-card recommendation-card opacity-0 translate-y-10 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl relative" data-index="${i}">`;
         
@@ -318,7 +319,11 @@ function renderPersonalizedRecommendations(products) {
         card += `<p class="text-gray-600 mb-4 line-clamp-2">${product.description}</p>`;
         card += `<div class="flex space-x-3">`;
         card += `<a href="/products/${product.id}?from=ml" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center transition-colors duration-300 flex-1 justify-center"><i class="fas fa-eye mr-2"></i> View</a>`;
-        card += `<form action="${window.LaravelCartAddRoute.replace('PRODUCT_ID', product.id)}" method="POST" class="flex-1">`;
+        let formAction = '#';
+        if (typeof window.LaravelCartAddRoute === 'string' && (typeof product.id === 'string' || typeof product.id === 'number')) {
+            formAction = window.LaravelCartAddRoute.replace('PRODUCT_ID', product.id);
+        }
+        card += `<form action="${formAction}" method="POST" class="flex-1 ajax-add-to-cart">`;
         card += `<input type="hidden" name="_token" value="${window.LaravelCsrfToken}">`;
         card += `<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center transition-colors duration-300"><i class="fas fa-cart-plus mr-2"></i> Add to Cart</button>`;
         card += `</form>`;
@@ -337,6 +342,7 @@ function renderRecommendations(products) {
         return;
     }
     products.forEach((product, i) => {
+        if (!product || typeof product.id === 'undefined') return; // skip invalid
         const hasImage = product.image && product.image !== 'images/dataset/none';
         let card = `<div class="product-card recommendation-card opacity-0 translate-y-10 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl" data-index="${i}">`;
         card += `<div class="product-image-container">`;
@@ -355,7 +361,11 @@ function renderRecommendations(products) {
         card += `<p class="text-gray-600 mb-4 line-clamp-2">${product.description}</p>`;
         card += `<div class="flex space-x-3">`;
         card += `<a href="/products/${product.id}?from=ml" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center transition-colors duration-300 flex-1 justify-center"><i class="fas fa-eye mr-2"></i> View</a>`;
-        card += `<form action="${window.LaravelCartAddRoute.replace('PRODUCT_ID', product.id)}" method="POST" class="flex-1">`;
+        let formAction = '#';
+        if (typeof window.LaravelCartAddRoute === 'string' && (typeof product.id === 'string' || typeof product.id === 'number')) {
+            formAction = window.LaravelCartAddRoute.replace('PRODUCT_ID', product.id);
+        }
+        card += `<form action="${formAction}" method="POST" class="flex-1 ajax-add-to-cart">`;
         card += `<input type="hidden" name="_token" value="${window.LaravelCsrfToken}">`;
         card += `<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full flex items-center justify-center transition-colors duration-300"><i class="fas fa-cart-plus mr-2"></i> Add to Cart</button>`;
         card += `</form>`;
@@ -400,10 +410,10 @@ async function fetchTagsAndProducts() {
     const res = await fetch('/api/products-for-ml');
     const data = await res.json();
     allProducts = data.products || [];
-    // Extract unique colors, styles, and genders from all products
-    const colors = [...new Set(allProducts.map(p => p.color).filter(Boolean))];
-    const styles = [...new Set(allProducts.map(p => p.style).filter(Boolean))];
-    const genders = [...new Set(allProducts.map(p => p.gender).filter(Boolean))];
+    // Extract unique colors, styles, and genders from all products (use ml_color and ml_style)
+    const colors = [...new Set(allProducts.map(p => p.ml_color).filter(Boolean))];
+    const styles = [...new Set(allProducts.map(p => p.ml_style).filter(Boolean))];
+    const genders = [...new Set(allProducts.map(p => p.ml_gender).filter(Boolean))];
     allTags = { colors, styles, genders };
     renderGenderDropdown(genders);
     renderTagBar(colors, styles, allProducts);
@@ -434,24 +444,34 @@ function renderTagBar(colors, styles, products) {
     tagBar.innerHTML = '';
     // Render color tags
     colors.forEach(color => {
-        const product = products.find(p => p.color === color);
+        const product = products.find(p => p.ml_color === color);
         const img = product ? product.image : '';
         const tag = document.createElement('div');
         tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-green-200 hover:bg-green-300';
-        tag.onclick = () => { selectedTags.color = color; fetchRecommendations(); highlightSelectedTags(); };
-        tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${color}" onerror="this.style.display='none'"><span>${color}</span>`;
+        tag.onclick = () => {
+            // Toggle color selection
+            selectedTags.color = (selectedTags.color === color) ? null : color;
+            fetchRecommendations();
+            highlightSelectedTags();
+        };
+        tag.innerHTML = img ? `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${color}" onerror="this.style.display='none'"/><span>${color}</span>` : `<span>${color}</span>`;
         tag.dataset.type = 'color';
         tag.dataset.value = color;
         tagBar.appendChild(tag);
     });
     // Render style tags
     styles.forEach(style => {
-        const product = products.find(p => p.style === style);
+        const product = products.find(p => p.ml_style === style);
         const img = product ? product.image : '';
         const tag = document.createElement('div');
         tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-blue-200 hover:bg-blue-300';
-        tag.onclick = () => { selectedTags.style = style; fetchRecommendations(); highlightSelectedTags(); };
-        tag.innerHTML = `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${style}" onerror="this.style.display='none'"><span>${style}</span>`;
+        tag.onclick = () => {
+            // Toggle style selection
+            selectedTags.style = (selectedTags.style === style) ? null : style;
+            fetchRecommendations();
+            highlightSelectedTags();
+        };
+        tag.innerHTML = img ? `<img src="/${img}" class="w-8 h-8 rounded-full mr-2" alt="${style}" onerror="this.style.display='none'"/><span>${style}</span>` : `<span>${style}</span>`;
         tag.dataset.type = 'style';
         tag.dataset.value = style;
         tagBar.appendChild(tag);
