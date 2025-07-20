@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>DURABAG Dashboard - @yield('title', 'Dashboard')</title>
+    <link rel="icon" type="image/png" href="/images/fav.png">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
      <script src="https://cdn.tailwindcss.com"></script>
 
@@ -42,7 +43,7 @@
                             </svg>
                         </button>
                         <a href="{{ url('/') }}" class="flex ms-2 md:me-24 items-center">
-                            <i class="fas fa-bag-shopping me-2 text-2xl text-white"></i>
+                            <img src="/images/logo.png" alt="Logo" class="w-8 h-8 object-contain me-2" />
                             <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">DURABAG</span>
                         </a>
                         <!-- Cart Link -->

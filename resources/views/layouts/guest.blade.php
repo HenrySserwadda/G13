@@ -7,6 +7,7 @@
 
     <title>DURABAG</title>
 
+    <link rel="icon" type="image/png" href="/images/fav.png">
     
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet">
@@ -57,7 +58,7 @@
             <!-- Logo and header -->
             <div class="flex flex-col items-center text-center mb-10">
                 <div class="w-16 h-16 bg-white dark:bg-gray-800 rounded-xl shadow-md flex items-center justify-center mb-4 border border-gray-100 dark:border-gray-700">
-                    <i class="fas fa-bag-shopping me-2 text-2xl text-blue-500"></i>
+                    <img src="/images/logo.png" alt="Logo" class="w-12 h-12 object-contain" />
                 </div>
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
                     <span class="text-primary-600">DURA</span><span class="text-gray-800 dark:text-gray-200">BAG</span>
