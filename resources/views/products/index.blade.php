@@ -1,5 +1,6 @@
 {{-- filepath: resources/views/products/index.blade.php --}}
 @extends('components.dashboard')
+@php use Illuminate\Support\Str; @endphp
 
 @section('title', 'Products - DURABAG')
 @section('page-title', 'Products')
@@ -102,13 +103,16 @@
                 <div class="product-card recommendation-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl opacity-0 translate-y-10" data-index="{{ $loop->index }}">
                     <div class="product-image-container">
                         @if($product->image)
-                            <img src="{{ asset('storage/'.$product->image) }}" 
+                            @php
+                                $isMlImage = Str::startsWith($product->image, 'images/dataset/');
+                                $imgSrc = $isMlImage ? asset($product->image) : asset('storage/'.$product->image);
+                            @endphp
+                            <img src="{{ $imgSrc }}" 
                                  alt="{{ $product->name }}" 
                                  class="product-image"
                                  loading="lazy"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                                 srcset="{{ asset('storage/'.$product->image) }} 1x, 
-                                         {{ asset('storage/'.$product->image) }} 2x">
+                                 srcset="{{ $imgSrc }} 1x, {{ $imgSrc }} 2x">
                             <div class="no-image-placeholder" style="display: none;">
                                 <i class="fas fa-camera text-5xl text-gray-400"></i>
                             </div>
@@ -358,10 +362,14 @@ document.addEventListener('DOMContentLoaded', function() {
         colors.forEach(color => {
             const product = products.find(p => p.ml_color === color);
             const img = product ? product.image : '';
+            let imgSrc = '';
+            if (img) {
+                imgSrc = img.startsWith('images/dataset/') ? `/${img}` : `/storage/${img}`;
+            }
             const tag = document.createElement('div');
             tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-green-200 hover:bg-green-300';
             tag.onclick = () => { selectedTags.color = color; selectedTags.style = null; filterProducts(); highlightSelectedTags(); };
-            tag.innerHTML = img ? `<img src="/storage/${img}" class="w-8 h-8 rounded-full mr-2" alt="${color}" onerror="this.style.display='none'"/><span>${color}</span>` : `<span>${color}</span>`;
+            tag.innerHTML = imgSrc ? `<img src="${imgSrc}" class="w-8 h-8 rounded-full mr-2" alt="${color}" onerror="this.style.display='none'"/><span>${color}</span>` : `<span>${color}</span>`;
             tag.dataset.type = 'color';
             tag.dataset.value = color;
             tagBar.appendChild(tag);
@@ -370,10 +378,14 @@ document.addEventListener('DOMContentLoaded', function() {
         styles.forEach(style => {
             const product = products.find(p => p.ml_style === style);
             const img = product ? product.image : '';
+            let imgSrc = '';
+            if (img) {
+                imgSrc = img.startsWith('images/dataset/') ? `/${img}` : `/storage/${img}`;
+            }
             const tag = document.createElement('div');
             tag.className = 'tag-item cursor-pointer rounded-lg px-4 py-2 flex items-center bg-blue-200 hover:bg-blue-300';
             tag.onclick = () => { selectedTags.style = style; selectedTags.color = null; filterProducts(); highlightSelectedTags(); };
-            tag.innerHTML = img ? `<img src="/storage/${img}" class="w-8 h-8 rounded-full mr-2" alt="${style}" onerror="this.style.display='none'"/><span>${style}</span>` : `<span>${style}</span>`;
+            tag.innerHTML = imgSrc ? `<img src="${imgSrc}" class="w-8 h-8 rounded-full mr-2" alt="${style}" onerror="this.style.display='none'"/><span>${style}</span>` : `<span>${style}</span>`;
             tag.dataset.type = 'style';
             tag.dataset.value = style;
             tagBar.appendChild(tag);
