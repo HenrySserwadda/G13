@@ -244,3 +244,7 @@ Route::post('/workers/allocate', [WorkforceController::class, 'allocateWorkers']
 
 Route::get('/user-profile',[UserController::class,'userProfile']
 )->name('user-profile');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard/user-segments', [\App\Http\Controllers\SystemAdminController::class, 'userSegments'])->name('dashboard.user-segments');
+});
