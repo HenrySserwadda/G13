@@ -3,12 +3,12 @@
 @section('content')
     <div class="max-w-xl mx-auto mt-10 bg-white rounded-2xl shadow-md p-6 border border-gray-200">
         <h2 class="text-2xl font-semibold text-gray-900 center mb-6 border-b pb-2">User Profile</h2>
-        <div class="flex justify-center mb-6">
+        {{--<div class="flex justify-center mb-6">
             <img src="{{ $user->avatar_url }}" alt="User Avatar" class="w-24 h-24 rounded-full shadow-md object-cover">
         </div>
         <div class="flex justify-center mb-6">
             @livewire('avatar-upload', ['user' => $user], key($user->id))
-        </div>
+        </div>--}}
         <table class="w-full text-m text-left text-gray-800">
             <tbody>
                 <tr class="border-b">

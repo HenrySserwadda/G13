@@ -23,6 +23,12 @@ class UserController extends Controller
     public function application(Request $request){
         $user=Auth::user();
         $category = $request->input('categories');
+
+        if ($user->status=='application received')
+        {
+            return redirect()->back()->with('already', 'You already have a pending application. Please wait for it to be reviewed before applying again. You will be notified by email.');
+        }
+
         $user->status='application received';
         $user->pending_category=$category;
         $user->save();

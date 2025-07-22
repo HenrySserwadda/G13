@@ -78,7 +78,7 @@ class SystemadminController extends Controller
     public function filter(Request $request)
     {
         $category = $request->input('categories', 'all');   
-        $query = User::query()->where('status', 'approved');    
+        $query = User::query()->where('status', '!=','application rejected');    
         if ($category !== 'all') {
             $query->where('category', $category);
         }    
@@ -105,7 +105,10 @@ class SystemadminController extends Controller
             } elseif ($category === 'wholesaler') {
                 Wholesaler::create(['user_id' => $user->user_id]);
             } elseif ($category === 'supplier') {
-                Supplier::create(['user_id' => $user->user_id]);
+                Supplier::create([
+                    'user_id' => $user->user_id,
+                    'name'=>$user->name,
+                    'email'=>$user->email]);
             }
 
             return back()->with('success', ucfirst($category) . ' approved successfully.');

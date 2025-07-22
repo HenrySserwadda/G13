@@ -113,7 +113,10 @@
             <div class="mt-3">
                 <x-input-label for="user_id" :value="__('User Identification Number')" />
                 <x-text-input id="user_id" class="block mt-2 w-full px-3 py-2 text-m" type="text" name="user_id" :value="old('user_id')" required/>
-                <x-input-error :messages="$errors->get('user_id')" class="mt-4" />
+                @if ($errors->has('user_id'))
+                    <span class="text-red-500 text-sm">{{ $errors->first('user_id') }}</span>
+                @endif
+
             </div>
             <div class="flex items-center justify-between mt-4">
                 @if (Route::has('password.request'))

@@ -11,6 +11,7 @@ use Illuminate\View\View;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Session;
 use App\Models\User;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -98,11 +99,29 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended($user->redirectToDashboard());
         }
 
+        $attemptKey = 'user-id-attempt:' . $user->id;
+
         if ($request->user_id !== $user->user_id) {
-            Session::forget('temp_user_id'); 
+            RateLimiter::hit($attemptKey); 
+
+        if (RateLimiter::tooManyAttempts($attemptKey, 3)) {
+            Session::forget('temp_user_id');
             Session::forget('remember_me');
-            throw ValidationException::withMessages(['user_id' => __('The User ID you provided is incorrect.')]);
+            RateLimiter::clear($attemptKey);
+
+            return redirect()->route('login')->withErrors([
+                'email' => 'Too many failed User ID attempts. Please log in again.',
+            ]);
         }
+
+        return back()
+            ->withErrors(['user_id' => 'The User ID you provided is incorrect.'])
+            ->withInput();
+        }
+
+        // Clear attempts and log the user in
+        RateLimiter::clear($attemptKey);
+
         Auth::login($user, Session::get('remember_me', false));
         Session::forget('temp_user_id');
         Session::forget('remember_me');
