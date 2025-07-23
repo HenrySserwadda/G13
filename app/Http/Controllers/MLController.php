@@ -408,6 +408,9 @@ class MLController extends Controller
                     'style' => $product['ml_style'],
                     'color' => $product['ml_color'],
                     'gender' => $product['ml_gender'],
+                    'ml_style' => $product['ml_style'],
+                    'ml_color' => $product['ml_color'],
+                    'ml_gender' => $product['ml_gender'],
                     'is_ml_generated' => true,
                 ];
             }, $databaseProducts);

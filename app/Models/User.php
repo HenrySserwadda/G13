@@ -149,8 +149,9 @@ public function inventories()
         return $this->belongsTo(Systemadmin::class,'user_id','user_id');
     }
 
+    // Use the string user_id as the local key if that's how orders are linked
     public function orders(){
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Order::class, 'user_id', 'user_id');
     }
 
     public function sentMessages()

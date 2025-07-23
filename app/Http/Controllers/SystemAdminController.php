@@ -271,4 +271,185 @@ class SystemadminController extends Controller
         );
         return view('dashboard.activity-log', compact('activities'));
     }
+
+    /**
+     * Show user segments for admin/staff dashboard
+     */
+    public function userSegments()
+    {
+        $user = auth()->user();
+        if (!$user || !in_array(strtolower($user->category), ['systemadmin', 'admin', 'staff'])) {
+            abort(403, 'Unauthorized');
+        }
+        $users = \App\Models\User::with('orders')->get();
+        $segments = [
+            'By Gender' => [],
+            'High Frequency Buyers' => [],
+            'High Budget Users' => [],
+            'Dormant Users' => [],
+            'By Preferred Style' => [],
+            'By Preferred Color' => [],
+        ];
+        $now = now();
+        foreach ($users as $user) {
+            $orders = $user->orders()->with('items.product')->get();
+            $orderCount = $orders->count();
+            $totalSpent = $orders->sum('total');
+            $avgOrderValue = $orderCount > 0 ? $totalSpent / $orderCount : 0;
+            $lastOrder = $orders->sortByDesc('created_at')->first();
+            $lastOrderDate = $lastOrder ? $lastOrder->created_at : null;
+            // Gender
+            $gender = $user->gender ?? 'Unknown';
+            $segments['By Gender'][$gender][] = $user;
+            // High frequency
+            if ($orderCount >= 5) {
+                $segments['High Frequency Buyers'][] = $user;
+            }
+            // High budget
+            if ($avgOrderValue >= 200000) {
+                $segments['High Budget Users'][] = $user;
+            }
+            // Dormant
+            if ($lastOrderDate && $now->diffInDays($lastOrderDate) > 90) {
+                $segments['Dormant Users'][] = $user;
+            }
+            // Preferred style/color
+            $styleCounts = [];
+            $colorCounts = [];
+            foreach ($orders as $order) {
+                foreach ($order->items as $item) {
+                    $product = $item->product;
+                    if ($product) {
+                        if ($product->ml_style) {
+                            $styleCounts[$product->ml_style] = ($styleCounts[$product->ml_style] ?? 0) + 1;
+                        }
+                        if ($product->ml_color) {
+                            $colorCounts[$product->ml_color] = ($colorCounts[$product->ml_color] ?? 0) + 1;
+                        }
+                    }
+                }
+            }
+            if (!empty($styleCounts)) {
+                arsort($styleCounts);
+                $topStyle = array_key_first($styleCounts);
+                $segments['By Preferred Style'][$topStyle][] = $user;
+            }
+            if (!empty($colorCounts)) {
+                arsort($colorCounts);
+                $topColor = array_key_first($colorCounts);
+                $segments['By Preferred Color'][$topColor][] = $user;
+            }
+        }
+        $genderCounts = $users->groupBy('gender')->map->count();
+        $segmentCounts = collect($segments)->map(function($group) {
+            if (is_array($group)) {
+                return collect($group)->flatten(1)->count();
+            }
+            return is_array($group) ? count($group) : 0;
+        });
+
+        // Orders over time (by day, by category)
+        $ordersByDay = $users->flatMap->orders
+            ->filter()
+            ->groupBy(function($order) { return $order->created_at ? $order->created_at->format('Y-m-d') : 'Unknown'; })
+            ->map->count();
+        $ordersByDayCategory = $users->flatMap(function($user) {
+            return $user->orders->map(function($order) use ($user) {
+                return [
+                    'day' => $order->created_at ? $order->created_at->format('Y-m-d') : 'Unknown',
+                    'category' => $user->category ?? 'Unknown',
+                ];
+            });
+        })->groupBy('category')->map(function($orders) {
+            return collect($orders)->groupBy('day')->map->count();
+        });
+
+        // Revenue by segment (by day range)
+        $revenueBySegmentDay = collect($segments)->map(function($group, $segment) {
+            $users = is_array($group) ? collect($group)->flatten(1) : collect([]);
+            $byDay = collect();
+            foreach ($users as $user) {
+                foreach ($user->orders as $order) {
+                    $day = $order->created_at ? $order->created_at->format('Y-m-d') : 'Unknown';
+                    $byDay[$day] = ($byDay[$day] ?? 0) + $order->total;
+                }
+            }
+            return $byDay;
+        });
+
+        // Top styles/colors purchased (by gender)
+        $stylesByGender = $users->groupBy('gender')->map(function($users) {
+            $styles = [];
+            foreach ($users as $user) {
+                foreach ($user->orders as $order) {
+                    foreach ($order->items as $item) {
+                        $product = $item->product;
+                        if ($product && $product->ml_style) {
+                            $styles[$product->ml_style] = ($styles[$product->ml_style] ?? 0) + 1;
+                        }
+                    }
+                }
+            }
+            arsort($styles);
+            return $styles;
+        });
+        $colorsByGender = $users->groupBy('gender')->map(function($users) {
+            $colors = [];
+            foreach ($users as $user) {
+                foreach ($user->orders as $order) {
+                    foreach ($order->items as $item) {
+                        $product = $item->product;
+                        if ($product && $product->ml_color) {
+                            $colors[$product->ml_color] = ($colors[$product->ml_color] ?? 0) + 1;
+                        }
+                    }
+                }
+            }
+            arsort($colors);
+            return $colors;
+        });
+
+        // Active vs. dormant users (by category)
+        $now = now();
+        $activeDormantByCategory = $users->groupBy('category')->map(function($users) use ($now) {
+            $active = 0; $dormant = 0;
+            foreach ($users as $user) {
+                $lastOrder = $user->orders->sortByDesc('created_at')->first();
+                if ($lastOrder && $now->diffInDays($lastOrder->created_at) <= 90) {
+                    $active++;
+                } else {
+                    $dormant++;
+                }
+            }
+            return ['active' => $active, 'dormant' => $dormant];
+        });
+
+        // Per-user daily data for orders and amount spent
+        $allUsers = $users->sortBy('name')->values();
+        $ordersByDayUser = [];
+        $amountByDayUser = [];
+        foreach ($allUsers as $user) {
+            $ordersByDayUser[$user->id] = $user->orders->groupBy(function($order) {
+                return $order->created_at ? $order->created_at->format('Y-m-d') : 'Unknown';
+            })->map->count();
+            $amountByDayUser[$user->id] = $user->orders->groupBy(function($order) {
+                return $order->created_at ? $order->created_at->format('Y-m-d') : 'Unknown';
+            })->map(function($orders) {
+                return $orders->sum('total');
+            });
+        }
+        // Also prepare 'all' for all users combined
+        $ordersByDayUser['all'] = $ordersByDay;
+        $amountByDayUser['all'] = $users->flatMap->orders
+            ->filter()
+            ->groupBy(function($order) { return $order->created_at ? $order->created_at->format('Y-m-d') : 'Unknown'; })
+            ->map(function($orders) { return $orders->sum('total'); });
+
+        return view('dashboard.user-segments', compact(
+            'segments', 'genderCounts', 'segmentCounts',
+            'ordersByDay', 'ordersByDayCategory', 'revenueBySegmentDay',
+            'stylesByGender', 'colorsByGender', 'activeDormantByCategory',
+            'allUsers', 'ordersByDayUser', 'amountByDayUser'
+        ));
+    }
 }

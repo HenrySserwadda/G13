@@ -31,7 +31,7 @@ public class EmailService {
 
 
             content = String.format(
-                "Dear CEO,\n\n" +
+                "Dear %s,\n\n" +
                 "Congratulations! Your company %s has been successfully validated as a Vendor or Wholesaler.\n" +
                 "You meet all our requirements and are now eligible for business opportunities.\n\n" +
                 "We will have a visit to your facility on %s and hope you will be prepared for it.\n\n" +
@@ -41,7 +41,7 @@ public class EmailService {
 
         } else {
             content = String.format(
-                "Dear CEO,\n\n" +
+                "Dear %s,\n\n" +
                 "Thank you for submitting %s for vendor validation.\n" +
                 "Unfortunately, your application did not meet all requirements at this time.\n\n" +
                 "Reasons for rejection:\n%s\n\n" +

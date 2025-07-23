@@ -99,6 +99,23 @@
                     </div>
                 </div>
             </a>
+            <!-- User Segments Tile -->
+            <a href="{{ route('dashboard.user-segments') }}" class="group relative bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-pink-300 overflow-hidden">
+                <div class="absolute inset-0 bg-pink-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"></div>
+                <div class="relative z-10 p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center mr-4 text-pink-600">
+                            <i class="fas fa-users text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800">User Segments</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">View users by purchase patterns and preferences</p>
+                    <div class="text-pink-600 text-sm font-medium flex items-center">
+                        <span>View Segments</span>
+                        <i class="fas fa-chevron-right ml-2 transition-transform group-hover:translate-x-1 duration-200"></i>
+                    </div>
+                </div>
+            </a>
         </div>
         <!-- Quick Actions Row -->
         <div class="flex flex-wrap gap-4 mb-10">

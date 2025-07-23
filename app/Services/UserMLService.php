@@ -152,6 +152,21 @@ class UserMLService
     {
         $preferences = $this->analyzeUserPreferences($user);
         
+        // Get product IDs from the user's most recent order
+        $recentOrder = Order::with(['items.product'])
+            ->where('user_id', $user->id)
+            ->orWhere('user_id', $user->user_id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        $recentProductIds = [];
+        if ($recentOrder) {
+            foreach ($recentOrder->items as $item) {
+                if ($item->product) {
+                    $recentProductIds[] = $item->product->id;
+                }
+            }
+        }
+        
         // Build query based on user preferences
         $query = Product::query();
 
@@ -183,6 +198,11 @@ class UserMLService
             ]);
         }
 
+        // Exclude products from the most recent order
+        if (!empty($recentProductIds)) {
+            $query->whereNotIn('id', $recentProductIds);
+        }
+
         // Prioritize ML-generated products and order by popularity
         $query->where('is_ml_generated', true)
               ->orderBy('ml_popularity_score', 'desc')
@@ -194,7 +214,7 @@ class UserMLService
         if ($products->count() < $limit) {
             $remaining = $limit - $products->count();
             $generalProducts = Product::where('is_ml_generated', true)
-                ->whereNotIn('id', $products->pluck('id'))
+                ->whereNotIn('id', $products->pluck('id')->merge($recentProductIds))
                 ->orderBy('ml_popularity_score', 'desc')
                 ->limit($remaining)
                 ->get();
