@@ -280,7 +280,7 @@ class SystemadminController extends Controller
      */
     public function userSegments()
     {
-        $user = auth()->user();
+        $user = \Illuminate\Support\Facades\Auth::user();
         if (!$user || !in_array(strtolower($user->category), ['systemadmin', 'admin', 'staff'])) {
             abort(403, 'Unauthorized');
         }
@@ -308,8 +308,16 @@ class SystemadminController extends Controller
             if ($orderCount >= 5) {
                 $segments['High Frequency Buyers'][] = $user;
             }
-            // High budget
-            if ($avgOrderValue >= 200000) {
+            // High budget (spending ≥1,000,000 UGX daily)
+            $dailySpending = $orders->groupBy(function($order) {
+                return $order->created_at->format('Y-m-d');
+            })->map(function($dayOrders) {
+                return $dayOrders->sum('total');
+            });
+            
+            if ($dailySpending->contains(function($amount) {
+                return $amount >= 1000000;
+            })) {
                 $segments['High Budget Users'][] = $user;
             }
             // Dormant

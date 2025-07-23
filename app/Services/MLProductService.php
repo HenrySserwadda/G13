@@ -48,6 +48,7 @@ class MLProductService
                         'ml_gender' => $mlProduct['gender'] ?? null,
                         'ml_expires_at' => Carbon::now()->addDays(30), // 30 days expiry
                         'ml_popularity_score' => 0,
+                        'supply_center_id' => \App\Models\SupplyCenter::inRandomOrder()->first()->id,
                     ]);
                     $createdProducts[] = $product;
                 }

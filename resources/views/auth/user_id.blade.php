@@ -68,18 +68,22 @@
             font-weight: 500;
         }
         .login-card input[type="text"] {
-            border: 1px solid #cbd5e1;
+            border: 1px solid rgba(0, 0, 0, 0.2);
             border-radius: 8px;
             padding: 0.75rem 1rem;
             margin-top: 0.5rem;
             margin-bottom: 1rem;
             width: 100%;
             font-size: 1rem;
-            background: #f8fafc;
-            transition: border 0.2s;
+            background: #ffffff;
+            color: #000000;
+            font-weight: 400;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
         }
         .login-card input:focus {
-            border-color: #6366f1;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
             outline: none;
         }
         .login-card .primary-btn {

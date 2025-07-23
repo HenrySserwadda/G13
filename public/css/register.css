@@ -1,0 +1,63 @@
+.register-container {
+    position: relative;
+    z-index: 1;
+}
+
+.register-bg-images {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.register-bg-image {
+    position: absolute;
+    opacity: 0.15;
+    filter: saturate(1.2) contrast(1.1);
+    transition: transform 0.5s ease-out;
+}
+
+.register-bg-image-1 {
+    top: 5%;
+    right: 5%;
+    width: 300px;
+    transform: rotate(10deg);
+    animation: floatRegister1 15s infinite ease-in-out;
+}
+
+.register-bg-image-2 {
+    bottom: 5%;
+    left: 5%;
+    width: 280px;
+    transform: rotate(-5deg);
+    animation: floatRegister2 18s infinite ease-in-out;
+}
+
+.register-bg-image-3 {
+    top: 40%;
+    right: 15%;
+    width: 220px;
+    transform: rotate(15deg);
+    animation: floatRegister3 20s infinite ease-in-out;
+}
+
+@keyframes floatRegister1 {
+    0%, 100% { transform: translate(0, 0) rotate(10deg); }
+    50% { transform: translate(-10px, -15px) rotate(12deg); }
+}
+
+@keyframes floatRegister2 {
+    0%, 100% { transform: translate(0, 0) rotate(-5deg); }
+    50% { transform: translate(15px, 10px) rotate(-8deg); }
+}
+
+@keyframes floatRegister3 {
+    0%, 100% { transform: translate(0, 0) rotate(15deg); }
+    50% { transform: translate(-15px, 15px) rotate(18deg); }
+}
+
+.register-form {
+    position: relative;
+    z-index: 2;
+}

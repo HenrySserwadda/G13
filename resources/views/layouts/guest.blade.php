@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,6 +12,22 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            min-height: 100vh;
+            overflow-y: auto !important;
+        }
+        .auth-container {
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        @media (max-height: 800px) {
+            .auth-container {
+                padding: 3rem 0;
+            }
+        }
+    </style>
 
     
    
@@ -47,9 +63,9 @@
     </script>
 </head>
 <body class="font-sans text-gray-800 antialiased bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-    <div class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div class="auth-container flex flex-col items-center justify-center p-4 relative overflow-y-auto">
         <!-- Background pattern -->
-        <div class="absolute inset-0 z-0 opacity-5 dark:opacity-10">
+        <div class="fixed inset-0 z-0 opacity-5 dark:opacity-10">
             <div class="absolute inset-0 bg-[url('/images/bag-pattern.svg')] bg-repeat bg-[length:200px]"></div>
         </div>
 

@@ -3,173 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Durabag - Premium Bag Manufacturers</title>
+    <title>DURABAG - Bags You Can Trust</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #e74c3c;
-            --light-color: #ecf0f1;
+            --primary-bg: #0a0d13;
+            --card-bg: #181c23;
+            --accent:rgb(38, 144, 231);
+            --text-main: #fff;
+            --text-secondary: #b0b3b8;
         }
-        
+        html, body {
+            height: 100%;
+            min-height: 100%;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
-        
-        .hero-section {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images/bag4.avif');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 120px 0;
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        
         .navbar {
-            background-color: var(--primary-color) !important;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: rgba(13, 0, 0, 0.55);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
         }
-        
-        .navbar-brand {
-            font-weight: 700;
-            color: white !important;
-            font-size: 1.5rem;
-        }
-        
-        .btn-primary {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }
-        
-        .btn-primary:hover {
-            background-color: #c0392b;
-            border-color: #c0392b;
-        }
-        
-        .feature-box {
-            padding: 30px;
-            border-radius: 5px;
-            background-color: white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .feature-box:hover {
-            transform: translateY(-10px);
-        }
-        
-        .feature-icon {
-            font-size: 2.5rem;
-            color: var(--secondary-color);
-            margin-bottom: 20px;
-        }
-        
-        footer {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 30px 0;
-            margin-top: 50px;
-        }
-        
-        .product-showcase {
-            margin: 50px 0;
-        }
-        
-        .product-card {
+        .brand-yellow { color: var(--accent); }
+        .btn-accent {
+            background: var(--accent);
+            color: #111;
             border: none;
-            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-accent:hover {
+            background: #fff;
+            color: var(--accent);
+        }
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+        }
+        .hero-tagline {
+            font-size: 1.5rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+        .hero-section {
+            padding: 80px 0 40px 0;
+            background: linear-gradient(135deg,rgb(79, 79, 79) 0%, #000 100%);
+        }
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.18);
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
-            margin-bottom: 30px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
         }
-        
         .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.28);
         }
-        
         .product-img {
-            height: 200px;
+            width: 100%;
+            height: 220px;
             object-fit: cover;
+            background: #222;
+        }
+        .product-title {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .product-desc {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        .product-card .p-3 {
+            background: transparent !important;
+        }
+        .main-content {
+            flex: 1 0 auto;
+        }
+        footer {
+            flex-shrink: 0;
+        }
+        @media (max-width: 767px) {
+            .hero-title { font-size: 2.5rem; }
+            .hero-section { padding: 40px 0 20px 0; }
+        }
+        #products, footer {
+            background: white !important;
+            color: #111;
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-bag-shopping me-2"></i>Durabag
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg" style="background: linear-gradient(20deg, #0a2342 0%, #111 100%); padding: 0.5rem 0; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center" href="#" style="color: #fff; font-weight: bold; font-size: 2rem;">
+                <img src="/images/logo.png" alt="Logo" style="height: 32px; margin-right: 8px;">
+                Durabag
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-      
-                <div class="ms-3">
-                     @if (Route::has('login'))
+            <div class="d-flex align-items-center gap-3">
                 
-                    @auth
-                        <a
-                            href="{{ route('redirect') }}"  class="btn btn-outline-light me-2">
-                                                   
-                            Dashboard
-                        </a>
-                      
-                    @else
-                        <a
-                            href="{{ route('login') }}"  class="btn btn-outline-light me-2"
-                           
-                        >
-                            Log in
-                        </a>
-
-                        @if (Route::has('register'))
-                            <a
-                                href="{{ route('register') }}" class="btn btn-primary" >
-                              
-                                Register
-                            </a>
-                        @endif
-                    @endauth
-                </nav>
-            @endif
-
-                </div>
+                <!-- Globe -->
+                <a href="#" class="text-white" style="font-size: 1.3rem;"><i class="fas fa-globe"></i></a>
+                <!-- Cart -->
+                <a href="#" class="text-white" style="font-size: 1.3rem;"><i class="fas fa-shopping-cart"></i></a>
+                <!-- User -->
+                <a href="#" class="text-white" style="font-size: 1.3rem;"><i class="fas fa-user"></i></a>
+                <!-- Create Account Button -->
+                <a href="{{ route('register') }}" class="btn" style="background:rgb(0, 187, 255); color: #fff; font-weight: bold; font-size: 1.1rem; border-radius: 2rem; padding: 0.5rem 1.5rem;">
+                    Create account
+                </a>
+                <a href="{{ route('login') }}" class="btn" style="background:rgb(0, 187, 255); color: #fff; font-weight: bold; font-size: 1.1rem; border-radius: 2rem; padding: 0.5rem 1.5rem;">
+                    Login
+                </a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="container">
-            <h1 class="display-3 fw-bold mb-4">Welcome to Durabag</h1>
-            <p class="lead mb-5"><em>The bags you dream of</em></p>
-            <a href="#about" class="btn btn-primary btn-lg px-4 me-2">Discover More</a>
-           
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="py-5">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 mb-4 mb-lg-0">
-                    <img src="/images/bag5.webp" 
-                         alt="Durabag Workshop" class="img-fluid rounded shadow">
+    <section class="hero-section" style="position:relative; background: none;">
+        <div style="position:absolute;top:0;left:0;width:100%;height:100%;background: linear-gradient(135deg,rgba(30,30,30,0.7) 0%,rgba(0,0,0,0.7) 100%), url('/images/pixel1.jpg') center center/cover no-repeat; z-index:0;"></div>
+        <div class="container" style="position:relative;z-index:1;">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6 text-center text-lg-start">
+                    <div class="hero-title">
+                        <span class="brand-yellow">DURA</span>BAG
+                    </div>
+                    <div class="hero-tagline">BAGS YOU CAN TRUST</div>
+                    <h2 class="fw-bold mb-4">Premium Quality Bags for Every Journey</h2>
+                    <div class="mb-4" style="color:var(--text-secondary);">
+                        Discover our collection of meticulously crafted bags designed for durability, style, and functionality. From business travels to outdoor adventures, Durabag has you covered.
+                    </div>
+                    <div style="display:inline-block; background:rgba(255,255,255,0.12); border-radius:2rem; box-shadow:0 2px 12px rgba(0,0,0,0.10); padding:0.5rem 1.5rem;">
+                        <a href="#products" class="btn btn-accent btn-lg px-4 d-flex align-items-center gap-2" style="font-weight:600; border-radius:2rem;">
+                            Discover
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M13.293 6.293a1 1 0 0 1 1.414 0l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 1 1-1.414-1.414L16.586 13H5a1 1 0 1 1 0-2h11.586l-3.293-3.293a1 1 0 0 1 0-1.414z"/></svg>
+                        </a>
+                    </div>
                 </div>
                 <div class="col-lg-6">
-                    <h2 class="fw-bold mb-4">Hello there!</h2>
-                    <p class="lead mb-4">Durabag is a company that manufactures different kinds of bags with premium quality and craftsmanship.</p>
-                    <p>Since our founding in 2025, we've been committed to creating durable, stylish, and functional bags for all lifestyles. Our products are designed to withstand daily use while maintaining their elegance.</p>
-                    
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="product-card d-flex flex-row align-items-center">
+                                <img src="/images/bag4.avif" class="product-img" alt="Professional Backpack">
+                                <div class="p-3">
+                                    <div class="product-title">Professional Backpack</div>
+                                    <div class="product-desc">Built for the modern professional</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="product-card" style="box-shadow: 0 4px 24px rgba(210, 207, 207, 0.18);">
+                                <img src="/images/bag5.webp" class="product-img" alt="Leather Satchel">
+                                <div class="p-3">
+                                    <div class="product-title">Leather Satchel</div>
+                                    <div class="product-desc">Professional elegance</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="product-card" style="box-shadow: 0 4px 24px rgba(210, 207, 207, 0.18);">
+                                <img src="/images/blue.avif.jpg" class="product-img" alt="Leather Duffel">
+                                <div class="p-3">
+                                    <div class="product-title">Leather Duffel</div>
+                                    <div class="product-desc">Travel in style</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Product Cards Section -->
+    <section id="products" class="py-5">
+        <div class="container" >
+            <h3 class="mb-4 fw-bold brand-yellow">Featured Products</h3>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="product-card">
+                        <img src="/images/pixel4.jpg" class="product-img" alt="Professional Backpack">
+                        <div class="p-3">
+                            <div class="product-title">Kids' Backpack</div>
+                            <div class="product-desc">Built for the modern professional</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="product-card">
+                        <img src="/images/pixel2.jpeg" class="product-img" alt="Leather Satchel">
+                        <div class="p-3">
+                            <div class="product-title">Leather Satchel</div>
+                            <div class="product-desc">Professional elegance</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="product-card">
+                        <img src="/images/pixel6.webp" class="product-img" alt="Leather Duffel">
+                        <div class="p-3">
+                            <div class="product-title">Leather Duffel</div>
+                            <div class="product-desc">Travel in style</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Add more product cards as needed -->
+            </div>
+        </div>
+    </section>
+    <!-- Trade Confidence Section -->
+    <section class="py-5" style="background: url('/images/main.jpg') center center/cover no-repeat; position: relative; color: #fff;">
+        <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(60,40,20,0.55);z-index:1;"></div>
+        <div class="container" style="position:relative;z-index:2;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="fw-bold display-5 mb-3">Trade with confidence from<br>production quality to purchase protection</h2>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="p-3 rounded-4 h-100 d-flex flex-column justify-content-between" style="background: rgba(0,0,0,0.25); min-height: 260px;">
+                        <div>
+                            <div class="mb-3" style="font-size:1.2rem; font-weight:600;">Ensure production quality with</div>
+                            <div class="mb-2" style="font-size:2rem; font-weight:800;">
+                                <span style="color:#1e90ff;">V</span><span style="color:#fff;">erified Supplier/</span>
+                                <span style="color:#1e90ff;">R</span><span style="color:#fff;">etailer</span>
+                            </div>
+                            <div class="mb-3" style="font-size:1rem; color:#f3f3f3;">
+                                Connect with a variety of suppliers with third-party-verified credentials and capabilities. Look for the "Verified" logo to begin sourcing with experienced suppliers your business could rely on.
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-4 h-100 d-flex flex-column justify-content-between" style="background: rgba(0,0,0,0.25); min-height: 260px;">
+                        <div>
+                            <div class="mb-3" style="font-size:1.2rem; font-weight:600;">Protect your purchase with</div>
+                            <div class="mb-2" style="font-size:2rem; font-weight:800;">
+                                <span style="color:#ffc107; font-size:2.2rem; vertical-align:middle;">&#128176;</span>
+                                <span style="color:#fff;">Trade Assurance</span>
+                            </div>
+                            <div class="mb-3" style="font-size:1rem; color:#f3f3f3;">
+                                Source confidently with access to secure payment options, protection against product issues, and mediation support for any purchase-related concerns when you order and pay on Durabag.com.
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="text-center mt-5 py-4">
+        &copy; {{ date('Y') }} DURABAG. All rights reserved.
+    </footer>
+    
+</body>
+</html>
