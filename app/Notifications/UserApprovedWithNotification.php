@@ -37,7 +37,7 @@ class UserApprovedWithNotification extends Notification
         return (new MailMessage)
             ->subject('Application Accepted')
             ->greeting('Hello, '.$this->user->name)
-            ->line('Your application to become a Durabag retailer been accepted. Please find your user identification number below.')
+            ->line('Your application to Durabag been accepted. Please find your user identification number below.')
             ->line('User Identification number: '.$this->user->user_id)
             ->action('Proceed to login', url('/login'))
             ;

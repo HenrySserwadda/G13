@@ -36,7 +36,7 @@
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->category }}</td>
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->email }}</td>
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">
-                    <form method="POST" action="{{ route('dashboard.systemadmin.make-staff',$user->id) }}">
+                    <form method="POST" action="{{ route('dashboard.systemadmin.make-staff',$user->id) }}" onsubmit="return confirm('Are you sure you want to make this user a staff member?')">
                         <x-primary-button>Make staff member</x-primary-button>
                         @csrf
                     </form>

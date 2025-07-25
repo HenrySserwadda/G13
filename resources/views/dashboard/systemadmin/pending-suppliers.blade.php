@@ -36,7 +36,7 @@
                     <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->name }}</td>
                     <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->email }}</td>
                     <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">
-                        <form method="POST" action="{{ route('dashboard.systemadmin.handleAdminAction', $user->id) }}" class="flex items-center gap-2">
+                        <form method="POST" action="{{ route('dashboard.systemadmin.handleAdminAction', $user->id) }}" onsubmit="return confirm('Are you sure you want to approve this user?')" class="flex items-center gap-2">
                             @csrf
                             <select name="action" class="border rounded px-2 py-1 text-sm">
                                 <option value="approve">Approve</option>

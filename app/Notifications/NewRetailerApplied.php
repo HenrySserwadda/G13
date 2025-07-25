@@ -41,7 +41,7 @@ class NewRetailerApplied extends Notification
             ->line('A user has applied to be a retailer and is awaiting approval.')
             ->line('Name: ' . $this->user->name)
             ->line('Email: ' . $this->user->email)
-            ->action('View Applied Retailers', url('/dashboard/systemadmin/pending-users'))
+            ->action('View Applied Retailers', url('/dashboard/systemadmin/pending-retailers'))
             ->line('Please log in to approve or reject this user.');
     }
 

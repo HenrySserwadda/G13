@@ -41,7 +41,7 @@ class NewSupplierApplied extends Notification
             ->line('A user has applied to be a supplier and is awaiting approval.')
             ->line('Name: ' . $this->user->name)
             ->line('Email: ' . $this->user->email)
-            ->action('View Applied Suppliers', url('/dashboard/systemadmin/pending-users'))
+            ->action('View Applied Suppliers', url('/dashboard/systemadmin/pending-suppliers'))
             ->line('Please log in to approve or reject this user.');
     }
 

@@ -36,7 +36,7 @@
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->category }}</td>
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{{ $user->email }}</td>
                 <td class="py-2 px-4 border-b border-gray-200 dark:border-gray-700">
-                    <form method="POST" action="{{ route('dashboard.systemadmin.make-systemadmin',$user->id) }}">
+                    <form method="POST" action="{{ route('dashboard.systemadmin.make-systemadmin',$user->id) }}" onsubmit="return confirm('Are you sure you want to make this user a systemadmin?')">
                         <x-primary-button>Make system admin</x-primary-button>
                         @csrf
                     </form>
