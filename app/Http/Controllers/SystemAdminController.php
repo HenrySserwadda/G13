@@ -305,7 +305,7 @@ class SystemadminController extends Controller
             $gender = $user->gender ?? 'Unknown';
             $segments['By Gender'][$gender][] = $user;
             // High frequency
-            if ($orderCount >= 5) {
+            if ($orderCount >= 10) {
                 $segments['High Frequency Buyers'][] = $user;
             }
             // High budget (spending ≥1,000,000 UGX daily)
