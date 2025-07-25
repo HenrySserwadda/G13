@@ -30,7 +30,7 @@ public class EmailService {
             LocalDate visitDate = visitSchedulerService.generateVisitDate(vendor);
 
             content = String.format(
-                "Dear %s,\n\n" +
+                "Dear CEO,\n\n" +
                 "Congratulations! Your company %s has been successfully validated as a Vendor or Wholesaler.\n" +
                 "You meet all our requirements and are now eligible for business opportunities.\n\n" +
                 "We will have a visit to your facility on %s and hope you will be prepared for it.\n\n" +
@@ -40,7 +40,7 @@ public class EmailService {
 
         } else {
             content = String.format(
-                "Dear %s,\n\n" +
+                "Dear CEO,\n\n" +
                 "Thank you for submitting %s for vendor validation.\n" +
                 "Unfortunately, your application did not meet all requirements at this time.\n\n" +
                 "Reasons for rejection:\n%s\n\n" +

@@ -1,6 +1,6 @@
 @extends('components.dashboard')
 @section('page-title', 'Dashboard')
-@section('page-description', ' wholesale management ')
+@section('page-description', ' Business management ')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-100/20">
@@ -13,7 +13,7 @@
                     <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
                         <div>
                             <h1 class="text-3xl font-bold text-gray-800 mb-2">Welcome back, {{ Auth::user()->name }}!</h1>
-                            <p class="text-gray-600">Here's what's happening with your wholesale business today</p>
+                            <p class="text-gray-600">Here's what's happening with your business today</p>
                         </div>
                         <div class="mt-4 md:mt-0">
                             <div class="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full">
