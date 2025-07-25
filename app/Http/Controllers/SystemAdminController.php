@@ -97,7 +97,7 @@ class SystemadminController extends Controller
             $user->category = $category;
             $user->pending_category = null;
             $user->user_id = User::generateUserId($category);
-            //$user->notify(new UserApprovedWithNotification($user));
+            $user->notify(new UserApprovedWithNotification($user));
             $user->save();
 
             if ($category === 'retailer') {
@@ -133,7 +133,7 @@ class SystemadminController extends Controller
         $user->status='no application';
         $user->user_id=Systemadmin::generateSystemAdminId($id);
         $user->is_admin=true;
-        //$user->notify(new NewSystemAdmin($user));
+        $user->notify(new NewSystemAdmin($user));
         $user->save();
         Systemadmin::create([
             'user_id'=>$user->user_id
@@ -147,7 +147,7 @@ class SystemadminController extends Controller
         $user->pending_category=null;
         $user->status='no application';
         $user->user_id=User::generateUserId($user->category);
-        //$user->notify(new NewStaffMember($user));
+        $user->notify(new NewStaffMember($user));
         $user->save();
         Staff::create([
             'user_id'=>$user->user_id

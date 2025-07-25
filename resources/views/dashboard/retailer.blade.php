@@ -1,7 +1,7 @@
 @extends('components.dashboard')
 
-@section('page-title', 'Wholesaler Dashboard')
-@section('page-description', 'Overview of your wholesaler dashboard')
+@section('page-title', 'Dashboard')
+@section('page-description', 'Overview of your dashboard')
 
 @section('content')
     <div class="filter mb-3 flex justify-end">

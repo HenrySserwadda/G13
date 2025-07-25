@@ -1,5 +1,5 @@
 @extends('components.dashboard')
-@section('page-title', 'Wholesaler Dashboard')
+@section('page-title', 'Dashboard')
 @section('page-description', ' wholesale management ')
 
 @section('content')

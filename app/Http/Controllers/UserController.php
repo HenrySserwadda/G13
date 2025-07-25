@@ -36,14 +36,14 @@ class UserController extends Controller
             return redirect()->route('insertpdf');
         }
         if($category=='retailer'){
-            //Notification::route('mail', 'bluey@hometown.com')->notify(new NewRetailerApplied($user));
+            Notification::route('mail', 'bluey@hometown.com')->notify(new NewRetailerApplied($user));
             return redirect()
                 ->intended($user->redirectToDashboard())
                 ->with('success', 'Your retailer application has been submitted and is awaiting approval!')
                 ->with('selected_category', $category);
         }
         if($category=='supplier'){
-            //Notification::route('mail', 'bluey@hometown.com')->notify(new NewSupplierApplied($user));
+            Notification::route('mail', 'bluey@hometown.com')->notify(new NewSupplierApplied($user));
             return redirect()
                 ->intended($user->redirectToDashboard())
                 ->with('success', 'Your supplier application has been submitted and is awaiting approval!')
