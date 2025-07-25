@@ -87,7 +87,7 @@
     <!-- Header -->
     <div class="bg-white dark:bg-gray-800 shadow px-4 py-6 rounded-b-lg">
         <div class="flex items-center justify-center max-w-4xl mx-auto">
-            <img src="https://placehold.co/50x50/3b82f6/ffffff?text=DB" class="w-12 h-12 rounded-full mr-4 shadow-md" alt="DURABAG Logo">
+            <img src="images/logo.png" class="w-12 h-12 rounded-full mr-4 shadow-md" alt="DURABAG Logo">
             <h1 class="text-3xl font-bold text-blue-900 dark:text-blue-300">DURABAG</h1>
         </div>
     </div>
